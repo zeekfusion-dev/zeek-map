@@ -200,8 +200,16 @@ export default function App() {
         ZEEKFUSION MAP TRAVELS ON STREAM
       </div>
 
-      <MapContainer center={[31, -30]} zoom={3} style={{ height: "100%", width: "100%" }}>
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+      <MapContainer
+        center={[31, -30]}
+        zoom={3}
+        style={{ height: "100%", width: "100%" }}
+        worldCopyJump={false}
+        maxBounds={[[ -85, -180 ], [ 85, 180 ]]}
+        maxBoundsViscosity={1.0}
+        minZoom={2}
+      >
+        <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
 
         {visitedZones.map((zone, i) => (
           <Polygon key={i} positions={zone.points} pathOptions={zone.style || visitedStyle}>
