@@ -4,8 +4,28 @@ import "leaflet/dist/leaflet.css";
 
 const visitedZones = [
   {
+    name: "Miami (HOME BASE)",
+    description: "Where I live / main content hub",
+    details: ["Home Base", "IRL streams", "Daily content"],
+    youtube: "https://youtube.com/",
+    style: {
+      color: "#00c2ff",
+      fillColor: "#00c2ff",
+      fillOpacity: 0.35,
+      weight: 4
+    },
+    points: [
+      [25.95, -80.40],
+      [25.95, -80.05],
+      [25.55, -80.05],
+      [25.55, -80.40]
+    ]
+  },
+  {
     name: "South Florida",
-    description: "Visited zone",
+    description: "General South Florida travel / streams",
+    details: ["Miami", "Fort Lauderdale", "Boca Raton"],
+    youtube: "https://youtube.com/",
     points: [
       [27.25, -80.05],
       [27.05, -80.32],
@@ -23,6 +43,8 @@ const visitedZones = [
   {
     name: "Dallas–Fort Worth",
     description: "Home base / visited zone",
+    details: ["Dallas", "Fort Worth"],
+    youtube: "https://youtube.com/",
     points: [
       [33.20, -97.45],
       [33.18, -96.55],
@@ -36,8 +58,58 @@ const visitedZones = [
     ]
   },
   {
+    name: "Downtown Orlando",
+    description: "Nightlife / IRL content",
+    details: ["Downtown Orlando", "Night stream"],
+    youtube: "https://youtube.com/",
+    points: [
+      [28.585, -81.408],
+      [28.585, -81.345],
+      [28.515, -81.345],
+      [28.515, -81.408]
+    ]
+  },
+  {
+    name: "Tallahassee",
+    description: "Travel / content stop",
+    details: ["Tallahassee"],
+    youtube: "https://youtube.com/",
+    points: [
+      [30.52, -84.40],
+      [30.52, -84.18],
+      [30.36, -84.18],
+      [30.36, -84.40]
+    ]
+  },
+  {
+    name: "New Orleans",
+    description: "Mardi Gras",
+    details: ["New Orleans", "Mardi Gras"],
+    youtube: "https://youtube.com/",
+    points: [
+      [30.04, -90.16],
+      [30.04, -89.93],
+      [29.88, -89.93],
+      [29.88, -90.16]
+    ]
+  },
+  {
+    name: "Tampa",
+    description: "Gasparilla",
+    details: ["Tampa", "Gasparilla"],
+    youtube: "https://youtube.com/",
+    points: [
+      [28.03, -82.58],
+      [28.03, -82.34],
+      [27.84, -82.34],
+      [27.84, -82.58]
+    ]
+  },
+  {
     name: "Austria Route",
     description: "Visited region",
+    details: ["Vienna", "Salzburg area"],
+    youtube: "https://youtube.com/",
     points: [
       [48.35, 13.15],
       [48.45, 16.55],
@@ -51,6 +123,8 @@ const plannedZones = [
   {
     name: "NYC Trip Zone",
     description: "Planned trip",
+    details: ["New York City"],
+    youtube: "https://youtube.com/",
     points: [
       [40.92, -74.22],
       [40.92, -73.68],
@@ -75,6 +149,38 @@ const plannedStyle = {
   dashArray: "8 8"
 };
 
+function ZonePopup({ zone }) {
+  return (
+    <Popup>
+      <div style={{ minWidth: 180 }}>
+        <strong>{zone.name}</strong>
+        <br />
+        <span>{zone.description}</span>
+        {zone.details?.length ? (
+          <>
+            <br />
+            <br />
+            <span style={{ fontWeight: 600 }}>Why I was there:</span>
+            <ul style={{ margin: "6px 0 0 18px", padding: 0 }}>
+              {zone.details.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+        {zone.youtube ? (
+          <>
+            <br />
+            <a href={zone.youtube} target="_blank" rel="noreferrer">
+              Watch the YouTube video
+            </a>
+          </>
+        ) : null}
+      </div>
+    </Popup>
+  );
+}
+
 export default function App() {
   return (
     <div style={{ height: "100vh", width: "100%", color: "white" }}>
@@ -98,22 +204,14 @@ export default function App() {
         <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
 
         {visitedZones.map((zone, i) => (
-          <Polygon key={i} positions={zone.points} pathOptions={visitedStyle}>
-            <Popup>
-              <strong>{zone.name}</strong>
-              <br />
-              {zone.description}
-            </Popup>
+          <Polygon key={i} positions={zone.points} pathOptions={zone.style || visitedStyle}>
+          <ZonePopup zone={zone} />
           </Polygon>
         ))}
 
         {plannedZones.map((zone, i) => (
           <Polygon key={i} positions={zone.points} pathOptions={plannedStyle}>
-            <Popup>
-              <strong>{zone.name}</strong>
-              <br />
-              {zone.description}
-            </Popup>
+            <ZonePopup zone={zone} />
           </Polygon>
         ))}
       </MapContainer>
