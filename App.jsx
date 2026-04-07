@@ -1,0 +1,43 @@
+import React from "react";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+const visited = [
+  { name: "Miami", coords: [25.7617, -80.1918] },
+  { name: "Dallas", coords: [32.7767, -96.797] },
+];
+
+const planned = [
+  { name: "New York", coords: [40.7128, -74.006] },
+];
+
+export default function App() {
+  return (
+    <div style={{ height: "100vh", width: "100%", color: "white" }}>
+      <div style={{ position: "absolute", top: 20, width: "100%", textAlign: "center", zIndex: 1000, fontSize: "28px", fontWeight: "bold" }}>
+        ZEEKFUSION MAP TRAVELS ON STREAM
+      </div>
+
+      <MapContainer center={[20, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
+        <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+
+        {visited.map((place, i) => (
+          <CircleMarker key={i} center={place.coords} radius={10} pathOptions={{ color: "white", fillColor: "darkblue", fillOpacity: 1 }}>
+            <Popup>{place.name} (Visited)</Popup>
+          </CircleMarker>
+        ))}
+
+        {planned.map((place, i) => (
+          <CircleMarker key={i} center={place.coords} radius={10} pathOptions={{ color: "white", fillColor: "orange", fillOpacity: 1 }}>
+            <Popup>{place.name} (Planned)</Popup>
+          </CircleMarker>
+        ))}
+      </MapContainer>
+
+      <div style={{ position: "absolute", bottom: 20, width: "100%", textAlign: "center", zIndex: 1000 }}>
+        <span style={{ color: "darkblue", marginRight: 20 }}>● Visited</span>
+        <span style={{ color: "orange" }}>● Planned</span>
+      </div>
+    </div>
+  );
+}
