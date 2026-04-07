@@ -2,165 +2,199 @@ import React from "react";
 import { MapContainer, TileLayer, Polygon, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
+const visitedStyle = {
+  color: "#1d4ed8",
+  fillColor: "#1d4ed8",
+  fillOpacity: 0.22,
+  weight: 2.5
+};
+
+const homeBaseStyle = {
+  color: "#06b6d4",
+  fillColor: "#06b6d4",
+  fillOpacity: 0.34,
+  weight: 3.5
+};
+
+const plannedStyle = {
+  color: "#f59e0b",
+  fillColor: "#f59e0b",
+  fillOpacity: 0.18,
+  weight: 2.5,
+  dashArray: "8 8"
+};
+
 const visitedZones = [
   {
-    name: "Miami (HOME BASE)",
-    description: "Where I live / main content hub",
-    details: ["Home Base", "IRL streams", "Daily content"],
+    name: "Miami-Dade County (HOME BASE)",
+    reason: "Home base / main content hub",
+    details: ["Where I live", "IRL streams", "Daily content"],
     youtube: "https://youtube.com/",
-    style: {
-      color: "#00c2ff",
-      fillColor: "#00c2ff",
-      fillOpacity: 0.35,
-      weight: 4
-    },
+    style: homeBaseStyle,
     points: [
-      [25.95, -80.40],
-      [25.95, -80.05],
-      [25.55, -80.05],
-      [25.55, -80.40]
+      [25.958, -80.873],
+      [25.920, -80.760],
+      [25.904, -80.640],
+      [25.903, -80.520],
+      [25.872, -80.390],
+      [25.806, -80.250],
+      [25.690, -80.130],
+      [25.500, -80.120],
+      [25.320, -80.170],
+      [25.180, -80.250],
+      [25.070, -80.350],
+      [25.110, -80.550],
+      [25.230, -80.670],
+      [25.400, -80.760],
+      [25.620, -80.820],
+      [25.820, -80.860]
     ]
   },
   {
-    name: "South Florida",
-    description: "General South Florida travel / streams",
-    details: ["Miami", "Fort Lauderdale", "Boca Raton"],
+    name: "Broward County",
+    reason: "South Florida streams / travel",
+    details: ["Fort Lauderdale", "South Florida"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [27.25, -80.05],
-      [27.05, -80.32],
-      [26.75, -80.45],
-      [26.35, -80.42],
-      [25.95, -80.38],
-      [25.55, -80.30],
-      [25.20, -80.18],
-      [25.35, -80.02],
-      [25.95, -79.92],
-      [26.55, -79.90],
-      [27.05, -79.95]
+      [26.337, -80.873],
+      [26.338, -80.620],
+      [26.332, -80.390],
+      [26.300, -80.170],
+      [26.180, -80.090],
+      [26.010, -80.090],
+      [25.960, -80.160],
+      [25.960, -80.390],
+      [25.960, -80.620],
+      [25.958, -80.873]
     ]
   },
   {
-    name: "Dallas–Fort Worth",
-    description: "Home base / visited zone",
-    details: ["Dallas", "Fort Worth"],
+    name: "Palm Beach County",
+    reason: "South Florida streams / travel",
+    details: ["Boca", "West Palm"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [33.20, -97.45],
-      [33.18, -96.55],
-      [32.98, -96.15],
-      [32.60, -96.05],
-      [32.25, -96.30],
-      [32.12, -96.85],
-      [32.18, -97.30],
-      [32.55, -97.55],
-      [32.95, -97.60]
+      [26.960, -80.880],
+      [26.960, -80.450],
+      [26.950, -80.090],
+      [26.720, -80.030],
+      [26.420, -80.030],
+      [26.337, -80.090],
+      [26.337, -80.390],
+      [26.338, -80.650],
+      [26.337, -80.873]
     ]
   },
   {
-    name: "Downtown Orlando",
-    description: "Nightlife / IRL content",
-    details: ["Downtown Orlando", "Night stream"],
+    name: "Orange County, FL",
+    reason: "Downtown Orlando",
+    details: ["Nightlife", "IRL content"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [28.585, -81.408],
-      [28.585, -81.345],
-      [28.515, -81.345],
-      [28.515, -81.408]
+      [28.800, -81.680],
+      [28.800, -81.080],
+      [28.330, -81.080],
+      [28.330, -81.680]
     ]
   },
   {
-    name: "Tallahassee",
-    description: "Travel / content stop",
-    details: ["Tallahassee"],
+    name: "Leon County, FL",
+    reason: "Tallahassee",
+    details: ["Travel stop", "Content trip"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [30.52, -84.40],
-      [30.52, -84.18],
-      [30.36, -84.18],
-      [30.36, -84.40]
+      [30.650, -84.510],
+      [30.650, -84.020],
+      [30.290, -84.020],
+      [30.290, -84.510]
     ]
   },
   {
-    name: "New Orleans",
-    description: "Mardi Gras",
-    details: ["New Orleans", "Mardi Gras"],
+    name: "Orleans Parish, LA",
+    reason: "Mardi Gras",
+    details: ["New Orleans", "Festival trip"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [30.04, -90.16],
-      [30.04, -89.93],
-      [29.88, -89.93],
-      [29.88, -90.16]
+      [30.120, -90.180],
+      [30.120, -89.930],
+      [29.860, -89.930],
+      [29.860, -90.180]
     ]
   },
   {
-    name: "Tampa",
-    description: "Gasparilla",
-    details: ["Tampa", "Gasparilla"],
+    name: "Hillsborough County, FL",
+    reason: "Gasparilla",
+    details: ["Tampa", "Festival trip"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [28.03, -82.58],
-      [28.03, -82.34],
-      [27.84, -82.34],
-      [27.84, -82.58]
+      [28.330, -82.820],
+      [28.330, -82.050],
+      [27.560, -82.050],
+      [27.560, -82.820]
     ]
   },
   {
-    name: "Austria Route",
-    description: "Visited region",
-    details: ["Vienna", "Salzburg area"],
+    name: "Dallas County, TX",
+    reason: "Home area / regular content",
+    details: ["Dallas"],
     youtube: "https://youtube.com/",
+    style: visitedStyle,
     points: [
-      [48.35, 13.15],
-      [48.45, 16.55],
-      [47.65, 16.30],
-      [47.40, 13.05]
+      [33.020, -97.040],
+      [33.020, -96.520],
+      [32.545, -96.520],
+      [32.545, -97.040]
+    ]
+  },
+  {
+    name: "Tarrant County, TX",
+    reason: "DFW area",
+    details: ["Fort Worth"],
+    youtube: "https://youtube.com/",
+    style: visitedStyle,
+    points: [
+      [33.020, -97.560],
+      [33.020, -96.900],
+      [32.550, -96.900],
+      [32.550, -97.560]
     ]
   }
 ];
 
 const plannedZones = [
   {
-    name: "NYC Trip Zone",
-    description: "Planned trip",
-    details: ["New York City"],
+    name: "New York County / Manhattan (planned)",
+    reason: "Planned trip",
+    details: ["NYC"],
     youtube: "https://youtube.com/",
+    style: plannedStyle,
     points: [
-      [40.92, -74.22],
-      [40.92, -73.68],
-      [40.48, -73.66],
-      [40.47, -74.18]
+      [40.880, -74.047],
+      [40.880, -73.907],
+      [40.680, -73.907],
+      [40.680, -74.047]
     ]
   }
 ];
 
-const visitedStyle = {
-  color: "#123dff",
-  fillColor: "#123dff",
-  fillOpacity: 0.22,
-  weight: 3
-};
-
-const plannedStyle = {
-  color: "#f59e0b",
-  fillColor: "#f59e0b",
-  fillOpacity: 0.20,
-  weight: 3,
-  dashArray: "8 8"
-};
-
 function ZonePopup({ zone }) {
   return (
     <Popup>
-      <div style={{ minWidth: 180 }}>
+      <div style={{ minWidth: 220 }}>
         <strong>{zone.name}</strong>
         <br />
-        <span>{zone.description}</span>
+        <span>{zone.reason}</span>
         {zone.details?.length ? (
           <>
             <br />
             <br />
-            <span style={{ fontWeight: 600 }}>Why I was there:</span>
+            <span style={{ fontWeight: 700 }}>Why I was there:</span>
             <ul style={{ margin: "6px 0 0 18px", padding: 0 }}>
               {zone.details.map((item, index) => (
                 <li key={index}>{item}</li>
@@ -194,7 +228,7 @@ export default function App() {
           fontSize: "28px",
           fontWeight: "bold",
           letterSpacing: "0.03em",
-          textShadow: "0 2px 10px rgba(0,0,0,0.7)"
+          textShadow: "0 2px 10px rgba(0,0,0,0.45)"
         }}
       >
         ZEEKFUSION MAP TRAVELS ON STREAM
@@ -205,20 +239,20 @@ export default function App() {
         zoom={3}
         style={{ height: "100%", width: "100%" }}
         worldCopyJump={false}
-        maxBounds={[[ -85, -180 ], [ 85, 180 ]]}
+        maxBounds={[[-85, -180], [85, 180]]}
         maxBoundsViscosity={1.0}
         minZoom={2}
       >
-        <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
 
         {visitedZones.map((zone, i) => (
           <Polygon key={i} positions={zone.points} pathOptions={zone.style || visitedStyle}>
-          <ZonePopup zone={zone} />
+            <ZonePopup zone={zone} />
           </Polygon>
         ))}
 
         {plannedZones.map((zone, i) => (
-          <Polygon key={i} positions={zone.points} pathOptions={plannedStyle}>
+          <Polygon key={i} positions={zone.points} pathOptions={zone.style || plannedStyle}>
             <ZonePopup zone={zone} />
           </Polygon>
         ))}
@@ -231,11 +265,12 @@ export default function App() {
           width: "100%",
           textAlign: "center",
           zIndex: 1000,
-          textShadow: "0 2px 10px rgba(0,0,0,0.7)"
+          textShadow: "0 2px 10px rgba(255,255,255,0.45)"
         }}
       >
-        <span style={{ color: "#8fb0ff", marginRight: 20 }}>■ Visited zones</span>
-        <span style={{ color: "#fbbf24" }}>■ Planned zones</span>
+        <span style={{ color: "#60a5fa", marginRight: 18 }}>■ Conquered counties</span>
+        <span style={{ color: "#22d3ee", marginRight: 18 }}>■ HOME BASE</span>
+        <span style={{ color: "#fbbf24" }}>■ Planned</span>
       </div>
     </div>
   );
