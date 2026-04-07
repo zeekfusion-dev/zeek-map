@@ -201,7 +201,7 @@ export default function App() {
       </div>
 
       <MapContainer center={[31, -30]} zoom={3} style={{ height: "100%", width: "100%" }}>
-        <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
 
         {visitedZones.map((zone, i) => (
           <Polygon key={i} positions={zone.points} pathOptions={zone.style || visitedStyle}>
