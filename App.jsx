@@ -9,6 +9,7 @@ export default function App() {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [hoveredPlace, setHoveredPlace] = useState(null);
 
   const visitedCountryData = useMemo(
     () => [
@@ -75,14 +76,14 @@ export default function App() {
       lng: -80.1918,
       label: "United States of America",
       color: "#22d3ee",
-      altitude: 0.05
+      altitude: 0.03
     },
     {
       lat: 48.2082,
       lng: 16.3738,
       label: "Austria",
       color: "#3b82f6",
-      altitude: 0.05
+      altitude: 0.03
     }
   ];
 
@@ -92,28 +93,28 @@ export default function App() {
       lng: -81.7603,
       label: "Florida",
       color: "#22d3ee",
-      altitude: 0.04
+      altitude: 0.025
     },
     {
       lat: 31.1695,
       lng: -91.8678,
       label: "Louisiana",
       color: "#3b82f6",
-      altitude: 0.04
+      altitude: 0.025
     },
     {
       lat: 31.9686,
       lng: -99.9018,
       label: "Texas",
       color: "#3b82f6",
-      altitude: 0.04
+      altitude: 0.025
     },
     {
       lat: 42.9134,
       lng: -75.5963,
       label: "New York",
       color: "#38bdf8",
-      altitude: 0.04
+      altitude: 0.025
     }
   ];
 
@@ -136,7 +137,8 @@ export default function App() {
             ...f,
             name,
             isVisited: Boolean(visitedInfo),
-            youtube: visitedInfo?.youtube || null
+            youtube: visitedInfo?.youtube || null,
+            placeType: "Visited Country"
           };
         });
 
@@ -149,7 +151,8 @@ export default function App() {
             id,
             name: visitedInfo?.name || `State ${id}`,
             isVisited: Boolean(visitedInfo),
-            youtube: visitedInfo?.youtube || null
+            youtube: visitedInfo?.youtube || null,
+            placeType: "Visited State"
           };
         });
 
@@ -191,7 +194,8 @@ export default function App() {
     background: active ? activeColor : "rgba(255,255,255,0.08)",
     color: "white",
     cursor: "pointer",
-    fontWeight: 700
+    fontWeight: 700,
+    boxShadow: active ? "0 0 18px rgba(59,130,246,0.45)" : "none"
   });
 
   const panelStyle = {
@@ -199,31 +203,76 @@ export default function App() {
     border: "1px solid rgba(96,165,250,0.28)",
     borderRadius: "18px",
     backdropFilter: "blur(8px)",
-    color: "white"
+    color: "white",
+    boxShadow: "0 0 22px rgba(37,99,235,0.18)"
   };
+
+  const activeInfoPanel = selectedPlace || hoveredPlace;
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#020617", position: "relative" }}>
+      {/* 3D / layered title */}
       <div
         style={{
           position: "absolute",
-          top: 20,
+          top: 18,
           width: "100%",
           textAlign: "center",
-          color: "white",
-          fontSize: "32px",
-          fontWeight: "bold",
-          zIndex: 20,
-          textShadow: "0 0 20px rgba(59,130,246,0.7)"
+          zIndex: 30,
+          pointerEvents: "none"
         }}
       >
-        ZEEKFUSION MAP TRAVELS ON STREAM
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            transform: "translate(3px, 3px)",
+            color: "rgba(8,47,73,0.95)",
+            fontSize: "34px",
+            fontWeight: 900,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase"
+          }}
+        >
+          ZEEKFUSION MAP TRAVELS ON STREAM
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            transform: "translate(1.5px, 1.5px)",
+            color: "rgba(14,116,144,0.95)",
+            fontSize: "34px",
+            fontWeight: 900,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase"
+          }}
+        >
+          ZEEKFUSION MAP TRAVELS ON STREAM
+        </div>
+
+        <div
+          style={{
+            position: "relative",
+            color: "#e0f2fe",
+            fontSize: "34px",
+            fontWeight: 900,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            textShadow:
+              "0 0 8px rgba(255,255,255,0.45), 0 0 18px rgba(56,189,248,0.65), 0 0 36px rgba(37,99,235,0.55)"
+          }}
+        >
+          ZEEKFUSION MAP TRAVELS ON STREAM
+        </div>
       </div>
 
+      {/* mode buttons */}
       <div
         style={{
           position: "absolute",
-          top: 75,
+          top: 78,
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -235,6 +284,7 @@ export default function App() {
           onClick={() => {
             setViewMode("world");
             setSelectedPlace(null);
+            setHoveredPlace(null);
           }}
           style={buttonStyle(viewMode === "world", "#3b82f6")}
         >
@@ -245,6 +295,7 @@ export default function App() {
           onClick={() => {
             setViewMode("usa");
             setSelectedPlace(null);
+            setHoveredPlace(null);
           }}
           style={buttonStyle(viewMode === "usa", "#22d3ee")}
         >
@@ -252,6 +303,7 @@ export default function App() {
         </button>
       </div>
 
+      {/* top left */}
       <div
         style={{
           position: "absolute",
@@ -267,15 +319,14 @@ export default function App() {
           {viewMode === "world" ? "COUNTRIES VISITED" : "STATES VISITED"}
         </div>
         <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1, marginTop: 8, color: "#22d3ee" }}>
-          {viewMode === "world"
-            ? `${visitedCountryData.length}`
-            : `${visitedStateData.length}`}
+          {viewMode === "world" ? `${visitedCountryData.length}` : `${visitedStateData.length}`}
         </div>
         <div style={{ marginTop: 10, fontSize: 14, color: "#e2e8f0" }}>
           {viewMode === "world" ? "Tracked on globe" : "Tracked in USA mode"}
         </div>
       </div>
 
+      {/* bottom left */}
       <div
         style={{
           position: "absolute",
@@ -308,31 +359,34 @@ export default function App() {
         </div>
       </div>
 
-      {selectedPlace && (
+      {/* right info panel */}
+      {activeInfoPanel && (
         <div
           style={{
             position: "absolute",
             right: 24,
             top: 120,
-            zIndex: 20,
-            width: 280,
+            zIndex: 25,
+            width: 290,
             padding: "16px 18px",
             ...panelStyle
           }}
         >
           <div style={{ fontSize: 13, color: "#93c5fd", letterSpacing: "0.08em", fontWeight: 800 }}>
-            SELECTED LOCATION
-          </div>
-          <div style={{ marginTop: 10, fontSize: 24, fontWeight: 800 }}>
-            {selectedPlace.name}
-          </div>
-          <div style={{ marginTop: 8, color: "#cbd5e1", fontSize: 14 }}>
-            {selectedPlace.type}
+            {selectedPlace ? "SELECTED LOCATION" : "HOVERING"}
           </div>
 
-          {selectedPlace.youtube ? (
+          <div style={{ marginTop: 10, fontSize: 24, fontWeight: 800 }}>
+            {activeInfoPanel.name}
+          </div>
+
+          <div style={{ marginTop: 8, color: "#cbd5e1", fontSize: 14 }}>
+            {activeInfoPanel.type}
+          </div>
+
+          {activeInfoPanel.youtube ? (
             <a
-              href={selectedPlace.youtube}
+              href={activeInfoPanel.youtube}
               target="_blank"
               rel="noreferrer"
               style={{
@@ -343,7 +397,8 @@ export default function App() {
                 background: "#22d3ee",
                 color: "#020617",
                 textDecoration: "none",
-                fontWeight: 800
+                fontWeight: 800,
+                boxShadow: "0 0 16px rgba(34,211,238,0.45)"
               }}
             >
               Watch YouTube Video
@@ -361,12 +416,33 @@ export default function App() {
           {...commonGlobeProps}
           polygonsData={countries}
           polygonGeoJsonGeometry="geometry"
-          polygonCapColor={(d) =>
-            d.isVisited ? "rgba(59,130,246,0.55)" : "rgba(255,255,255,0.03)"
-          }
+          polygonCapColor={(d) => {
+            if (hoveredPlace?.name === d.name) return "rgba(125,211,252,0.92)";
+            if (d.isVisited) return "rgba(59,130,246,0.62)";
+            return "rgba(255,255,255,0.03)";
+          }}
           polygonSideColor={() => "rgba(0,0,0,0)"}
-          polygonStrokeColor={() => "#60a5fa"}
-          polygonAltitude={(d) => (d.isVisited ? 0.02 : 0.006)}
+          polygonStrokeColor={(d) => {
+            if (hoveredPlace?.name === d.name) return "#e0f2fe";
+            return "#60a5fa";
+          }}
+          polygonAltitude={(d) => {
+            if (hoveredPlace?.name === d.name) return 0.032;
+            if (d.isVisited) return 0.02;
+            return 0.006;
+          }}
+          onPolygonHover={(d) => {
+            if (!d || !d.isVisited) {
+              setHoveredPlace(null);
+              return;
+            }
+
+            setHoveredPlace({
+              name: d.name,
+              youtube: d.youtube,
+              type: "Visited Country"
+            });
+          }}
           onPolygonClick={(d) => {
             if (!d?.isVisited) return;
             setSelectedPlace({
@@ -375,15 +451,13 @@ export default function App() {
               type: "Visited Country"
             });
           }}
-          polygonLabel={(d) =>
-            d.isVisited ? `${d.name} • Click for video` : d.name
-          }
+          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : d.name)}
           pointsData={worldPoints}
           pointLat="lat"
           pointLng="lng"
           pointColor="color"
           pointLabel="label"
-          pointRadius={0.22}
+          pointRadius={0.16}
           pointAltitude="altitude"
         />
       ) : (
@@ -391,12 +465,33 @@ export default function App() {
           {...commonGlobeProps}
           polygonsData={states}
           polygonGeoJsonGeometry="geometry"
-          polygonCapColor={(d) =>
-            d.isVisited ? "rgba(34,211,238,0.65)" : "rgba(255,255,255,0.03)"
-          }
+          polygonCapColor={(d) => {
+            if (hoveredPlace?.name === d.name) return "rgba(103,232,249,0.96)";
+            if (d.isVisited) return "rgba(34,211,238,0.7)";
+            return "rgba(255,255,255,0.03)";
+          }}
           polygonSideColor={() => "rgba(0,0,0,0)"}
-          polygonStrokeColor={() => "#22d3ee"}
-          polygonAltitude={(d) => (d.isVisited ? 0.025 : 0.008)}
+          polygonStrokeColor={(d) => {
+            if (hoveredPlace?.name === d.name) return "#ecfeff";
+            return "#22d3ee";
+          }}
+          polygonAltitude={(d) => {
+            if (hoveredPlace?.name === d.name) return 0.038;
+            if (d.isVisited) return 0.025;
+            return 0.008;
+          }}
+          onPolygonHover={(d) => {
+            if (!d || !d.isVisited) {
+              setHoveredPlace(null);
+              return;
+            }
+
+            setHoveredPlace({
+              name: d.name,
+              youtube: d.youtube,
+              type: "Visited State"
+            });
+          }}
           onPolygonClick={(d) => {
             if (!d?.isVisited) return;
             setSelectedPlace({
@@ -405,19 +500,18 @@ export default function App() {
               type: "Visited State"
             });
           }}
-          polygonLabel={(d) =>
-            d.isVisited ? `${d.name} • Click for video` : d.name
-          }
+          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : d.name)}
           pointsData={usaPoints}
           pointLat="lat"
           pointLng="lng"
           pointColor="color"
           pointLabel="label"
-          pointRadius={0.2}
+          pointRadius={0.14}
           pointAltitude="altitude"
         />
       )}
 
+      {/* bottom center legend */}
       <div
         style={{
           position: "absolute",
@@ -437,7 +531,7 @@ export default function App() {
       >
         <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
         <span><span style={{ color: "#22d3ee" }}>│</span> Travel Marker</span>
-        <span><span style={{ color: "#93c5fd" }}>Click</span> for video</span>
+        <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for video</span>
       </div>
     </div>
   );
