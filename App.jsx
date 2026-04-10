@@ -70,20 +70,22 @@ export default function App() {
     { place: "Dubai", votes: 244 }
   ];
 
+  const markerColor = "#facc15";
+
   const worldPoints = [
     {
       lat: 25.7617,
       lng: -80.1918,
       label: "United States of America",
-      color: "#22d3ee",
-      altitude: 0.03
+      color: markerColor,
+      altitude: 0.045
     },
     {
       lat: 48.2082,
       lng: 16.3738,
       label: "Austria",
-      color: "#3b82f6",
-      altitude: 0.03
+      color: markerColor,
+      altitude: 0.045
     }
   ];
 
@@ -92,29 +94,29 @@ export default function App() {
       lat: 27.9944,
       lng: -81.7603,
       label: "Florida",
-      color: "#22d3ee",
-      altitude: 0.025
+      color: markerColor,
+      altitude: 0.038
     },
     {
       lat: 31.1695,
       lng: -91.8678,
       label: "Louisiana",
-      color: "#3b82f6",
-      altitude: 0.025
+      color: markerColor,
+      altitude: 0.038
     },
     {
       lat: 31.9686,
       lng: -99.9018,
       label: "Texas",
-      color: "#3b82f6",
-      altitude: 0.025
+      color: markerColor,
+      altitude: 0.038
     },
     {
       lat: 42.9134,
       lng: -75.5963,
       label: "New York",
-      color: "#38bdf8",
-      altitude: 0.025
+      color: markerColor,
+      altitude: 0.038
     }
   ];
 
@@ -207,11 +209,23 @@ export default function App() {
     boxShadow: "0 0 22px rgba(37,99,235,0.18)"
   };
 
+  const socialIconStyle = {
+    width: 34,
+    height: 34,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "10px",
+    fontSize: "18px",
+    fontWeight: 900,
+    color: "white",
+    boxShadow: "0 0 10px rgba(255,255,255,0.15)"
+  };
+
   const activeInfoPanel = selectedPlace || hoveredPlace;
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#020617", position: "relative" }}>
-      {/* 3D / layered title */}
       <div
         style={{
           position: "absolute",
@@ -268,7 +282,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* mode buttons */}
       <div
         style={{
           position: "absolute",
@@ -303,7 +316,6 @@ export default function App() {
         </button>
       </div>
 
-      {/* top left */}
       <div
         style={{
           position: "absolute",
@@ -326,7 +338,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* bottom left */}
       <div
         style={{
           position: "absolute",
@@ -359,7 +370,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* right info panel */}
       {activeInfoPanel && (
         <div
           style={{
@@ -457,7 +467,7 @@ export default function App() {
           pointLng="lng"
           pointColor="color"
           pointLabel="label"
-          pointRadius={0.16}
+          pointRadius={0.34}
           pointAltitude="altitude"
         />
       ) : (
@@ -506,12 +516,11 @@ export default function App() {
           pointLng="lng"
           pointColor="color"
           pointLabel="label"
-          pointRadius={0.14}
+          pointRadius={0.3}
           pointAltitude="altitude"
         />
       )}
 
-      {/* bottom center legend */}
       <div
         style={{
           position: "absolute",
@@ -530,8 +539,49 @@ export default function App() {
         }}
       >
         <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
-        <span><span style={{ color: "#22d3ee" }}>│</span> Travel Marker</span>
+        <span><span style={{ color: markerColor }}>│</span> Travel Marker</span>
         <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for video</span>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          right: 24,
+          bottom: 24,
+          zIndex: 25,
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "10px 14px",
+          borderRadius: "18px",
+          background: "rgba(0,0,0,0.4)",
+          border: "1px solid rgba(96,165,250,0.25)",
+          backdropFilter: "blur(8px)",
+          boxShadow: "0 0 20px rgba(37,99,235,0.18)"
+        }}
+      >
+        <div style={{ ...socialIconStyle, background: "#22c55e" }}>K</div>
+        <div style={{ ...socialIconStyle, background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)" }}>
+          IG
+        </div>
+        <div style={{ ...socialIconStyle, background: "#ef4444" }}>▶</div>
+        <div style={{ ...socialIconStyle, background: "#38bdf8" }}>X</div>
+        <div style={{ ...socialIconStyle, background: "#111827", border: "1px solid rgba(255,255,255,0.15)" }}>
+          ♪
+        </div>
+
+        <div
+          style={{
+            marginLeft: "4px",
+            color: "#e0f2fe",
+            fontSize: "28px",
+            fontWeight: 900,
+            letterSpacing: "0.02em",
+            textShadow: "0 0 10px rgba(56,189,248,0.45)"
+          }}
+        >
+          ZeekFusion
+        </div>
       </div>
     </div>
   );
