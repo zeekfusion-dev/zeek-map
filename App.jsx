@@ -70,6 +70,14 @@ export default function App() {
     { place: "Dubai", votes: 244 }
   ];
 
+  const socialLinks = {
+    kick: "https://kick.com/zeekfusion",
+    instagram: "https://instagram.com/zeekfusion",
+    youtube: "https://youtube.com/@ZeekFusion",
+    x: "https://x.com/zeekfusion",
+    tiktok: "https://tiktok.com/@zeekfusion"
+  };
+
   const markerColor = "#facc15";
 
   const worldPoints = [
@@ -140,7 +148,7 @@ export default function App() {
             name,
             isVisited: Boolean(visitedInfo),
             youtube: visitedInfo?.youtube || null,
-            placeType: "Visited Country"
+            placeType: "Country"
           };
         });
 
@@ -154,7 +162,7 @@ export default function App() {
             name: visitedInfo?.name || `State ${id}`,
             isVisited: Boolean(visitedInfo),
             youtube: visitedInfo?.youtube || null,
-            placeType: "Visited State"
+            placeType: "State"
           };
         });
 
@@ -219,7 +227,9 @@ export default function App() {
     fontSize: "18px",
     fontWeight: 900,
     color: "white",
-    boxShadow: "0 0 10px rgba(255,255,255,0.15)"
+    boxShadow: "0 0 10px rgba(255,255,255,0.15)",
+    textDecoration: "none",
+    transition: "transform 0.15s ease, box-shadow 0.15s ease"
   };
 
   const activeInfoPanel = selectedPlace || hoveredPlace;
@@ -442,7 +452,7 @@ export default function App() {
             return 0.006;
           }}
           onPolygonHover={(d) => {
-            if (!d || !d.isVisited) {
+            if (!d) {
               setHoveredPlace(null);
               return;
             }
@@ -450,7 +460,7 @@ export default function App() {
             setHoveredPlace({
               name: d.name,
               youtube: d.youtube,
-              type: "Visited Country"
+              type: d.isVisited ? "Visited Country" : "Country"
             });
           }}
           onPolygonClick={(d) => {
@@ -461,7 +471,7 @@ export default function App() {
               type: "Visited Country"
             });
           }}
-          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : d.name)}
+          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : `${d.name} • Hover`)}
           pointsData={worldPoints}
           pointLat="lat"
           pointLng="lng"
@@ -491,7 +501,7 @@ export default function App() {
             return 0.008;
           }}
           onPolygonHover={(d) => {
-            if (!d || !d.isVisited) {
+            if (!d) {
               setHoveredPlace(null);
               return;
             }
@@ -499,7 +509,7 @@ export default function App() {
             setHoveredPlace({
               name: d.name,
               youtube: d.youtube,
-              type: "Visited State"
+              type: d.isVisited ? "Visited State" : "State"
             });
           }}
           onPolygonClick={(d) => {
@@ -510,7 +520,7 @@ export default function App() {
               type: "Visited State"
             });
           }}
-          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : d.name)}
+          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : `${d.name} • Hover`)}
           pointsData={usaPoints}
           pointLat="lat"
           pointLng="lng"
@@ -560,15 +570,42 @@ export default function App() {
           boxShadow: "0 0 20px rgba(37,99,235,0.18)"
         }}
       >
-        <div style={{ ...socialIconStyle, background: "#22c55e" }}>K</div>
-        <div style={{ ...socialIconStyle, background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)" }}>
+        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }}>
+          K
+        </a>
+
+        <a
+          href={socialLinks.instagram}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            ...socialIconStyle,
+            background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)"
+          }}
+        >
           IG
-        </div>
-        <div style={{ ...socialIconStyle, background: "#ef4444" }}>▶</div>
-        <div style={{ ...socialIconStyle, background: "#38bdf8" }}>X</div>
-        <div style={{ ...socialIconStyle, background: "#111827", border: "1px solid rgba(255,255,255,0.15)" }}>
+        </a>
+
+        <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#ef4444" }}>
+          ▶
+        </a>
+
+        <a href={socialLinks.x} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#38bdf8" }}>
+          X
+        </a>
+
+        <a
+          href={socialLinks.tiktok}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            ...socialIconStyle,
+            background: "#111827",
+            border: "1px solid rgba(255,255,255,0.15)"
+          }}
+        >
           ♪
-        </div>
+        </a>
 
         <div
           style={{
