@@ -333,56 +333,6 @@ export default function App() {
     tiktok: "https://tiktok.com/@zeekfusion"
   };
 
-  const markerColor = "#facc15";
-
-  const worldPoints = [
-    {
-      lat: 25.7617,
-      lng: -80.1918,
-      label: "United States of America",
-      color: markerColor,
-      altitude: 0.045
-    },
-    {
-      lat: 48.2082,
-      lng: 16.3738,
-      label: "Austria",
-      color: markerColor,
-      altitude: 0.045
-    }
-  ];
-
-  const usaPoints = [
-    {
-      lat: 27.9944,
-      lng: -81.7603,
-      label: "Florida",
-      color: markerColor,
-      altitude: 0.038
-    },
-    {
-      lat: 31.1695,
-      lng: -91.8678,
-      label: "Louisiana",
-      color: markerColor,
-      altitude: 0.038
-    },
-    {
-      lat: 31.9686,
-      lng: -99.9018,
-      label: "Texas",
-      color: markerColor,
-      altitude: 0.038
-    },
-    {
-      lat: 42.9134,
-      lng: -75.5963,
-      label: "New York",
-      color: markerColor,
-      altitude: 0.038
-    }
-  ];
-
   useEffect(() => {
     async function loadMapData() {
       try {
@@ -468,6 +418,43 @@ export default function App() {
       globeRef.current.pointOfView({ lat: 37, lng: -96, altitude: 1.25 }, 1000);
     }
   }, [viewMode]);
+
+  function zoomToPlace(d) {
+    if (!globeRef.current || !d?.geometry) return;
+
+    let latSum = 0;
+    let lngSum = 0;
+    let count = 0;
+
+    const collectCoords = (coords) => {
+      if (!Array.isArray(coords)) return;
+
+      if (typeof coords[0] === "number" && typeof coords[1] === "number") {
+        latSum += coords[1];
+        lngSum += coords[0];
+        count += 1;
+        return;
+      }
+
+      coords.forEach(collectCoords);
+    };
+
+    collectCoords(d.geometry.coordinates);
+
+    if (!count) return;
+
+    const lat = latSum / count;
+    const lng = lngSum / count;
+
+    globeRef.current.pointOfView(
+      {
+        lat,
+        lng,
+        altitude: viewMode === "world" ? 0.8 : 0.55
+      },
+      1200
+    );
+  }
 
   const commonGlobeProps = {
     ref: globeRef,
@@ -1092,21 +1079,17 @@ export default function App() {
           }}
           onPolygonClick={(d) => {
             if (!d?.isVisited && !d?.isPlanned) return;
+
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited Country" : "Planned Country"
             });
+
+            zoomToPlace(d);
           }}
           polygonLabel={(d) => d.name}
-          pointsData={worldPoints}
-          pointLat="lat"
-          pointLng="lng"
-          pointColor="color"
-          pointLabel="label"
-          pointRadius={0.34}
-          pointAltitude="altitude"
         />
       ) : (
         <Globe
@@ -1146,21 +1129,17 @@ export default function App() {
           }}
           onPolygonClick={(d) => {
             if (!d?.isVisited && !d?.isPlanned) return;
+
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited State" : "Planned State"
             });
+
+            zoomToPlace(d);
           }}
           polygonLabel={(d) => d.name}
-          pointsData={usaPoints}
-          pointLat="lat"
-          pointLng="lng"
-          pointColor="color"
-          pointLabel="label"
-          pointRadius={0.3}
-          pointAltitude="altitude"
         />
       )}
 
@@ -1183,7 +1162,6 @@ export default function App() {
       >
         <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
         <span><span style={{ color: "#facc15" }}>■</span> Planned Soon</span>
-        <span><span style={{ color: markerColor }}>│</span> Travel Marker</span>
         <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
       </div>
 
