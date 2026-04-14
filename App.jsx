@@ -699,7 +699,7 @@ export default function App() {
           bottom: 24,
           left: 24,
           zIndex: 20,
-          width: 360,
+          width: 310,
           color: "white"
         }}
       >
@@ -707,28 +707,48 @@ export default function App() {
           onClick={() => setVotesOpen((prev) => !prev)}
           style={{
             cursor: "pointer",
-            padding: "14px 18px",
-            borderRadius: "18px",
-            background: "rgba(0,0,0,0.5)",
-            border: "1px solid rgba(239,68,68,0.35)",
-            backdropFilter: "blur(8px)",
-            boxShadow: "0 0 22px rgba(239,68,68,0.12)",
+            padding: "12px 14px",
+            borderRadius: "16px",
+            background: "rgba(2,6,23,0.78)",
+            border: "1px solid rgba(96,165,250,0.26)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 0 22px rgba(37,99,235,0.16)",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center"
+            alignItems: "center",
+            gap: 10
           }}
         >
-          <div style={{ fontSize: 20, fontWeight: 900, color: "#ef4444", textTransform: "uppercase" }}>
-            Where should ZEEK go next?
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 800,
+              color: "#dbeafe",
+              lineHeight: 1.2,
+              textTransform: "uppercase",
+              letterSpacing: "0.03em"
+            }}
+          >
+            Where should{" "}
+            <span
+              style={{
+                color: "#67e8f9",
+                textShadow: "0 0 8px rgba(103,232,249,0.55), 0 0 18px rgba(59,130,246,0.35)"
+              }}
+            >
+              ZEEK
+            </span>{" "}
+            go next?
           </div>
 
           <div
             style={{
-              fontSize: 24,
+              fontSize: 18,
               fontWeight: 900,
-              color: "#ef4444",
+              color: "#67e8f9",
               transform: votesOpen ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s ease"
+              transition: "transform 0.2s ease",
+              flexShrink: 0
             }}
           >
             ^
@@ -738,14 +758,14 @@ export default function App() {
         {votesOpen && (
           <div
             style={{
-              marginTop: 12,
-              padding: "18px",
-              borderRadius: "24px",
-              background: "rgba(0,0,0,0.8)",
-              border: "1px solid rgba(239,68,68,0.35)",
+              marginTop: 10,
+              padding: "14px",
+              borderRadius: "18px",
+              background: "rgba(2,6,23,0.86)",
+              border: "1px solid rgba(96,165,250,0.22)",
               backdropFilter: "blur(10px)",
-              boxShadow: "0 0 28px rgba(239,68,68,0.12)",
-              maxHeight: 520,
+              boxShadow: "0 0 24px rgba(37,99,235,0.14)",
+              maxHeight: 430,
               overflowY: "auto"
             }}
           >
@@ -754,30 +774,53 @@ export default function App() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: 14,
+                marginBottom: 12,
                 gap: 12
               }}
             >
               <div>
-                <div style={{ fontSize: 12, letterSpacing: "0.12em", color: "#f87171", fontWeight: 800 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.12em",
+                    color: "#93c5fd",
+                    fontWeight: 800
+                  }}
+                >
                   VIEWER VOTES
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 900, color: "white", marginTop: 4 }}>
-                  {viewMode === "world"
-                    ? "Where should ZEEK go next?"
-                    : "Which state should ZEEK hit next?"}
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "white",
+                    marginTop: 4,
+                    lineHeight: 1.2
+                  }}
+                >
+                  Where should{" "}
+                  <span
+                    style={{
+                      color: "#67e8f9",
+                      textShadow: "0 0 8px rgba(103,232,249,0.45)"
+                    }}
+                  >
+                    ZEEK
+                  </span>{" "}
+                  go next?
                 </div>
               </div>
 
               <div
                 style={{
-                  padding: "8px 14px",
+                  padding: "6px 10px",
                   borderRadius: "999px",
-                  border: "1px solid rgba(239,68,68,0.35)",
-                  color: "#f87171",
+                  border: "1px solid rgba(96,165,250,0.24)",
+                  color: "#67e8f9",
                   fontWeight: 800,
-                  fontSize: 16,
-                  whiteSpace: "nowrap"
+                  fontSize: 13,
+                  whiteSpace: "nowrap",
+                  background: "rgba(15,23,42,0.7)"
                 }}
               >
                 {activeVotesUsed}/3
@@ -791,20 +834,20 @@ export default function App() {
               placeholder={viewMode === "world" ? "Search countries..." : "Search states..."}
               style={{
                 width: "100%",
-                padding: "14px 16px",
-                marginBottom: 18,
-                borderRadius: "16px",
-                border: "1px solid rgba(239,68,68,0.35)",
-                background: "rgba(15,23,42,0.8)",
+                padding: "12px 14px",
+                marginBottom: 14,
+                borderRadius: "14px",
+                border: "1px solid rgba(96,165,250,0.22)",
+                background: "rgba(15,23,42,0.86)",
                 color: "white",
                 outline: "none",
-                fontSize: "16px"
+                fontSize: "14px"
               }}
             />
 
-            <div style={{ display: "grid", gap: 14 }}>
+            <div style={{ display: "grid", gap: 10 }}>
               {filteredVotes.length === 0 && (
-                <div style={{ color: "#94a3b8", fontSize: 15 }}>No results found.</div>
+                <div style={{ color: "#94a3b8", fontSize: 14 }}>No results found.</div>
               )}
 
               {filteredVotes.map((item, index) => {
@@ -814,52 +857,60 @@ export default function App() {
                   <div
                     key={item.place}
                     style={{
-                      padding: "12px 4px",
-                      borderBottom: "1px solid rgba(255,255,255,0.06)"
+                      padding: "10px 2px",
+                      borderBottom: "1px solid rgba(255,255,255,0.05)"
                     }}
                   >
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "52px 1fr 78px",
-                        gap: 12,
+                        gridTemplateColumns: "40px 1fr 60px",
+                        gap: 10,
                         alignItems: "center"
                       }}
                     >
                       <div
                         style={{
-                          width: 42,
-                          height: 42,
-                          borderRadius: "12px",
-                          border: "1px solid rgba(255,255,255,0.12)",
+                          width: 32,
+                          height: 32,
+                          borderRadius: "10px",
+                          border: "1px solid rgba(255,255,255,0.1)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           fontWeight: 900,
-                          fontSize: 20,
+                          fontSize: 14,
                           color:
                             index === 0
-                              ? "#facc15"
+                              ? "#67e8f9"
                               : index === 1
-                              ? "#e5e7eb"
+                              ? "#cbd5e1"
                               : index === 2
-                              ? "#fb923c"
-                              : "#9ca3af"
+                              ? "#93c5fd"
+                              : "#94a3b8",
+                          background: "rgba(15,23,42,0.72)"
                         }}
                       >
                         {index + 1}
                       </div>
 
                       <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 18, fontWeight: 800 }}>{item.place}</span>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            flexWrap: "wrap"
+                          }}
+                        >
+                          <span style={{ fontSize: 15, fontWeight: 700 }}>{item.place}</span>
                           <span
                             style={{
-                              fontSize: 13,
-                              padding: "6px 10px",
+                              fontSize: 11,
+                              padding: "4px 8px",
                               borderRadius: "999px",
-                              background: "rgba(255,255,255,0.08)",
-                              color: "#9ca3af"
+                              background: "rgba(255,255,255,0.07)",
+                              color: "#94a3b8"
                             }}
                           >
                             {item.region}
@@ -868,10 +919,10 @@ export default function App() {
 
                         <div
                           style={{
-                            marginTop: 10,
-                            height: 8,
+                            marginTop: 8,
+                            height: 6,
                             width: "100%",
-                            background: "rgba(255,255,255,0.12)",
+                            background: "rgba(255,255,255,0.1)",
                             borderRadius: "999px",
                             overflow: "hidden"
                           }}
@@ -882,12 +933,12 @@ export default function App() {
                               height: "100%",
                               background:
                                 index === 0
-                                  ? "#facc15"
+                                  ? "#67e8f9"
                                   : index === 1
-                                  ? "#d1d5db"
+                                  ? "#60a5fa"
                                   : index === 2
-                                  ? "#fb923c"
-                                  : "#64748b",
+                                  ? "#93c5fd"
+                                  : "#475569",
                               borderRadius: "999px"
                             }}
                           />
@@ -897,9 +948,9 @@ export default function App() {
                       <div style={{ textAlign: "right" }}>
                         <div
                           style={{
-                            fontSize: 22,
+                            fontSize: 17,
                             fontWeight: 900,
-                            color: index === 0 ? "#facc15" : "#e5e7eb"
+                            color: index === 0 ? "#67e8f9" : "#e5e7eb"
                           }}
                         >
                           {item.votes}
@@ -909,15 +960,18 @@ export default function App() {
                           onClick={() => handleVote(item.place)}
                           disabled={activeVotesUsed >= 3}
                           style={{
-                            marginTop: 8,
-                            padding: "8px 12px",
-                            borderRadius: "12px",
-                            border: "1px solid rgba(255,255,255,0.12)",
+                            marginTop: 6,
+                            padding: "6px 9px",
+                            borderRadius: "10px",
+                            border: "1px solid rgba(96,165,250,0.18)",
                             background:
-                              activeVotesUsed >= 3 ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)",
-                            color: activeVotesUsed >= 3 ? "#6b7280" : "#f87171",
+                              activeVotesUsed >= 3
+                                ? "rgba(255,255,255,0.05)"
+                                : "rgba(59,130,246,0.12)",
+                            color: activeVotesUsed >= 3 ? "#6b7280" : "#93c5fd",
                             cursor: activeVotesUsed >= 3 ? "not-allowed" : "pointer",
-                            fontWeight: 800
+                            fontWeight: 800,
+                            fontSize: 12
                           }}
                         >
                           Vote
