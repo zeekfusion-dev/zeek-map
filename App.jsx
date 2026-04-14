@@ -2,6 +2,212 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import { feature } from "topojson-client";
 
+const US_STATE_NAMES = {
+  "01": "Alabama",
+  "02": "Alaska",
+  "04": "Arizona",
+  "05": "Arkansas",
+  "06": "California",
+  "08": "Colorado",
+  "09": "Connecticut",
+  "10": "Delaware",
+  "11": "District of Columbia",
+  "12": "Florida",
+  "13": "Georgia",
+  "15": "Hawaii",
+  "16": "Idaho",
+  "17": "Illinois",
+  "18": "Indiana",
+  "19": "Iowa",
+  "20": "Kansas",
+  "21": "Kentucky",
+  "22": "Louisiana",
+  "23": "Maine",
+  "24": "Maryland",
+  "25": "Massachusetts",
+  "26": "Michigan",
+  "27": "Minnesota",
+  "28": "Mississippi",
+  "29": "Missouri",
+  "30": "Montana",
+  "31": "Nebraska",
+  "32": "Nevada",
+  "33": "New Hampshire",
+  "34": "New Jersey",
+  "35": "New Mexico",
+  "36": "New York",
+  "37": "North Carolina",
+  "38": "North Dakota",
+  "39": "Ohio",
+  "40": "Oklahoma",
+  "41": "Oregon",
+  "42": "Pennsylvania",
+  "44": "Rhode Island",
+  "45": "South Carolina",
+  "46": "South Dakota",
+  "47": "Tennessee",
+  "48": "Texas",
+  "49": "Utah",
+  "50": "Vermont",
+  "51": "Virginia",
+  "53": "Washington",
+  "54": "West Virginia",
+  "55": "Wisconsin",
+  "56": "Wyoming"
+};
+
+const INITIAL_WORLD_VOTES = {
+  Japan: 412,
+  Austria: 365,
+  Mexico: 287,
+  Brazil: 244,
+  Canada: 196,
+  "South Korea": 180,
+  Germany: 171,
+  Italy: 160,
+  Spain: 152,
+  Australia: 141
+};
+
+const INITIAL_USA_VOTES = {
+  California: 312,
+  Nevada: 264,
+  Arizona: 208,
+  Tennessee: 177,
+  Colorado: 166,
+  Illinois: 142,
+  Georgia: 130,
+  Hawaii: 119,
+  Washington: 110,
+  Ohio: 104
+};
+
+function safeLoad(key, fallback) {
+  if (typeof window === "undefined") return fallback;
+
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (error) {
+    console.error(`Failed reading ${key}:`, error);
+    return fallback;
+  }
+}
+
+function getWorldRegion(countryName) {
+  const regionMap = {
+    "United States of America": "Americas",
+    Canada: "Americas",
+    Mexico: "Americas",
+    Brazil: "Americas",
+    Argentina: "Americas",
+    Colombia: "Americas",
+    Peru: "Americas",
+    Chile: "Americas",
+    Austria: "Europe",
+    Germany: "Europe",
+    Italy: "Europe",
+    Spain: "Europe",
+    France: "Europe",
+    Portugal: "Europe",
+    Netherlands: "Europe",
+    Belgium: "Europe",
+    Switzerland: "Europe",
+    "United Kingdom": "Europe",
+    Ireland: "Europe",
+    Japan: "Asia",
+    China: "Asia",
+    India: "Asia",
+    Thailand: "Asia",
+    Vietnam: "Asia",
+    "South Korea": "Asia",
+    Indonesia: "Asia",
+    Philippines: "Asia",
+    Australia: "Oceania",
+    "New Zealand": "Oceania",
+    Egypt: "Africa",
+    Morocco: "Africa",
+    "South Africa": "Africa",
+    UAE: "Middle East",
+    Israel: "Middle East",
+    Turkey: "Middle East",
+    Saudi: "Middle East"
+  };
+
+  return regionMap[countryName] || "World";
+}
+
+function getUsaRegion(stateName) {
+  const west = new Set([
+    "Alaska",
+    "Arizona",
+    "California",
+    "Colorado",
+    "Hawaii",
+    "Idaho",
+    "Montana",
+    "Nevada",
+    "New Mexico",
+    "Oregon",
+    "Utah",
+    "Washington",
+    "Wyoming"
+  ]);
+
+  const south = new Set([
+    "Alabama",
+    "Arkansas",
+    "Delaware",
+    "Florida",
+    "Georgia",
+    "Kentucky",
+    "Louisiana",
+    "Maryland",
+    "Mississippi",
+    "North Carolina",
+    "Oklahoma",
+    "South Carolina",
+    "Tennessee",
+    "Texas",
+    "Virginia",
+    "West Virginia",
+    "District of Columbia"
+  ]);
+
+  const midwest = new Set([
+    "Illinois",
+    "Indiana",
+    "Iowa",
+    "Kansas",
+    "Michigan",
+    "Minnesota",
+    "Missouri",
+    "Nebraska",
+    "North Dakota",
+    "Ohio",
+    "South Dakota",
+    "Wisconsin"
+  ]);
+
+  const northeast = new Set([
+    "Connecticut",
+    "Maine",
+    "Massachusetts",
+    "New Hampshire",
+    "New Jersey",
+    "New York",
+    "Pennsylvania",
+    "Rhode Island",
+    "Vermont"
+  ]);
+
+  if (west.has(stateName)) return "West";
+  if (south.has(stateName)) return "South";
+  if (midwest.has(stateName)) return "Midwest";
+  if (northeast.has(stateName)) return "Northeast";
+  return "USA";
+}
+
 export default function App() {
   const globeRef = useRef();
 
@@ -10,6 +216,19 @@ export default function App() {
   const [states, setStates] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [hoveredPlace, setHoveredPlace] = useState(null);
+
+  const [votesOpen, setVotesOpen] = useState(false);
+  const [voteSearch, setVoteSearch] = useState("");
+
+  const [worldVoteCounts, setWorldVoteCounts] = useState(() =>
+    safeLoad("zeekfusion-world-votes", INITIAL_WORLD_VOTES)
+  );
+  const [usaVoteCounts, setUsaVoteCounts] = useState(() =>
+    safeLoad("zeekfusion-usa-votes", INITIAL_USA_VOTES)
+  );
+  const [votesUsed, setVotesUsed] = useState(() =>
+    safeLoad("zeekfusion-votes-used", { world: 0, usa: 0 })
+  );
 
   const visitedCountryData = useMemo(
     () => [
@@ -62,13 +281,6 @@ export default function App() {
     visitedStateData.forEach((item) => map.set(item.id, item));
     return map;
   }, [visitedStateData]);
-
-  const fanVotes = [
-    { place: "Tokyo", votes: 412 },
-    { place: "Los Angeles", votes: 365 },
-    { place: "London", votes: 287 },
-    { place: "Dubai", votes: 244 }
-  ];
 
   const socialLinks = {
     kick: "https://kick.com/zeekfusion",
@@ -153,13 +365,14 @@ export default function App() {
         });
 
         const mappedStates = usGeo.features.map((f) => {
-          const id = String(f.id);
+          const id = String(f.id).padStart(2, "0");
           const visitedInfo = visitedStatesMap.get(id);
+          const realName = US_STATE_NAMES[id] || `State ${id}`;
 
           return {
             ...f,
             id,
-            name: visitedInfo?.name || `State ${id}`,
+            name: visitedInfo?.name || realName,
             isVisited: Boolean(visitedInfo),
             youtube: visitedInfo?.youtube || null,
             placeType: "State"
@@ -175,6 +388,24 @@ export default function App() {
 
     loadMapData();
   }, [visitedCountriesMap, visitedStatesMap]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("zeekfusion-world-votes", JSON.stringify(worldVoteCounts));
+    }
+  }, [worldVoteCounts]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("zeekfusion-usa-votes", JSON.stringify(usaVoteCounts));
+    }
+  }, [usaVoteCounts]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("zeekfusion-votes-used", JSON.stringify(votesUsed));
+    }
+  }, [votesUsed]);
 
   useEffect(() => {
     if (!globeRef.current) return;
@@ -228,11 +459,74 @@ export default function App() {
     fontWeight: 900,
     color: "white",
     boxShadow: "0 0 10px rgba(255,255,255,0.15)",
-    textDecoration: "none",
-    transition: "transform 0.15s ease, box-shadow 0.15s ease"
+    textDecoration: "none"
   };
 
   const activeInfoPanel = selectedPlace || hoveredPlace;
+
+  const worldVoteItems = useMemo(() => {
+    return countries
+      .filter((item) => item.name && item.name !== "Antarctica")
+      .map((item) => ({
+        place: item.name,
+        region: getWorldRegion(item.name),
+        votes: worldVoteCounts[item.name] || 0
+      }))
+      .sort((a, b) => b.votes - a.votes || a.place.localeCompare(b.place));
+  }, [countries, worldVoteCounts]);
+
+  const usaVoteItems = useMemo(() => {
+    return states
+      .filter((item) => item.name)
+      .map((item) => ({
+        place: item.name,
+        region: getUsaRegion(item.name),
+        votes: usaVoteCounts[item.name] || 0
+      }))
+      .sort((a, b) => b.votes - a.votes || a.place.localeCompare(b.place));
+  }, [states, usaVoteCounts]);
+
+  const activeVoteItems = viewMode === "world" ? worldVoteItems : usaVoteItems;
+  const activeVotesUsed = viewMode === "world" ? votesUsed.world : votesUsed.usa;
+
+  const filteredVotes = useMemo(() => {
+    return activeVoteItems.filter((item) =>
+      item.place.toLowerCase().includes(voteSearch.toLowerCase())
+    );
+  }, [activeVoteItems, voteSearch]);
+
+  const maxVoteValue = useMemo(() => {
+    if (!filteredVotes.length) return 1;
+    return Math.max(...filteredVotes.map((item) => item.votes), 1);
+  }, [filteredVotes]);
+
+  function handleVote(placeName) {
+    if (viewMode === "world") {
+      if (votesUsed.world >= 3) return;
+
+      setWorldVoteCounts((prev) => ({
+        ...prev,
+        [placeName]: (prev[placeName] || 0) + 1
+      }));
+
+      setVotesUsed((prev) => ({
+        ...prev,
+        world: prev.world + 1
+      }));
+    } else {
+      if (votesUsed.usa >= 3) return;
+
+      setUsaVoteCounts((prev) => ({
+        ...prev,
+        [placeName]: (prev[placeName] || 0) + 1
+      }));
+
+      setVotesUsed((prev) => ({
+        ...prev,
+        usa: prev.usa + 1
+      }));
+    }
+  }
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#020617", position: "relative" }}>
@@ -308,6 +602,7 @@ export default function App() {
             setViewMode("world");
             setSelectedPlace(null);
             setHoveredPlace(null);
+            setVoteSearch("");
           }}
           style={buttonStyle(viewMode === "world", "#3b82f6")}
         >
@@ -319,6 +614,7 @@ export default function App() {
             setViewMode("usa");
             setSelectedPlace(null);
             setHoveredPlace(null);
+            setVoteSearch("");
           }}
           style={buttonStyle(viewMode === "usa", "#22d3ee")}
         >
@@ -354,30 +650,237 @@ export default function App() {
           bottom: 24,
           left: 24,
           zIndex: 20,
-          width: 260,
-          padding: "16px 18px",
-          ...panelStyle
+          width: 360,
+          color: "white"
         }}
       >
-        <div style={{ fontSize: 13, color: "#93c5fd", letterSpacing: "0.08em", fontWeight: 800 }}>
-          FAN VOTES
+        <div
+          onClick={() => setVotesOpen((prev) => !prev)}
+          style={{
+            cursor: "pointer",
+            padding: "14px 18px",
+            borderRadius: "18px",
+            background: "rgba(0,0,0,0.5)",
+            border: "1px solid rgba(239,68,68,0.35)",
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 0 22px rgba(239,68,68,0.12)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
+          <div style={{ fontSize: 20, fontWeight: 900, color: "#ef4444", textTransform: "uppercase" }}>
+            Where should ZEEK go next?
+          </div>
+
+          <div
+            style={{
+              fontSize: 24,
+              fontWeight: 900,
+              color: "#ef4444",
+              transform: votesOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease"
+            }}
+          >
+            ^
+          </div>
         </div>
-        <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
-          {fanVotes.map((item) => (
+
+        {votesOpen && (
+          <div
+            style={{
+              marginTop: 12,
+              padding: "18px",
+              borderRadius: "24px",
+              background: "rgba(0,0,0,0.8)",
+              border: "1px solid rgba(239,68,68,0.35)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 0 28px rgba(239,68,68,0.12)",
+              maxHeight: 520,
+              overflowY: "auto"
+            }}
+          >
             <div
-              key={item.place}
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                fontSize: 14,
-                color: "white"
+                alignItems: "center",
+                marginBottom: 14,
+                gap: 12
               }}
             >
-              <span>{item.place}</span>
-              <span style={{ color: "#22d3ee", fontWeight: 700 }}>{item.votes}</span>
+              <div>
+                <div style={{ fontSize: 12, letterSpacing: "0.12em", color: "#f87171", fontWeight: 800 }}>
+                  VIEWER VOTES
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "white", marginTop: 4 }}>
+                  {viewMode === "world"
+                    ? "Where should ZEEK go next?"
+                    : "Which state should ZEEK hit next?"}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(239,68,68,0.35)",
+                  color: "#f87171",
+                  fontWeight: 800,
+                  fontSize: 16,
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {activeVotesUsed}/3
+              </div>
             </div>
-          ))}
-        </div>
+
+            <input
+              type="text"
+              value={voteSearch}
+              onChange={(e) => setVoteSearch(e.target.value)}
+              placeholder={viewMode === "world" ? "Search countries..." : "Search states..."}
+              style={{
+                width: "100%",
+                padding: "14px 16px",
+                marginBottom: 18,
+                borderRadius: "16px",
+                border: "1px solid rgba(239,68,68,0.35)",
+                background: "rgba(15,23,42,0.8)",
+                color: "white",
+                outline: "none",
+                fontSize: "16px"
+              }}
+            />
+
+            <div style={{ display: "grid", gap: 14 }}>
+              {filteredVotes.length === 0 && (
+                <div style={{ color: "#94a3b8", fontSize: 15 }}>No results found.</div>
+              )}
+
+              {filteredVotes.map((item, index) => {
+                const barWidth = `${(item.votes / maxVoteValue) * 100}%`;
+
+                return (
+                  <div
+                    key={item.place}
+                    style={{
+                      padding: "12px 4px",
+                      borderBottom: "1px solid rgba(255,255,255,0.06)"
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "52px 1fr 78px",
+                        gap: 12,
+                        alignItems: "center"
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: "12px",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 900,
+                          fontSize: 20,
+                          color:
+                            index === 0
+                              ? "#facc15"
+                              : index === 1
+                              ? "#e5e7eb"
+                              : index === 2
+                              ? "#fb923c"
+                              : "#9ca3af"
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 18, fontWeight: 800 }}>{item.place}</span>
+                          <span
+                            style={{
+                              fontSize: 13,
+                              padding: "6px 10px",
+                              borderRadius: "999px",
+                              background: "rgba(255,255,255,0.08)",
+                              color: "#9ca3af"
+                            }}
+                          >
+                            {item.region}
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            marginTop: 10,
+                            height: 8,
+                            width: "100%",
+                            background: "rgba(255,255,255,0.12)",
+                            borderRadius: "999px",
+                            overflow: "hidden"
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: barWidth,
+                              height: "100%",
+                              background:
+                                index === 0
+                                  ? "#facc15"
+                                  : index === 1
+                                  ? "#d1d5db"
+                                  : index === 2
+                                  ? "#fb923c"
+                                  : "#64748b",
+                              borderRadius: "999px"
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: "right" }}>
+                        <div
+                          style={{
+                            fontSize: 22,
+                            fontWeight: 900,
+                            color: index === 0 ? "#facc15" : "#e5e7eb"
+                          }}
+                        >
+                          {item.votes}
+                        </div>
+
+                        <button
+                          onClick={() => handleVote(item.place)}
+                          disabled={activeVotesUsed >= 3}
+                          style={{
+                            marginTop: 8,
+                            padding: "8px 12px",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            background:
+                              activeVotesUsed >= 3 ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.12)",
+                            color: activeVotesUsed >= 3 ? "#6b7280" : "#f87171",
+                            cursor: activeVotesUsed >= 3 ? "not-allowed" : "pointer",
+                            fontWeight: 800
+                          }}
+                        >
+                          Vote
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {activeInfoPanel && (
