@@ -115,6 +115,7 @@ function getWorldRegion(countryName) {
     Switzerland: "Europe",
     "United Kingdom": "Europe",
     Ireland: "Europe",
+    Czechia: "Europe",
     Japan: "Asia",
     China: "Asia",
     India: "Asia",
@@ -270,6 +271,36 @@ export default function App() {
     []
   );
 
+  const plannedCountryData = useMemo(
+    () => [
+      {
+        name: "Italy",
+        note: "Europe Summer July-August"
+      },
+      {
+        name: "Czechia",
+        note: "Europe Summer July-August"
+      }
+    ],
+    []
+  );
+
+  const plannedStateData = useMemo(
+    () => [
+      {
+        id: "13",
+        name: "Georgia",
+        note: "Dreamhack Atlanta May 15-17"
+      },
+      {
+        id: "39",
+        name: "Ohio",
+        note: "Randomly Picked by End of May"
+      }
+    ],
+    []
+  );
+
   const visitedCountriesMap = useMemo(() => {
     const map = new Map();
     visitedCountryData.forEach((item) => map.set(item.name, item));
@@ -281,6 +312,18 @@ export default function App() {
     visitedStateData.forEach((item) => map.set(item.id, item));
     return map;
   }, [visitedStateData]);
+
+  const plannedCountriesMap = useMemo(() => {
+    const map = new Map();
+    plannedCountryData.forEach((item) => map.set(item.name, item));
+    return map;
+  }, [plannedCountryData]);
+
+  const plannedStatesMap = useMemo(() => {
+    const map = new Map();
+    plannedStateData.forEach((item) => map.set(item.id, item));
+    return map;
+  }, [plannedStateData]);
 
   const socialLinks = {
     kick: "https://kick.com/zeekfusion",
@@ -354,12 +397,15 @@ export default function App() {
         const mappedCountries = worldGeo.features.map((f) => {
           const name = f.properties?.name || "";
           const visitedInfo = visitedCountriesMap.get(name);
+          const plannedInfo = plannedCountriesMap.get(name);
 
           return {
             ...f,
             name,
             isVisited: Boolean(visitedInfo),
+            isPlanned: Boolean(plannedInfo),
             youtube: visitedInfo?.youtube || null,
+            note: plannedInfo?.note || null,
             placeType: "Country"
           };
         });
@@ -367,14 +413,17 @@ export default function App() {
         const mappedStates = usGeo.features.map((f) => {
           const id = String(f.id).padStart(2, "0");
           const visitedInfo = visitedStatesMap.get(id);
+          const plannedInfo = plannedStatesMap.get(id);
           const realName = US_STATE_NAMES[id] || `State ${id}`;
 
           return {
             ...f,
             id,
-            name: visitedInfo?.name || realName,
+            name: visitedInfo?.name || plannedInfo?.name || realName,
             isVisited: Boolean(visitedInfo),
+            isPlanned: Boolean(plannedInfo),
             youtube: visitedInfo?.youtube || null,
+            note: plannedInfo?.note || null,
             placeType: "State"
           };
         });
@@ -387,7 +436,7 @@ export default function App() {
     }
 
     loadMapData();
-  }, [visitedCountriesMap, visitedStatesMap]);
+  }, [visitedCountriesMap, visitedStatesMap, plannedCountriesMap, plannedStatesMap]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -907,6 +956,23 @@ export default function App() {
             {activeInfoPanel.type}
           </div>
 
+          {activeInfoPanel.note && (
+            <div
+              style={{
+                marginTop: 12,
+                padding: "10px 12px",
+                borderRadius: "12px",
+                background: "rgba(250,204,21,0.12)",
+                border: "1px solid rgba(250,204,21,0.3)",
+                color: "#fde68a",
+                fontSize: 14,
+                fontWeight: 700
+              }}
+            >
+              {activeInfoPanel.note}
+            </div>
+          )}
+
           {activeInfoPanel.youtube ? (
             <a
               href={activeInfoPanel.youtube}
@@ -941,16 +1007,19 @@ export default function App() {
           polygonGeoJsonGeometry="geometry"
           polygonCapColor={(d) => {
             if (hoveredPlace?.name === d.name) return "rgba(125,211,252,0.92)";
+            if (d.isPlanned) return "rgba(250,204,21,0.72)";
             if (d.isVisited) return "rgba(59,130,246,0.62)";
             return "rgba(255,255,255,0.03)";
           }}
           polygonSideColor={() => "rgba(0,0,0,0)"}
           polygonStrokeColor={(d) => {
             if (hoveredPlace?.name === d.name) return "#e0f2fe";
+            if (d.isPlanned) return "#facc15";
             return "#60a5fa";
           }}
           polygonAltitude={(d) => {
             if (hoveredPlace?.name === d.name) return 0.032;
+            if (d.isPlanned) return 0.022;
             if (d.isVisited) return 0.02;
             return 0.006;
           }}
@@ -963,15 +1032,17 @@ export default function App() {
             setHoveredPlace({
               name: d.name,
               youtube: d.youtube,
-              type: d.isVisited ? "Visited Country" : "Country"
+              note: d.note,
+              type: d.isVisited ? "Visited Country" : d.isPlanned ? "Planned Country" : "Country"
             });
           }}
           onPolygonClick={(d) => {
-            if (!d?.isVisited) return;
+            if (!d?.isVisited && !d?.isPlanned) return;
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
-              type: "Visited Country"
+              note: d.note,
+              type: d.isVisited ? "Visited Country" : "Planned Country"
             });
           }}
           polygonLabel={(d) => d.name}
@@ -990,16 +1061,19 @@ export default function App() {
           polygonGeoJsonGeometry="geometry"
           polygonCapColor={(d) => {
             if (hoveredPlace?.name === d.name) return "rgba(103,232,249,0.96)";
+            if (d.isPlanned) return "rgba(250,204,21,0.76)";
             if (d.isVisited) return "rgba(34,211,238,0.7)";
             return "rgba(255,255,255,0.03)";
           }}
           polygonSideColor={() => "rgba(0,0,0,0)"}
           polygonStrokeColor={(d) => {
             if (hoveredPlace?.name === d.name) return "#ecfeff";
+            if (d.isPlanned) return "#facc15";
             return "#22d3ee";
           }}
           polygonAltitude={(d) => {
             if (hoveredPlace?.name === d.name) return 0.038;
+            if (d.isPlanned) return 0.028;
             if (d.isVisited) return 0.025;
             return 0.008;
           }}
@@ -1012,15 +1086,17 @@ export default function App() {
             setHoveredPlace({
               name: d.name,
               youtube: d.youtube,
-              type: d.isVisited ? "Visited State" : "State"
+              note: d.note,
+              type: d.isVisited ? "Visited State" : d.isPlanned ? "Planned State" : "State"
             });
           }}
           onPolygonClick={(d) => {
-            if (!d?.isVisited) return;
+            if (!d?.isVisited && !d?.isPlanned) return;
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
-              type: "Visited State"
+              note: d.note,
+              type: d.isVisited ? "Visited State" : "Planned State"
             });
           }}
           polygonLabel={(d) => d.name}
@@ -1052,8 +1128,9 @@ export default function App() {
         }}
       >
         <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
+        <span><span style={{ color: "#facc15" }}>■</span> Planned Soon</span>
         <span><span style={{ color: markerColor }}>│</span> Travel Marker</span>
-        <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for video</span>
+        <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
       </div>
 
       <div
