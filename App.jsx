@@ -471,7 +471,7 @@ export default function App() {
               type: "Visited Country"
             });
           }}
-          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : `${d.name} • Hover`)}
+          polygonLabel={(d) => d.name}
           pointsData={worldPoints}
           pointLat="lat"
           pointLng="lng"
@@ -520,7 +520,7 @@ export default function App() {
               type: "Visited State"
             });
           }}
-          polygonLabel={(d) => (d.isVisited ? `${d.name} • Hover / Click` : `${d.name} • Hover`)}
+          polygonLabel={(d) => d.name}
           pointsData={usaPoints}
           pointLat="lat"
           pointLng="lng"
