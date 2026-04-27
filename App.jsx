@@ -88,8 +88,7 @@ function safeLoad(key, fallback) {
   try {
     const raw = window.localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
-  } catch (error) {
-    console.error(`Failed reading ${key}:`, error);
+  } catch {
     return fallback;
   }
 }
@@ -212,6 +211,11 @@ function getUsaRegion(stateName) {
 export default function App() {
   const globeRef = useRef();
 
+  const [screen, setScreen] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 1200,
+    height: typeof window !== "undefined" ? window.innerHeight : 800
+  });
+
   const [viewMode, setViewMode] = useState("world");
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
@@ -231,72 +235,42 @@ export default function App() {
     safeLoad("zeekfusion-votes-used", { world: 0, usa: 0 })
   );
 
+  const isMobile = screen.width <= 768;
+  const isTablet = screen.width > 768 && screen.width <= 1100;
+  const isTV = screen.width >= 1800;
+
+  const titleFontSize = isMobile ? "18px" : isTablet ? "26px" : isTV ? "44px" : "34px";
+
   const visitedCountryData = useMemo(
     () => [
-      {
-        name: "Austria",
-        youtube: "https://youtube.com/"
-      },
-      {
-        name: "United States of America",
-        youtube: "https://youtube.com/"
-      }
+      { name: "Austria", youtube: "https://youtube.com/" },
+      { name: "United States of America", youtube: "https://youtube.com/" }
     ],
     []
   );
 
   const visitedStateData = useMemo(
     () => [
-      {
-        id: "12",
-        name: "Florida",
-        youtube: "https://youtube.com/"
-      },
-      {
-        id: "22",
-        name: "Louisiana",
-        youtube: "https://youtube.com/"
-      },
-      {
-        id: "36",
-        name: "New York",
-        youtube: "https://youtube.com/"
-      },
-      {
-        id: "48",
-        name: "Texas",
-        youtube: "https://youtube.com/"
-      }
+      { id: "12", name: "Florida", youtube: "https://youtube.com/" },
+      { id: "22", name: "Louisiana", youtube: "https://youtube.com/" },
+      { id: "36", name: "New York", youtube: "https://youtube.com/" },
+      { id: "48", name: "Texas", youtube: "https://youtube.com/" }
     ],
     []
   );
 
   const plannedCountryData = useMemo(
     () => [
-      {
-        name: "Italy",
-        note: "Europe Summer July-August"
-      },
-      {
-        name: "Czechia",
-        note: "Europe Summer July-August"
-      }
+      { name: "Italy", note: "Europe Summer July-August" },
+      { name: "Czechia", note: "Europe Summer July-August" }
     ],
     []
   );
 
   const plannedStateData = useMemo(
     () => [
-      {
-        id: "13",
-        name: "Georgia",
-        note: "Dreamhack Atlanta May 15-17"
-      },
-      {
-        id: "39",
-        name: "Ohio",
-        note: "Randomly Picked by End of May"
-      }
+      { id: "13", name: "Georgia", note: "Dreamhack Atlanta May 15-17" },
+      { id: "39", name: "Ohio", note: "Randomly Picked by End of May" }
     ],
     []
   );
@@ -332,6 +306,18 @@ export default function App() {
     x: "https://x.com/zeekfusion",
     tiktok: "https://tiktok.com/@zeekfusion"
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreen({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     async function loadMapData() {
@@ -389,35 +375,35 @@ export default function App() {
   }, [visitedCountriesMap, visitedStatesMap, plannedCountriesMap, plannedStatesMap]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("zeekfusion-world-votes", JSON.stringify(worldVoteCounts));
-    }
+    window.localStorage.setItem("zeekfusion-world-votes", JSON.stringify(worldVoteCounts));
   }, [worldVoteCounts]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("zeekfusion-usa-votes", JSON.stringify(usaVoteCounts));
-    }
+    window.localStorage.setItem("zeekfusion-usa-votes", JSON.stringify(usaVoteCounts));
   }, [usaVoteCounts]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("zeekfusion-votes-used", JSON.stringify(votesUsed));
-    }
+    window.localStorage.setItem("zeekfusion-votes-used", JSON.stringify(votesUsed));
   }, [votesUsed]);
 
   useEffect(() => {
     if (!globeRef.current) return;
 
     globeRef.current.controls().autoRotate = true;
-    globeRef.current.controls().autoRotateSpeed = 0.45;
+    globeRef.current.controls().autoRotateSpeed = isMobile ? 0.25 : 0.45;
 
     if (viewMode === "world") {
-      globeRef.current.pointOfView({ lat: 20, lng: -20, altitude: 2.2 }, 1000);
+      globeRef.current.pointOfView(
+        { lat: 20, lng: -20, altitude: isMobile ? 2.9 : isTV ? 1.9 : 2.2 },
+        1000
+      );
     } else {
-      globeRef.current.pointOfView({ lat: 37, lng: -96, altitude: 1.25 }, 1000);
+      globeRef.current.pointOfView(
+        { lat: 37, lng: -96, altitude: isMobile ? 1.7 : isTV ? 1.05 : 1.25 },
+        1000
+      );
     }
-  }, [viewMode]);
+  }, [viewMode, isMobile, isTV]);
 
   function zoomToPlace(d) {
     if (!globeRef.current || !d?.geometry) return;
@@ -450,7 +436,7 @@ export default function App() {
       {
         lat,
         lng,
-        altitude: viewMode === "world" ? 0.8 : 0.55
+        altitude: viewMode === "world" ? (isMobile ? 1.25 : 0.8) : isMobile ? 0.85 : 0.55
       },
       1200
     );
@@ -465,33 +451,34 @@ export default function App() {
   };
 
   const buttonStyle = (active, activeColor) => ({
-    padding: "10px 18px",
+    padding: isMobile ? "8px 13px" : isTV ? "13px 24px" : "10px 18px",
     borderRadius: "999px",
     border: "1px solid rgba(96,165,250,0.35)",
     background: active ? activeColor : "rgba(255,255,255,0.08)",
     color: "white",
     cursor: "pointer",
     fontWeight: 700,
+    fontSize: isMobile ? "13px" : isTV ? "18px" : "14px",
     boxShadow: active ? "0 0 18px rgba(59,130,246,0.45)" : "none"
   });
 
   const panelStyle = {
     background: "rgba(0,0,0,0.38)",
     border: "1px solid rgba(96,165,250,0.28)",
-    borderRadius: "18px",
+    borderRadius: isMobile ? "14px" : "18px",
     backdropFilter: "blur(8px)",
     color: "white",
     boxShadow: "0 0 22px rgba(37,99,235,0.18)"
   };
 
   const socialIconStyle = {
-    width: 34,
-    height: 34,
+    width: isMobile ? 28 : isTV ? 42 : 34,
+    height: isMobile ? 28 : isTV ? 42 : 34,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "10px",
-    fontSize: "18px",
+    fontSize: isMobile ? "13px" : isTV ? "22px" : "18px",
     fontWeight: 900,
     color: "white",
     boxShadow: "0 0 10px rgba(255,255,255,0.15)",
@@ -565,71 +552,53 @@ export default function App() {
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#020617", position: "relative" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "#020617", position: "relative", overflow: "hidden" }}>
       <div
         style={{
           position: "absolute",
-          top: 18,
+          top: isMobile ? 14 : 18,
           width: "100%",
           textAlign: "center",
           zIndex: 30,
           pointerEvents: "none"
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            transform: "translate(3px, 3px)",
-            color: "rgba(8,47,73,0.95)",
-            fontSize: "34px",
-            fontWeight: 900,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase"
-          }}
-        >
-          ZEEKFUSION MAP TRAVELS ON STREAM
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            transform: "translate(1.5px, 1.5px)",
-            color: "rgba(14,116,144,0.95)",
-            fontSize: "34px",
-            fontWeight: 900,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase"
-          }}
-        >
-          ZEEKFUSION MAP TRAVELS ON STREAM
-        </div>
-
-        <div
-          style={{
-            position: "relative",
-            color: "#e0f2fe",
-            fontSize: "34px",
-            fontWeight: 900,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            textShadow:
-              "0 0 8px rgba(255,255,255,0.45), 0 0 18px rgba(56,189,248,0.65), 0 0 36px rgba(37,99,235,0.55)"
-          }}
-        >
-          ZEEKFUSION MAP TRAVELS ON STREAM
-        </div>
+        {[3, 1.5, 0].map((offset, index) => (
+          <div
+            key={index}
+            style={{
+              position: index === 2 ? "relative" : "absolute",
+              width: "100%",
+              transform: index === 2 ? "none" : `translate(${offset}px, ${offset}px)`,
+              color:
+                index === 0
+                  ? "rgba(8,47,73,0.95)"
+                  : index === 1
+                  ? "rgba(14,116,144,0.95)"
+                  : "#e0f2fe",
+              fontSize: titleFontSize,
+              fontWeight: 900,
+              letterSpacing: isMobile ? "0.02em" : "0.04em",
+              textTransform: "uppercase",
+              textShadow:
+                index === 2
+                  ? "0 0 8px rgba(255,255,255,0.45), 0 0 18px rgba(56,189,248,0.65), 0 0 36px rgba(37,99,235,0.55)"
+                  : "none"
+            }}
+          >
+            ZEEKFUSION MAP TRAVELS ON STREAM
+          </div>
+        ))}
       </div>
 
       <div
         style={{
           position: "absolute",
-          top: 78,
+          top: isMobile ? 52 : 78,
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          gap: "12px",
+          gap: isMobile ? "8px" : "12px",
           zIndex: 20
         }}
       >
@@ -661,21 +630,38 @@ export default function App() {
       <div
         style={{
           position: "absolute",
-          top: 120,
-          left: 24,
+          top: isMobile ? 96 : 120,
+          left: isMobile ? 12 : 24,
           zIndex: 20,
-          width: 220,
-          padding: "16px 18px",
+          width: isMobile ? 145 : isTV ? 260 : 220,
+          padding: isMobile ? "10px 12px" : "16px 18px",
           ...panelStyle
         }}
       >
-        <div style={{ fontSize: 13, color: "#93c5fd", letterSpacing: "0.08em", fontWeight: 800 }}>
+        <div
+          style={{
+            fontSize: isMobile ? 10 : 13,
+            color: "#93c5fd",
+            letterSpacing: "0.08em",
+            fontWeight: 800
+          }}
+        >
           {viewMode === "world" ? "COUNTRIES VISITED" : "STATES VISITED"}
         </div>
-        <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1, marginTop: 8, color: "#22d3ee" }}>
-          {viewMode === "world" ? `${visitedCountryData.length}` : `${visitedStateData.length}`}
+
+        <div
+          style={{
+            fontSize: isMobile ? 32 : isTV ? 58 : 48,
+            fontWeight: 900,
+            lineHeight: 1,
+            marginTop: 8,
+            color: "#22d3ee"
+          }}
+        >
+          {viewMode === "world" ? visitedCountryData.length : visitedStateData.length}
         </div>
-        <div style={{ marginTop: 10, fontSize: 14, color: "#e2e8f0" }}>
+
+        <div style={{ marginTop: 8, fontSize: isMobile ? 11 : 14, color: "#e2e8f0" }}>
           {viewMode === "world" ? "Tracked on globe" : "Tracked in USA mode"}
         </div>
       </div>
@@ -683,10 +669,11 @@ export default function App() {
       <div
         style={{
           position: "absolute",
-          bottom: 24,
-          left: 24,
+          bottom: isMobile ? 74 : 24,
+          left: isMobile ? 12 : 24,
           zIndex: 20,
-          width: 310,
+          width: isMobile ? "calc(100vw - 24px)" : isTV ? 390 : 310,
+          maxWidth: isMobile ? 340 : "none",
           color: "white"
         }}
       >
@@ -694,7 +681,7 @@ export default function App() {
           onClick={() => setVotesOpen((prev) => !prev)}
           style={{
             cursor: "pointer",
-            padding: "12px 14px",
+            padding: isMobile ? "10px 12px" : "12px 14px",
             borderRadius: "16px",
             background: "rgba(2,6,23,0.78)",
             border: "1px solid rgba(96,165,250,0.26)",
@@ -708,7 +695,7 @@ export default function App() {
         >
           <div
             style={{
-              fontSize: 14,
+              fontSize: isMobile ? 12 : isTV ? 17 : 14,
               fontWeight: 800,
               color: "#dbeafe",
               lineHeight: 1.2,
@@ -730,7 +717,7 @@ export default function App() {
 
           <div
             style={{
-              fontSize: 18,
+              fontSize: isMobile ? 16 : 18,
               fontWeight: 900,
               color: "#67e8f9",
               transform: votesOpen ? "rotate(180deg)" : "rotate(0deg)",
@@ -746,13 +733,13 @@ export default function App() {
           <div
             style={{
               marginTop: 10,
-              padding: "14px",
+              padding: isMobile ? "12px" : "14px",
               borderRadius: "18px",
               background: "rgba(2,6,23,0.86)",
               border: "1px solid rgba(96,165,250,0.22)",
               backdropFilter: "blur(10px)",
               boxShadow: "0 0 24px rgba(37,99,235,0.14)",
-              maxHeight: 430,
+              maxHeight: isMobile ? 300 : isTV ? 560 : 430,
               overflowY: "auto"
             }}
           >
@@ -766,35 +753,11 @@ export default function App() {
               }}
             >
               <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    letterSpacing: "0.12em",
-                    color: "#93c5fd",
-                    fontWeight: 800
-                  }}
-                >
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", color: "#93c5fd", fontWeight: 800 }}>
                   VIEWER VOTES
                 </div>
-                <div
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 800,
-                    color: "white",
-                    marginTop: 4,
-                    lineHeight: 1.2
-                  }}
-                >
-                  Where should{" "}
-                  <span
-                    style={{
-                      color: "#67e8f9",
-                      textShadow: "0 0 8px rgba(103,232,249,0.45)"
-                    }}
-                  >
-                    ZEEK
-                  </span>{" "}
-                  go next?
+                <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 800, color: "white", marginTop: 4 }}>
+                  Where should <span style={{ color: "#67e8f9" }}>ZEEK</span> go next?
                 </div>
               </div>
 
@@ -828,7 +791,8 @@ export default function App() {
                 background: "rgba(15,23,42,0.86)",
                 color: "white",
                 outline: "none",
-                fontSize: "14px"
+                fontSize: "14px",
+                boxSizing: "border-box"
               }}
             />
 
@@ -841,40 +805,27 @@ export default function App() {
                 const barWidth = `${(item.votes / maxVoteValue) * 100}%`;
 
                 return (
-                  <div
-                    key={item.place}
-                    style={{
-                      padding: "10px 2px",
-                      borderBottom: "1px solid rgba(255,255,255,0.05)"
-                    }}
-                  >
+                  <div key={item.place} style={{ padding: "10px 2px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "40px 1fr 60px",
+                        gridTemplateColumns: isMobile ? "32px 1fr 52px" : "40px 1fr 60px",
                         gap: 10,
                         alignItems: "center"
                       }}
                     >
                       <div
                         style={{
-                          width: 32,
-                          height: 32,
+                          width: isMobile ? 28 : 32,
+                          height: isMobile ? 28 : 32,
                           borderRadius: "10px",
                           border: "1px solid rgba(255,255,255,0.1)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           fontWeight: 900,
-                          fontSize: 14,
-                          color:
-                            index === 0
-                              ? "#67e8f9"
-                              : index === 1
-                              ? "#cbd5e1"
-                              : index === 2
-                              ? "#93c5fd"
-                              : "#94a3b8",
+                          fontSize: isMobile ? 12 : 14,
+                          color: index === 0 ? "#67e8f9" : index === 1 ? "#cbd5e1" : index === 2 ? "#93c5fd" : "#94a3b8",
                           background: "rgba(15,23,42,0.72)"
                         }}
                       >
@@ -882,26 +833,21 @@ export default function App() {
                       </div>
 
                       <div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            flexWrap: "wrap"
-                          }}
-                        >
-                          <span style={{ fontSize: 15, fontWeight: 700 }}>{item.place}</span>
-                          <span
-                            style={{
-                              fontSize: 11,
-                              padding: "4px 8px",
-                              borderRadius: "999px",
-                              background: "rgba(255,255,255,0.07)",
-                              color: "#94a3b8"
-                            }}
-                          >
-                            {item.region}
-                          </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700 }}>{item.place}</span>
+                          {!isMobile && (
+                            <span
+                              style={{
+                                fontSize: 11,
+                                padding: "4px 8px",
+                                borderRadius: "999px",
+                                background: "rgba(255,255,255,0.07)",
+                                color: "#94a3b8"
+                              }}
+                            >
+                              {item.region}
+                            </span>
+                          )}
                         </div>
 
                         <div
@@ -918,14 +864,7 @@ export default function App() {
                             style={{
                               width: barWidth,
                               height: "100%",
-                              background:
-                                index === 0
-                                  ? "#67e8f9"
-                                  : index === 1
-                                  ? "#60a5fa"
-                                  : index === 2
-                                  ? "#93c5fd"
-                                  : "#475569",
+                              background: index === 0 ? "#67e8f9" : index === 1 ? "#60a5fa" : index === 2 ? "#93c5fd" : "#475569",
                               borderRadius: "999px"
                             }}
                           />
@@ -933,13 +872,7 @@ export default function App() {
                       </div>
 
                       <div style={{ textAlign: "right" }}>
-                        <div
-                          style={{
-                            fontSize: 17,
-                            fontWeight: 900,
-                            color: index === 0 ? "#67e8f9" : "#e5e7eb"
-                          }}
-                        >
+                        <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 900, color: index === 0 ? "#67e8f9" : "#e5e7eb" }}>
                           {item.votes}
                         </div>
 
@@ -948,17 +881,14 @@ export default function App() {
                           disabled={activeVotesUsed >= 3}
                           style={{
                             marginTop: 6,
-                            padding: "6px 9px",
+                            padding: isMobile ? "5px 7px" : "6px 9px",
                             borderRadius: "10px",
                             border: "1px solid rgba(96,165,250,0.18)",
-                            background:
-                              activeVotesUsed >= 3
-                                ? "rgba(255,255,255,0.05)"
-                                : "rgba(59,130,246,0.12)",
+                            background: activeVotesUsed >= 3 ? "rgba(255,255,255,0.05)" : "rgba(59,130,246,0.12)",
                             color: activeVotesUsed >= 3 ? "#6b7280" : "#93c5fd",
                             cursor: activeVotesUsed >= 3 ? "not-allowed" : "pointer",
                             fontWeight: 800,
-                            fontSize: 12
+                            fontSize: isMobile ? 11 : 12
                           }}
                         >
                           Vote
@@ -977,36 +907,37 @@ export default function App() {
         <div
           style={{
             position: "absolute",
-            right: 24,
-            top: 120,
+            right: isMobile ? 12 : 24,
+            top: isMobile ? 178 : 120,
             zIndex: 25,
-            width: 290,
-            padding: "16px 18px",
+            width: isMobile ? "calc(100vw - 24px)" : isTV ? 340 : 290,
+            maxWidth: isMobile ? 340 : "none",
+            padding: isMobile ? "12px 14px" : "16px 18px",
             ...panelStyle
           }}
         >
-          <div style={{ fontSize: 13, color: "#93c5fd", letterSpacing: "0.08em", fontWeight: 800 }}>
+          <div style={{ fontSize: isMobile ? 11 : 13, color: "#93c5fd", letterSpacing: "0.08em", fontWeight: 800 }}>
             {selectedPlace ? "SELECTED LOCATION" : "HOVERING"}
           </div>
 
-          <div style={{ marginTop: 10, fontSize: 24, fontWeight: 800 }}>
+          <div style={{ marginTop: 8, fontSize: isMobile ? 19 : 24, fontWeight: 800 }}>
             {activeInfoPanel.name}
           </div>
 
-          <div style={{ marginTop: 8, color: "#cbd5e1", fontSize: 14 }}>
+          <div style={{ marginTop: 6, color: "#cbd5e1", fontSize: isMobile ? 13 : 14 }}>
             {activeInfoPanel.type}
           </div>
 
           {activeInfoPanel.note && (
             <div
               style={{
-                marginTop: 12,
-                padding: "10px 12px",
+                marginTop: 10,
+                padding: "9px 11px",
                 borderRadius: "12px",
                 background: "rgba(250,204,21,0.12)",
                 border: "1px solid rgba(250,204,21,0.3)",
                 color: "#fde68a",
-                fontSize: 14,
+                fontSize: isMobile ? 12 : 14,
                 fontWeight: 700
               }}
             >
@@ -1021,20 +952,21 @@ export default function App() {
               rel="noreferrer"
               style={{
                 display: "inline-block",
-                marginTop: 14,
+                marginTop: 12,
                 padding: "10px 14px",
                 borderRadius: "999px",
                 background: "#22d3ee",
                 color: "#020617",
                 textDecoration: "none",
                 fontWeight: 800,
+                fontSize: isMobile ? 13 : 14,
                 boxShadow: "0 0 16px rgba(34,211,238,0.45)"
               }}
             >
               Watch YouTube Video
             </a>
           ) : (
-            <div style={{ marginTop: 14, color: "#94a3b8", fontSize: 14 }}>
+            <div style={{ marginTop: 12, color: "#94a3b8", fontSize: isMobile ? 12 : 14 }}>
               No video link added yet.
             </div>
           )}
@@ -1143,38 +1075,40 @@ export default function App() {
         />
       )}
 
-      <div
-        style={{
-          position: "absolute",
-          bottom: 25,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 20,
-          color: "white",
-          fontSize: "14px",
-          display: "flex",
-          gap: "20px",
-          background: "rgba(0,0,0,0.32)",
-          padding: "10px 18px",
-          borderRadius: "999px",
-          border: "1px solid rgba(96,165,250,0.18)"
-        }}
-      >
-        <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
-        <span><span style={{ color: "#facc15" }}>■</span> Planned Soon</span>
-        <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
-      </div>
+      {!isMobile && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 25,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 20,
+            color: "white",
+            fontSize: isTV ? "18px" : "14px",
+            display: "flex",
+            gap: isTV ? "28px" : "20px",
+            background: "rgba(0,0,0,0.32)",
+            padding: isTV ? "13px 24px" : "10px 18px",
+            borderRadius: "999px",
+            border: "1px solid rgba(96,165,250,0.18)"
+          }}
+        >
+          <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
+          <span><span style={{ color: "#facc15" }}>■</span> Planned Soon</span>
+          <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
+        </div>
+      )}
 
       <div
         style={{
           position: "absolute",
-          right: 24,
-          bottom: 24,
+          right: isMobile ? 12 : 24,
+          bottom: isMobile ? 12 : 24,
           zIndex: 25,
           display: "flex",
           alignItems: "center",
-          gap: "10px",
-          padding: "10px 14px",
+          gap: isMobile ? "6px" : "10px",
+          padding: isMobile ? "8px 10px" : "10px 14px",
           borderRadius: "18px",
           background: "rgba(0,0,0,0.4)",
           border: "1px solid rgba(96,165,250,0.25)",
@@ -1182,48 +1116,35 @@ export default function App() {
           boxShadow: "0 0 20px rgba(37,99,235,0.18)"
         }}
       >
-        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }}>
-          K
-        </a>
+        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }}>K</a>
 
         <a
           href={socialLinks.instagram}
           target="_blank"
           rel="noreferrer"
-          style={{
-            ...socialIconStyle,
-            background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)"
-          }}
+          style={{ ...socialIconStyle, background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)" }}
         >
           IG
         </a>
 
-        <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#ef4444" }}>
-          ▶
-        </a>
+        <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#ef4444" }}>▶</a>
 
-        <a href={socialLinks.x} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#38bdf8" }}>
-          X
-        </a>
+        <a href={socialLinks.x} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#38bdf8" }}>X</a>
 
         <a
           href={socialLinks.tiktok}
           target="_blank"
           rel="noreferrer"
-          style={{
-            ...socialIconStyle,
-            background: "#111827",
-            border: "1px solid rgba(255,255,255,0.15)"
-          }}
+          style={{ ...socialIconStyle, background: "#111827", border: "1px solid rgba(255,255,255,0.15)" }}
         >
           ♪
         </a>
 
         <div
           style={{
-            marginLeft: "4px",
+            marginLeft: isMobile ? "2px" : "4px",
             color: "#e0f2fe",
-            fontSize: "28px",
+            fontSize: isMobile ? "18px" : isTV ? "36px" : "28px",
             fontWeight: 900,
             letterSpacing: "0.02em",
             textShadow: "0 0 10px rgba(56,189,248,0.45)"
@@ -1235,3 +1156,4 @@ export default function App() {
     </div>
   );
 }
+```
