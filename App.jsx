@@ -1094,7 +1094,7 @@ export default function App() {
           }}
         >
           <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
-          <span><span style={{ color: "#facc15" }}>■</span> Planned Soon</span>
+          <span><span style={{ color: "#facc15" }}>■</span> Going Soon</span>
           <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
         </div>
       )}
