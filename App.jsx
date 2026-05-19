@@ -269,7 +269,7 @@ export default function App() {
 
   const plannedStateData = useMemo(
     () => [
-      { id: "13", name: "Georgia", note: "Dreamhack Atlanta May 15-17" },
+      { id: "32", name: "Nevada", note: "Brand Risk & Vegas" },
       { id: "39", name: "Ohio", note: "Randomly Picked by End of May" }
     ],
     []
