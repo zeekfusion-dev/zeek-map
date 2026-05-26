@@ -208,7 +208,7 @@ function getUsaRegion(stateName) {
   return "USA";
 }
 
-export default function App() {
+export default function TravelMap() {
   const globeRef = useRef();
 
   const [screen, setScreen] = useState({
