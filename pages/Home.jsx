@@ -23,7 +23,7 @@ export default function Home() {
           <Link style={navLink} to="/map">MAP</Link>
           <Link style={navLink} to="/schedule">SCHEDULE</Link>
           <Link style={navLink} to="/merch">MERCH</Link>
-          <a style={navLink} href="https://youtube.com/@ZeekFusion" target="_blank" rel="noreferrer">CLIPS</a>
+          <a style={navLink} href="http://tiktok.com/@zeekfusion" target="_blank" rel="noreferrer">CLIPS</a>
         </div>
 
         <img src="/images/zeek-profile.webp" alt="ZeekFusion" style={avatar} />
