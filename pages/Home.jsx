@@ -1,6 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import {
+  FaKickstarterK,
+  FaYoutube,
+  FaInstagram,
+  FaTiktok,
+  FaXTwitter,
+} from "react-icons/fa6";
+
 export default function Home() {
   return (
     <div style={page}>
@@ -18,7 +26,7 @@ export default function Home() {
           <a style={navLink} href="https://youtube.com/@ZeekFusion" target="_blank" rel="noreferrer">CLIPS</a>
         </div>
 
-        <img src="/zeek-profile.webp" alt="ZeekFusion" style={avatar} />
+        <img src="/images/zeek-profile.webp" alt="ZeekFusion" style={avatar} />
 
         <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={watchBtn}>
           <span style={kickSmall}>K</span> WATCH LIVE
@@ -42,43 +50,116 @@ export default function Home() {
           </div>
 
           <div style={heroFace}>
-            <img src="/zeek-profile.webp" alt="ZeekFusion" style={heroImg} />
+            <img src="/imzeek-profileages/.webp" alt="ZeekFusion" style={heroImg} />
           </div>
         </section>
 
-        <Link to="/map" style={{ ...card, ...mapCard }}>
-          <h2>TRAVEL MAP</h2>
-          <p>See everywhere I’ve been and where I’m going next.</p>
-          <button style={smallBtn}>EXPLORE MAP →</button>
+        <Link to="/map" style={{ ...imageCard, backgroundImage: "url('/images/map.png')" }}>
+        <div style={cardContent}>
+            <h2 style={cardTitle}>TRAVEL MAP</h2>
+            <p style={cardText}>See everywhere I’ve been and where I’m going next.</p>
+            <button style={smallBtn}>EXPLORE MAP →</button>
+        </div>
         </Link>
 
-        <Link to="/schedule" style={{ ...card, ...scheduleCard }}>
-          <h2>STREAM SCHEDULE</h2>
-          <p>Check out upcoming streams and events.</p>
-          <button style={smallBtn}>VIEW SCHEDULE →</button>
+        <Link to="/schedule" style={{ ...imageCard, backgroundImage: "url('/images/schedule.png')", backgroundPosition: "72% center"}}>
+        <div style={cardContent}>
+            <h2 style={cardTitle}>STREAM SCHEDULE</h2>
+            <p style={cardText}>Check out upcoming streams and events.</p>
+            <button style={smallBtn}>VIEW SCHEDULE →</button>
+        </div>
         </Link>
 
         <section style={videoCard}>
-          <h3>▌ LATEST VIDEO</h3>
-          <div style={videoBox}>
-            <img src="/zeek-profile.webp" alt="Latest video" style={videoFace} />
-            <div style={play}>▶</div>
-            <p>INSANE DAY IN MIAMI! 😂</p>
-          </div>
-          <a style={blueLink} href="https://youtube.com/@ZeekFusion" target="_blank" rel="noreferrer">
+        <h3>▌ LATEST VIDEO</h3>
+
+        <a
+            href="https://youtu.be/zZzMRrhVx0Y"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+            ...youtubeCard,
+            backgroundImage:
+                "url('https://img.youtube.com/vi/zZzMRrhVx0Y/maxresdefault.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            }}
+        >
+            <div style={videoOverlay}>
+            <div style={playButton}>▶</div>
+
+            <div>
+                <p style={latestLabel}></p>
+                <h2 style={latestTitle}>
+                I Met The OLDEST Person On Omegle
+                </h2>
+            </div>
+            </div>
+        </a>
+
+        <a
+            style={blueLink}
+            href="https://youtube.com/@ZeekFusion"
+            target="_blank"
+            rel="noreferrer"
+        >
             WATCH ON YOUTUBE →
-          </a>
+        </a>
         </section>
 
         <section style={connectCard}>
           <h3>CONNECT WITH ME</h3>
-          <div style={socials}>
-            <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer">KICK</a>
-            <a href="https://youtube.com/@ZeekFusion" target="_blank" rel="noreferrer">YOUTUBE</a>
-            <a href="https://instagram.com/zeekfusion" target="_blank" rel="noreferrer">INSTAGRAM</a>
-            <a href="https://x.com/zeekfusion" target="_blank" rel="noreferrer">X</a>
-            <a href="https://tiktok.com/@zeekfusion" target="_blank" rel="noreferrer">TIKTOK</a>
-          </div>
+            <div style={socials}>
+        <a
+            href="https://kick.com/zeekfusion"
+            target="_blank"
+            rel="noreferrer"
+            style={socialItem}
+        >
+            <FaKickstarterK style={{ ...socialIcon, color: "#53FC18" }} />
+            <span>KICK</span>
+        </a>
+
+        <a
+            href="https://youtube.com/@ZeekFusion"
+            target="_blank"
+            rel="noreferrer"
+            style={socialItem}
+        >
+            <FaYoutube style={{ ...socialIcon, color: "#FF0000" }} />
+            <span>YOUTUBE</span>
+        </a>
+
+        <a
+            href="https://instagram.com/zeekfusion"
+            target="_blank"
+            rel="noreferrer"
+            style={socialItem}
+        >
+            <FaInstagram style={{ ...socialIcon, color: "#E1306C" }} />
+            <span>INSTAGRAM</span>
+        </a>
+
+        <a
+            href="https://x.com/zeekfusion"
+            target="_blank"
+            rel="noreferrer"
+            style={socialItem}
+        >
+            <FaXTwitter style={{ ...socialIcon, color: "#1DA1F2" }} />
+            <span>TWITTER</span>
+        </a>
+
+        <a
+            href="https://tiktok.com/@zeekfusion"
+            target="_blank"
+            rel="noreferrer"
+            style={socialItem}
+        >
+            <FaTiktok style={socialIcon} />
+            <span>TIKTOK</span>
+        </a>
+        </div>
 
           <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={community}>
             <div>
@@ -266,14 +347,40 @@ const card = {
   background: "linear-gradient(135deg,#06101f,#082954)",
 };
 
-const mapCard = {
-  background:
-    "radial-gradient(circle at right, rgba(0,132,255,.7), transparent 40%), #06101f",
+const imageCard = {
+  minHeight: "210px",
+  border: "1px solid rgba(0,132,255,.55)",
+  borderRadius: "16px",
+  color: "white",
+  textDecoration: "none",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  overflow: "hidden",
 };
 
-const scheduleCard = {
-  background:
-    "radial-gradient(circle at right, rgba(0,89,255,.65), transparent 40%), #06101f",
+const cardContent = {
+  height: "100%",
+  padding: "26px 34px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "flex-start",
+  maxWidth: "42%",
+};
+
+const cardTitle = {
+  fontSize: "34px",
+  margin: "0 0 16px",
+  lineHeight: "1",
+};
+
+const cardText = {
+  fontSize: "18px",
+  lineHeight: "1.35",
+  margin: "0 0 20px",
+  fontFamily: "Arial, sans-serif",
+  fontWeight: 700,
 };
 
 const smallBtn = {
@@ -334,10 +441,11 @@ const connectCard = {
 };
 
 const socials = {
-  display: "flex",
-  justifyContent: "space-between",
-  margin: "24px 0",
-  gap: "12px",
+  display: "grid",
+  gridTemplateColumns: "repeat(5, 1fr)",
+  marginTop: "30px",
+  borderTop: "1px solid rgba(255,255,255,0.08)",
+  borderBottom: "1px solid rgba(255,255,255,0.08)",
 };
 
 const community = {
@@ -371,6 +479,94 @@ const stats = {
   padding: "22px",
   background: "linear-gradient(90deg,#05080e,#06162d)",
   textAlign: "center",
+};
+
+const socialGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(5, 1fr)",
+  marginTop: "18px",
+};
+
+const socialIcon = {
+  fontSize: "64px",
+};
+
+const socialItem = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "14px",
+  padding: "35px 10px",
+  textDecoration: "none",
+  color: "white",
+  fontWeight: "900",
+  fontSize: "18px",
+  letterSpacing: "1px",
+  borderRight: "1px solid rgba(255,255,255,0.08)",
+  transition: "0.25s",
+};
+
+const socialLabel = {
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+  fontWeight: "bold",
+  letterSpacing: ".5px",
+};
+
+const videoTitle = {
+  marginLeft: "18px",
+  fontSize: "18px",
+  fontWeight: 900,
+};
+
+const youtubeCard = {
+  height: "260px",
+  borderRadius: "14px",
+  overflow: "hidden",
+  textDecoration: "none",
+  position: "relative",
+  display: "flex",
+  alignItems: "flex-end",
+};
+
+const videoOverlay = {
+  width: "100%",
+  padding: "24px",
+  background:
+    "linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,.2), transparent)",
+  display: "flex",
+  alignItems: "center",
+  gap: "22px",
+};
+
+const playButton = {
+  width: "72px",
+  height: "72px",
+  borderRadius: "50%",
+  background: "red",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "34px",
+  color: "white",
+  flexShrink: 0,
+};
+
+const latestLabel = {
+  margin: 0,
+  color: "#0ea5ff",
+  fontSize: "14px",
+  letterSpacing: "2px",
+};
+
+const latestTitle = {
+  margin: "6px 0 0",
+  fontSize: "clamp(28px, 4vw, 64px)",
+  lineHeight: ".95",
+  color: "white",
+  textShadow: "0 0 18px rgba(0,0,0,.95)",
+  maxWidth: "75%",
 };
 
 const statsDiv = {};
