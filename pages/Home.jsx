@@ -177,11 +177,11 @@ export default function Home() {
         </Link>
 
         <section style={stats}>
-          <div><strong>100M+</strong><span>TOTAL VIEWS</span></div>
+          <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
           <div><strong>500+</strong><span>VIDEOS</span></div>
-          <div><strong>20+</strong><span>COUNTRIES VISITED</span></div>
-          <div><strong>LIVE</strong><span>ALMOST EVERY DAY</span></div>
-          <div><strong>ALL ENERGY</strong><span>ALL CHAOS</span></div>
+          <div><strong>VISING ALL OF USA </strong><span>BY 2027</span></div>
+          <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
+          <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
         </section>
       </main>
     </div>

@@ -591,6 +591,29 @@ export default function TravelMap() {
         ))}
       </div>
 
+      <a
+        href="/"
+        style={{
+          position: "absolute",
+          top: isMobile ? 18 : 24,
+          left: isMobile ? 12 : 24,
+          zIndex: 50,
+          padding: isMobile ? "8px 14px" : "10px 18px",
+          borderRadius: "14px",
+          textDecoration: "none",
+          color: "#e0f2fe",
+          fontWeight: 900,
+          fontSize: isMobile ? "12px" : "14px",
+          letterSpacing: "0.05em",
+          background: "rgba(0,0,0,0.45)",
+          border: "1px solid rgba(96,165,250,0.35)",
+          boxShadow: "0 0 18px rgba(37,99,235,0.25)",
+          backdropFilter: "blur(8px)"
+        }}
+      >
+        ← BACK HOME
+      </a>
+
       <div
         style={{
           position: "absolute",
