@@ -179,7 +179,7 @@ export default function Home() {
         <section style={stats}>
           <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
           <div><strong>500+</strong><span>VIDEOS</span></div>
-          <div><strong>VISING ALL OF USA </strong><span>BY 2027</span></div>
+          <div><strong>VISITING ALL OF USA </strong><span>BY 2027</span></div>
           <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
           <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
         </section>
