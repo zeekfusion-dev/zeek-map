@@ -50,7 +50,7 @@ export default function Home() {
           </div>
 
           <div style={heroFace}>
-            <img src="/imzeek-profileages/.webp" alt="ZeekFusion" style={heroImg} />
+            <img src="/images/zeekhomepage.png" alt="ZeekFusion" style={heroImg} />
           </div>
         </section>
 
@@ -74,13 +74,13 @@ export default function Home() {
         <h3>▌ LATEST VIDEO</h3>
 
         <a
-            href="https://youtu.be/zZzMRrhVx0Y"
+            href="https://youtu.be/7QLze6D0ODY"
             target="_blank"
             rel="noreferrer"
             style={{
             ...youtubeCard,
             backgroundImage:
-                "url('https://img.youtube.com/vi/zZzMRrhVx0Y/maxresdefault.jpg')",
+                "url('https://img.youtube.com/vi/7QLze6D0ODY/maxresdefault.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             }}
@@ -91,7 +91,7 @@ export default function Home() {
             <div>
                 <p style={latestLabel}></p>
                 <h2 style={latestTitle}>
-                I Met The OLDEST Person On Omegle
+                We Tried The World's Most Disgusting Smoothies!!
                 </h2>
             </div>
             </div>
@@ -330,11 +330,11 @@ const heroFace = {
 };
 
 const heroImg = {
-  width: "360px",
-  height: "360px",
-  objectFit: "cover",
-  borderRadius: "50%",
-  filter: "drop-shadow(0 0 35px #008cff)",
+  width: "560px",
+  height: "560px",
+  objectFit: "contain",
+  borderRadius: "0",
+  filter: "drop-shadow(0 0 45px #008cff)",
 };
 
 const card = {
