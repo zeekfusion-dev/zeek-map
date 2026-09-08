@@ -43,10 +43,17 @@ export default async function handler(req, res) {
       success: true,
       result,
     });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
+} catch (error) {
+  console.error("TEST Z ERROR:", error);
+  console.error("CAUSE:", error.cause);
+
+  return res.status(500).json({
+    success: false,
+    error: error.message,
+    cause: error.cause?.message || null,
+    code: error.cause?.code || null,
+    hasSupabaseUrl: !!process.env.SUPABASE_URL,
+    hasSupabaseKey: !!process.env.SUPABASE_SECRET_KEY,
+  });
+}
 }
