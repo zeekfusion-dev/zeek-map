@@ -1,0 +1,20 @@
+begin;
+create table if not exists public.z_kicks_events(event_id text primary key,kick_user_id bigint not null,kicks bigint not null,created_at timestamptz default now());
+create table if not exists public.z_kicks_remainders(kick_user_id bigint primary key,remainder numeric(24,8) not null default 0);
+alter table public.z_kicks_events enable row level security;alter table public.z_kicks_remainders enable row level security;
+revoke all on public.z_kicks_events,public.z_kicks_remainders from anon,authenticated;grant all on public.z_kicks_events,public.z_kicks_remainders to service_role;
+create or replace function public.z_award_kicks(p_user bigint,p_name text,p_kicks bigint,p_event text) returns jsonb language plpgsql security definer set search_path=public as $$declare c jsonb;value numeric;amount numeric;ev text;begin
+ select settings into c from z_config where id=1;if not(c->>'kicks_enabled')::boolean then return null;end if;
+ if p_kicks<=0 or p_user<=0 then raise exception 'Invalid KICKs';end if;
+ perform pg_advisory_xact_lock(p_user);
+ insert into z_kicks_events(event_id,kick_user_id,kicks) values(p_event,p_user,p_kicks) on conflict do nothing returning event_id into ev;if ev is null then return null;end if;
+ insert into z_kicks_remainders values(p_user,0) on conflict do nothing;
+ select remainder into value from z_kicks_remainders where kick_user_id=p_user for update;
+ value:=value+p_kicks/(c->>'kicks_per_z')::numeric;amount:=floor(value*100)/100;
+ update z_kicks_remainders set remainder=value-amount where kick_user_id=p_user;
+ if amount>0 then return z_award(p_user,p_name,amount,'Sent '||p_kicks||' KICKs',p_event);end if;return null;end$$;
+create or replace function public.z_giveaway_count(p_id uuid) returns bigint language sql security definer set search_path=public as $$select count(*) from z_giveaway_entries where giveaway_id=p_id$$;
+revoke all on function public.z_award_kicks(bigint,text,bigint,text),public.z_giveaway_count(uuid) from public,anon,authenticated;
+grant execute on function public.z_award_kicks(bigint,text,bigint,text),public.z_giveaway_count(uuid) to service_role;
+notify pgrst,'reload schema';
+commit;

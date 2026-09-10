@@ -21,7 +21,7 @@ export default function Home() {
         <div style={navLinks}>
           <Link style={activeNav} to="/">HOME</Link>
           <Link style={navLink} to="/map">MAP</Link>
-          <Link style={navLink} to="/schedule">SCHEDULE</Link>
+          <Link style={navLink} to="/vault">Z VAULT</Link>
           <Link style={navLink} to="/merch">MERCH</Link>
           <a style={navLink} href="http://tiktok.com/@zeekfusion" target="_blank" rel="noreferrer">CLIPS</a>
         </div>
@@ -62,11 +62,11 @@ export default function Home() {
         </div>
         </Link>
 
-        <Link to="/schedule" style={{ ...imageCard, backgroundImage: "url('/images/schedule.png')", backgroundPosition: "72% center"}}>
+        <Link to="/vault" style={{ ...imageCard, backgroundImage: "url('/images/schedule.png')", backgroundPosition: "72% center"}}>
         <div style={cardContent}>
-            <h2 style={cardTitle}>STREAM SCHEDULE</h2>
-            <p style={cardText}>Check out upcoming streams and events.</p>
-            <button style={smallBtn}>VIEW SCHEDULE →</button>
+            <h2 style={cardTitle}>THE Z VAULT</h2>
+            <p style={cardText}>Earn Zs in chat. Unlock rewards. Join the community.</p>
+            <button style={smallBtn}>ENTER VAULT →</button>
         </div>
         </Link>
 

@@ -1,0 +1,34 @@
+-- Run inside a transaction after migrations; caller rolls everything back.
+do $$declare result jsonb;balance numeric;r uuid;a bigint;begin
+ perform z_award(9000000000001,'z_test_viewer',5,'test','z-test-award');
+ perform z_award(9000000000001,'z_test_viewer',5,'test','z-test-award');
+ perform z_award(9000000000001,'z_test_viewer',0.2,'test','z-test-decimal');
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;
+ if balance<>5.2 then raise exception 'Duplicate or decimal award failed: %',balance;end if;
+ begin perform z_award(9000000000001,'z_test_viewer',-6,'test','z-test-overdraw');raise exception 'OVERDRAW_WAS_ALLOWED';exception when others then if sqlerrm='OVERDRAW_WAS_ALLOWED' then raise;end if;end;
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.2 then raise exception 'Overdraw changed balance';end if;
+ insert into z_rewards(title,cost,stock,enabled) values('Test reward',2,1,true) returning id into r;
+ perform z_redeem(9000000000001,'z_test_viewer',r,'00000000-0000-4000-8000-000000000001');
+ perform z_redeem(9000000000001,'z_test_viewer',r,'00000000-0000-4000-8000-000000000001');
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>3.2 then raise exception 'Redemption idempotency failed';end if;
+ perform z_resolve_redemption('00000000-0000-4000-8000-000000000001','refunded',20306616);
+ perform z_resolve_redemption('00000000-0000-4000-8000-000000000001','refunded',20306616);
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.2 then raise exception 'Refund idempotency failed';end if;
+ if (select stock from z_rewards where id=r)<>1 then raise exception 'Stock refund failed';end if;
+ insert into z_questions(question,answers) values('Test question?',ARRAY['test answer']) returning id into a;
+ insert into z_rounds(question_id,question,answers,reward,status,opened_at,expires_at) values(a,'Test question?',ARRAY['test answer'],0.2,'open',now()-interval '10 seconds',now()+interval '30 seconds') returning id into r;
+ result:=z_answer(9000000000001,'z_test_viewer','wrong','msg1',now());if result is not null then raise exception 'Wrong answer won';end if;
+ result:=z_answer(9000000000001,'z_test_viewer','test answer','msg2',now()-interval '20 seconds');if result is not null then raise exception 'Old answer won';end if;
+ result:=z_answer(9000000000001,'z_test_viewer','test answer','msg3',now());if not(result->>'won')::boolean then raise exception 'Correct answer lost';end if;
+ result:=z_answer(9000000000002,'z_test_viewer2','test answer','msg4',now());if result is not null then raise exception 'Second winner allowed';end if;
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.4 then raise exception 'Question reward failed';end if;
+ update z_config set settings=jsonb_set(jsonb_set(settings,'{kicks_enabled}','true'),'{kicks_per_z}','500') where id=1;
+ perform z_award_kicks(9000000000001,'z_test_viewer',1,'kick1');
+ perform z_award_kicks(9000000000001,'z_test_viewer',1,'kick1');
+ perform z_award_kicks(9000000000001,'z_test_viewer',4,'kick2');
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.41 then raise exception 'Fractional KICK accumulation failed: %',balance;end if;
+ if has_function_privilege('anon','public.z_award(bigint,text,numeric,text,text,jsonb)','execute') then raise exception 'Public award function access';end if;
+ if has_function_privilege('anon','public.award_z(bigint,text,integer,text,text,jsonb)','execute') then raise exception 'Public legacy award function access';end if;
+ if has_table_privilege('anon','public.z_bot','select') then raise exception 'Public token access';end if;
+end$$;
+select 'PASS: decimal rewards, deduplication, overdraft protection, redemption/refund idempotency, stock, answer timing, single winner, public access restrictions' as test_result;
