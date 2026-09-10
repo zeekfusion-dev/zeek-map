@@ -22,7 +22,9 @@ The first deployment uses the already configured SUPABASE_URL,
 SUPABASE_SECRET_KEY, KICK_CLIENT_ID, KICK_CLIENT_SECRET, KICK_REDIRECT_URI.
 The redirect URI must be https://www.zeekfusion.com/api/kick/callback.
 
-Visit /#/vault and sign in with the ZeekFusion Kick account. Controls → Activate
+Owner setup can start directly at /api/kick/login?bot=1 (the callback verifies
+the broadcaster ID before storing anything). Alternatively, visit /#/vault and
+sign in with the ZeekFusion Kick account. Controls → Activate
 Kick bot requests user:read and chat:write and stores encrypted refreshable
 tokens server-side. Viewer login requests only user:read. The cron job is dormant
 until a bot token exists. It then checks live status every minute and asks at the
