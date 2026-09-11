@@ -1,6 +1,8 @@
 # Clips account connections
 
-The gallery reads `z_clips` through `/api/clips`; no hand-maintained video list is imported. Popular means strictly more than 2,000 views, highest first. Unknown view counts appear only in Latest. All provider pages are followed. Deleted/private videos are removed after a complete successful catalog pass; an interrupted pass retains its cursor and existing cache.
+The gallery reads `z_clips` through `/api/clips`; no hand-maintained video list is imported. Popular means strictly more than 10,000 views, highest first. Unknown view counts appear only in Latest. All provider pages are followed. Deleted/private videos are removed after a complete successful catalog pass; an interrupted pass retains its cursor and existing cache.
+
+TikTok and Instagram currently use owner-supplied links and count snapshots (migration 017), by request. They do not require developer accounts. Existing videos remain available. Missing thumbnails use a branded fallback; playback opens the official embed or original link. YouTube automatic syncing still requires completed OAuth setup.
 
 ## Installation
 
