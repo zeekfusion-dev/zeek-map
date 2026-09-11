@@ -26,7 +26,7 @@ do $$declare result jsonb;balance numeric;r uuid;a bigint;begin
  perform z_award_kicks(9000000000001,'z_test_viewer',1,'kick1');
  perform z_award_kicks(9000000000001,'z_test_viewer',1,'kick1');
  perform z_award_kicks(9000000000001,'z_test_viewer',4,'kick2');
- select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.41 then raise exception 'Fractional KICK accumulation failed: %',balance;end if;
+ select zs_balance into balance from z_users where kick_user_id=9000000000001;if balance<>5.4 then raise exception 'Retired KICKs path awarded Zs: %',balance;end if;
  if has_function_privilege('anon','public.z_award(bigint,text,numeric,text,text,jsonb)','execute') then raise exception 'Public award function access';end if;
  if has_function_privilege('anon','public.award_z(bigint,text,integer,text,text,jsonb)','execute') then raise exception 'Public legacy award function access';end if;
  if has_table_privilege('anon','public.z_bot','select') then raise exception 'Public token access';end if;

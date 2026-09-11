@@ -1,5 +1,5 @@
-import {db,rpc,configuration} from '../../server/db.mjs';
-import {BROADCASTER,rewardForEvent,verifySignature,normalizeAnswer} from '../../server/domain.mjs';
+import {db,rpc} from '../../server/db.mjs';
+import {BROADCASTER,verifySignature,normalizeAnswer} from '../../server/domain.mjs';
 import {flushOutbox} from '../../server/kick.mjs';
 export const config={api:{bodyParser:false},maxDuration:60};
 const KICK_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -21,9 +21,6 @@ export default async function handler(req,res){
  if(!verifySignature(KICK_PUBLIC_KEY,id,ts,sig,raw))return res.status(401).json({error:'Invalid signature'});
  let body;try{body=JSON.parse(raw.toString());}catch{return res.status(400).end();}
  if(Number(body.broadcaster?.user_id)!==BROADCASTER)return res.json({received:true,ignored:true});
- const cfg=await configuration();const reward=type==='kicks.gifted'?null:rewardForEvent(type,body,cfg);
- if(type==='kicks.gifted'&&cfg.kicks_enabled&&body.sender?.user_id&&!body.sender.is_anonymous&&Number.isSafeInteger(body.gift?.amount)&&body.gift.amount>0)await rpc('z_award_kicks',{p_user:body.sender.user_id,p_name:body.sender.username,p_kicks:body.gift.amount,p_event:id});
- if(reward)await rpc('z_award',{p_user:reward.userId,p_name:reward.username,p_amount:reward.amount,p_reason:reward.reason,p_event:id,p_metadata:{event:type}});
  if(type!=='chat.message.sent')await db('z_runtime?id=eq.1',{method:'PATCH',body:{last_webhook_at:new Date().toISOString()}});
  if(type==='chat.message.sent'&&body.sender?.user_id&&!body.sender.is_anonymous){
  const who=body.sender,content=String(body.content||'');let send=false;

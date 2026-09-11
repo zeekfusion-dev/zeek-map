@@ -6,16 +6,16 @@ transactions, questions, redemptions, giveaway entries, sessions and the schedul
 ## Launch defaults
 
 - Question winner: 1 Z, every 30 minutes while live, 60 seconds to answer.
-- New subscription, renewal, and each gift to its gifter: 5 Zs.
-- KICKs and BotRix conversion tickets: disabled until owner chooses rates.
-- Decimals: two places; KICKs fractions below 0.01 Z are accumulated separately.
+- Paid subscriptions, renewals, gifts, KICKs, and donations never award Zs.
+- BotRix conversions: enabled, 1,000 verified free-earned points per Z, cap 5 Zs/week.
+- Decimals: two places. The legacy KICKs award function is retired.
 - No reward products or giveaways are automatically opened. Owner creates them.
 - Giveaways use one free entry per Kick account, independent of Z balance.
 - Zs have no cash value. Rates are adjustable prospectively from owner Controls.
 
 ## Installation
 
-Apply migrations 001, 003, 004, 005, then 002 in Supabase SQL Editor. Existing
+Apply migrations 001, 003, 004, 005, then 002 and 006–009 in Supabase SQL Editor. Existing
 balances remain numerically unchanged. Run `tests/database.sql` inside a
 transaction and ROLLBACK to validate against a disposable/isolated test state.
 The first deployment uses the already configured SUPABASE_URL,
@@ -71,11 +71,48 @@ Changing KICK_CLIENT_SECRET invalidates stored bot tokens; reconnect afterward.
 `npm run build`
 
 Database tests cover decimal awards, duplicate deliveries, overdrafts, stock,
-redemption/refund idempotency, answer timing, one winner, fractional KICKs and
+redemption/refund idempotency, answer timing, one winner, rejection of paid KICKs and
 public privilege restrictions. No purchases or production test rewards needed.
 
 ## Existing homepage work
 
 The uncommitted Mainframe video experiment is preserved in the original Desktop
-checkout. This deployment changes only the homepage Vault links/card, keeping the
-live static face until Zeek's own animation is ready.
+checkout. Home and Vault now share one responsive navigation component. The live static
+face remains in place until Zeek's own animation is ready.
+
+## Community Arena
+
+The Overview has a balance/rank/recent-result header, horizontal Top 5, and a
+real activity feed. The complete leaderboard has its own paginated section.
+Arcade, How It Works, Rewards, Giveaways, My activity, and owner Controls are
+separate tabs. No missions or fabricated production activity are seeded.
+
+Coin Flip reserves 1–100 whole Zs when posted; it remains open while the creator
+is offline. Up to five open challenges per player. The opponent matches the
+stake and a cryptographically random server coin decides the winner. The full
+pot is paid atomically; cancelled open challenges refund the creator once.
+Plinko uses eight server-generated independent binary turns. Total-return
+multipliers left to right are 8, 2, 1.5, .75, .5, .75, 1.5, 2, 8. The 256 equally
+likely paths give 98.046875% mean return. The board animates the recorded path.
+No client-supplied outcome or multiplier is accepted. Creation is rate-limited
+to one new game every two seconds. Request IDs make network retries idempotent.
+
+Arcade transfers use a dedicated ledger operation: refunds and returned stakes
+never inflate all-time earnings. Only net positive game profit counts toward
+rank. Row locks serialize competing accepts, cancellation and balance spending;
+account locks are ordered consistently for two-account settlements. Game,
+rank, three-game streak, trivia and redemption events enter the activity feed.
+
+Historic paid/converted credits are conservatively excluded from wagers while
+remaining spendable on stream interactions. There is no migration balance reset.
+BotRix approvals require verified free-activity provenance (including historical
+points), actual deduction and recorded proof. A database trigger enforces the
+approval marker. The site does not change BotRix settings or deduct points there;
+the owner must disable all paid point rewards and exclude historic paid points.
+Zs cannot be bought or converted to cash, merchandise, or gift cards.
+
+Run tests/arcade-database.sql inside BEGIN/ROLLBACK on a test transaction.
+Rollback verification covers escrow, settlement, duplicate requests, immutable
+outcomes on retries, self/third-player rejection, cancellation, legacy exclusions,
+paid-credit rejection, activity publishing, and denied public database privileges.
+Browser layout checks used local-only fixtures that are never deployed.

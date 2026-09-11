@@ -1,4 +1,5 @@
 import React from "react";
+import SiteNav from "../components/SiteNav";
 import { Link } from "react-router-dom";
 
 import {
@@ -12,26 +13,7 @@ import {
 export default function Home() {
   return (
     <div style={page}>
-      <nav style={nav}>
-        <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={kickBrand}>
-          <span style={kickK}>K</span>
-          <span>KICK.COM/ZEEKFUSION</span>
-        </a>
-
-        <div style={navLinks}>
-          <Link style={activeNav} to="/">HOME</Link>
-          <Link style={navLink} to="/map">MAP</Link>
-          <Link style={navLink} to="/vault">Z VAULT</Link>
-          <Link style={navLink} to="/merch">MERCH</Link>
-          <a style={navLink} href="http://tiktok.com/@zeekfusion" target="_blank" rel="noreferrer">CLIPS</a>
-        </div>
-
-        <img src="/images/zeek-profile.webp" alt="ZeekFusion" style={avatar} />
-
-        <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={watchBtn}>
-          <span style={kickSmall}>K</span> WATCH LIVE
-        </a>
-      </nav>
+      <SiteNav/>
 
       <main style={layout}>
         <section style={hero}>

@@ -1,0 +1,30 @@
+-- Run inside a transaction and roll back. No live balances or games remain.
+do $$declare a bigint:=922000001;b bigint:=922000002;c bigint:=922000003;g uuid:=gen_random_uuid();h uuid:=gen_random_uuid();j uuid:=gen_random_uuid();p uuid:=gen_random_uuid();x jsonb;y jsonb;begin
+ perform z_award(a,'arcade_test_a',100,'Free test credit','arcade-fixture-a');
+ perform z_award(b,'arcade_test_b',100,'Free test credit','arcade-fixture-b');
+ perform z_award(c,'arcade_test_c',100,'Free test credit','arcade-fixture-c');
+ x:=z_play(g,a,'arcade_test_a','coin',50,'heads');
+ if (select zs_balance from z_users where kick_user_id=a)<>50 then raise exception 'Escrow failed';end if;
+ y:=z_play(g,a,'arcade_test_a','coin',100,'tails');
+ if x<>y or (select zs_balance from z_users where kick_user_id=a)<>50 then raise exception 'Create idempotency failed';end if;
+ begin perform z_coin_action(g,a,'arcade_test_a',false,'heads');raise exception 'Own challenge accepted';exception when others then if sqlerrm<>'You cannot accept your own challenge' then raise;end if;end;
+ x:=z_coin_action(g,b,'arcade_test_b',false,'heads');
+ if (select zs_balance from z_users where kick_user_id=a)<>150 or (select zs_balance from z_users where kick_user_id=b)<>50 then raise exception 'Coin settlement failed';end if;
+ y:=z_coin_action(g,b,'arcade_test_b',false,'tails');if x<>y then raise exception 'Accept retry changed result';end if;
+ begin perform z_coin_action(g,c,'arcade_test_c',false,'tails');raise exception 'Third player accepted';exception when others then if sqlerrm<>'Challenge already closed' then raise;end if;end;
+ begin perform z_coin_action(g,a,'arcade_test_a',true);raise exception 'Resolved challenge cancelled';exception when others then if sqlerrm<>'Challenge already closed' then raise;end if;end;
+ update z_games set created_at=now()-interval '1 minute' where id=g;
+ perform z_play(h,a,'arcade_test_a','coin',20,'tails');perform z_coin_action(h,a,'arcade_test_a',true);perform z_coin_action(h,a,'arcade_test_a',true);
+ if (select zs_balance from z_users where kick_user_id=a)<>150 or (select lifetime_zs from z_users where kick_user_id=a)<>150 then raise exception 'Refund or lifetime inflated';end if;
+ update z_users set arcade_excluded=95 where kick_user_id=c;
+ begin perform z_play(j,c,'arcade_test_c','coin',10,'heads');raise exception 'Legacy credit wagered';exception when others then if sqlerrm<>'Insufficient free-earned Zs' then raise;end if;end;
+ x:=z_play(p,b,'arcade_test_b','plinko',10,null,'[1,1,1,1,0,0,0,0]');
+ if x->>'payout'<>'5.00' or (select zs_balance from z_users where kick_user_id=b)<>45 then raise exception 'Plinko settlement failed %',x;end if;
+ y:=z_play(p,b,'arcade_test_b','plinko',10,null,'[1,1,1,1,1,1,1,1]');if x<>y then raise exception 'Plinko retry rerolled';end if;
+ begin perform z_award(c,'arcade_test_c',5,'New subscription','paid-test');raise exception 'Paid award succeeded';exception when others then if sqlerrm<>'Paid activity cannot award Zs' then raise;end if;end;
+ if has_function_privilege('anon','z_play(uuid,bigint,text,text,numeric,text,jsonb)','execute') or has_table_privilege('anon','z_games','insert') then raise exception 'Public game access';end if;
+ perform z_award(c,'arcade_test_c',-90,'Redeemed: test interaction','legacy-spend-test');
+ if (select arcade_excluded from z_users where kick_user_id=c)<>10 then raise exception 'Historic exclusion failed to shrink after redemption';end if;
+ if not exists(select 1 from z_activity where kind='coin' and username='arcade_test_a') or not exists(select 1 from z_activity where kind='plinko' and username='arcade_test_b') then raise exception 'Missing activity';end if;
+end$$;
+select 'All Arcade database checks passed; changes rolled back' as result;
