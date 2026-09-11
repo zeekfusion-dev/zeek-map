@@ -1,10 +1,11 @@
+import {SiKick} from 'react-icons/si';
 import React,{useEffect,useState} from "react";
 import "./Home.css";
 import {amountZ} from "../server/z-format.mjs";
 import { Link } from "react-router-dom";
 
 import {
-  FaKickstarterK,
+
   FaYoutube,
   FaTwitch,
   FaInstagram,
@@ -96,19 +97,12 @@ export default function Home() {
         <HomeLeaders/>
 
 
-        <Link to="/merch" style={merchCard}>
+        <Link to="/merch" className="home-merch" style={merchCard}>
           <h3>MERCH</h3>
           <h2>LIMITED DROPS<br />COMING SOON</h2>
           <span style={smallBtn}>SHOP MERCH →</span>
         </Link>
 
-        <section style={stats}>
-          <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
-          <div><strong>500+</strong><span>VIDEOS</span></div>
-          <div><strong>VISITING ALL OF USA </strong><span>BY 2027</span></div>
-          <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
-          <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
-        </section>
         <section className="home-connect" style={connectCard}>
           <h3>CONNECT WITH ME</h3>
             <div style={socials}>
@@ -118,7 +112,7 @@ export default function Home() {
             rel="noreferrer"
             style={socialItem}
         >
-            <FaKickstarterK style={{ ...socialIcon, color: "#53FC18" }} />
+            <SiKick style={{ ...socialIcon, color: "#53FC18" }} />
             <span>KICK</span>
         </a>
 
@@ -149,7 +143,7 @@ export default function Home() {
             style={socialItem}
         >
             <FaXTwitter style={{ ...socialIcon, color: "#1DA1F2" }} />
-            <span>TWITTER</span>
+            <span>X</span>
         </a>
 
         <a
@@ -170,6 +164,13 @@ export default function Home() {
             </div>
             <span>›</span>
           </a>
+        </section>
+        <section style={stats}>
+          <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
+          <div><strong>500+</strong><span>VIDEOS</span></div>
+          <div><strong>VISITING ALL OF USA </strong><span>BY 2027</span></div>
+          <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
+          <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
         </section>
       </main>
       <footer className="home-footer">ZEEKFUSION · ALL ENERGY. ALL CHAOS.</footer>

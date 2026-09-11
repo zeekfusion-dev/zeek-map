@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import SiteNav from "./components/SiteNav";
 import "./components/SiteShell.css";
 import Home from "./pages/Home.jsx";
+const Clips = lazy(()=>import('./pages/Clips.jsx'));
 const Map = lazy(() => import("./Map.jsx"));
 
 import Vault from "./pages/Vault.jsx";
@@ -15,6 +16,7 @@ export default function App() {
       <div className="site-header-shell"><SiteNav/></div>
       <Suspense fallback={<p style={{padding:40}}>Loading…</p>}><Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/clips" element={<Clips />} />
         <Route path="/map" element={<Map />} />
         <Route path="/schedule" element={<Vault />} />
         <Route path="/vault" element={<Vault />} />

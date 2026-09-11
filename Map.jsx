@@ -1,4 +1,7 @@
+import {SiKick} from 'react-icons/si';
+import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok} from 'react-icons/fa6';
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import './pages/Map.css';
 import Globe from "react-globe.gl";
 import { feature } from "topojson-client";
 
@@ -211,6 +214,9 @@ function getUsaRegion(stateName) {
 export default function TravelMap() {
   const globeRef = useRef();
 
+  const mapRoot=useRef(null);
+  const [mapSize,setMapSize]=useState({width:1200,height:650});
+  useEffect(()=>{const el=mapRoot.current;if(!el)return;const observer=new ResizeObserver(([entry])=>setMapSize({width:entry.contentRect.width,height:entry.contentRect.height}));observer.observe(el);return()=>observer.disconnect()},[]);
   const [screen, setScreen] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 1200,
     height: typeof window !== "undefined" ? window.innerHeight : 800
@@ -394,7 +400,7 @@ export default function TravelMap() {
 
     if (viewMode === "world") {
       globeRef.current.pointOfView(
-        { lat: 20, lng: -20, altitude: isMobile ? 2.9 : isTV ? 1.9 : 2.2 },
+        { lat: 20, lng: -20, altitude: isMobile ? 4.5 : 2.5 },
         1000
       );
     } else {
@@ -443,6 +449,8 @@ export default function TravelMap() {
   }
 
   const commonGlobeProps = {
+    width: mapSize.width,
+    height: mapSize.height,
     ref: globeRef,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
     backgroundColor: "#020617",
@@ -552,12 +560,13 @@ export default function TravelMap() {
   }
 
   return (
-    <div style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: "650px", background: "#020617", position: "relative", overflow: "hidden" }}>
+    <div ref={mapRoot} className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "hidden" }}>
       <div
         style={{
           position: "absolute",
-          top: isMobile ? 14 : 18,
-          width: "100%",
+          top: isMobile ? 14 : 26,
+          left: isMobile ? 0 : 24,
+          width: isMobile ? "100%" : 250,
           textAlign: "center",
           zIndex: 30,
           pointerEvents: "none"
@@ -576,7 +585,7 @@ export default function TravelMap() {
                   : index === 1
                   ? "rgba(14,116,144,0.95)"
                   : "#e0f2fe",
-              fontSize: titleFontSize,
+              fontSize: isMobile ? 18 : 25,
               fontWeight: 900,
               letterSpacing: isMobile ? "0.02em" : "0.04em",
               textTransform: "uppercase",
@@ -596,7 +605,7 @@ export default function TravelMap() {
       <div
         style={{
           position: "absolute",
-          top: isMobile ? 52 : 78,
+          top: isMobile ? 52 : 24,
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -1081,7 +1090,7 @@ export default function TravelMap() {
         <div
           style={{
             position: "absolute",
-            bottom: 25,
+            bottom: 65,
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 20,
@@ -1118,7 +1127,7 @@ export default function TravelMap() {
           boxShadow: "0 0 20px rgba(37,99,235,0.18)"
         }}
       >
-        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }}>K</a>
+        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }} aria-label="Kick"><SiKick/></a>
 
         <a
           href={socialLinks.instagram}
@@ -1126,12 +1135,12 @@ export default function TravelMap() {
           rel="noreferrer"
           style={{ ...socialIconStyle, background: "linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)" }}
         >
-          IG
+          <FaInstagram aria-label="Instagram"/>
         </a>
 
-        <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#ef4444" }}>▶</a>
+        <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#ef4444" }} aria-label="YouTube"><FaYoutube/></a>
 
-        <a href={socialLinks.x} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#38bdf8" }}>X</a>
+        <a href={socialLinks.x} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#38bdf8" }} aria-label="X"><FaXTwitter/></a>
 
         <a
           href={socialLinks.tiktok}
@@ -1139,7 +1148,7 @@ export default function TravelMap() {
           rel="noreferrer"
           style={{ ...socialIconStyle, background: "#111827", border: "1px solid rgba(255,255,255,0.15)" }}
         >
-          ♪
+          <FaTiktok aria-label="TikTok"/>
         </a>
 
         <div
