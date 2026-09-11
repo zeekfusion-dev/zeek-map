@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 export const BROADCASTER = 20306616;
-export const defaults = {subscription_z:0,gift_z:0,renewal_z:0,question_z:1,question_interval_minutes:30,answer_seconds:60,questions_enabled:true,kicks_enabled:false,kicks_per_z:100,botrix_enabled:false,botrix_points_per_z:1000,botrix_weekly_cap_z:5};
+export const defaults = {subscription_z:0,gift_z:0,renewal_z:0,question_z:1,question_interval_minutes:30,answer_seconds:60,questions_enabled:true,kicks_enabled:false,kicks_per_z:100,botrix_enabled:false,botrix_points_per_z:1000};
 export function cents(value) {
   const s=String(value);
   if(!/^-?\d+(\.\d{1,2})?$/.test(s)) throw new Error('Use a number with at most two decimal places.');
@@ -12,7 +12,7 @@ export function normalizeAnswer(s) {return String(s).normalize('NFKD').replace(/
 export function validConfig(input) {
   const output={...defaults};
   for(const key of Object.keys(defaults)) if(key in input) output[key]=input[key];
-  for(const key of ['subscription_z','gift_z','renewal_z','question_z','botrix_weekly_cap_z']) {cents(output[key]);if(Number(output[key])<0||Number(output[key])>1000) throw new Error('Reward rates must be between 0 and 1,000 Zs.');output[key]=Number(output[key]);}
+  for(const key of ['subscription_z','gift_z','renewal_z','question_z']) {cents(output[key]);if(Number(output[key])<0||Number(output[key])>1000) throw new Error('Reward rates must be between 0 and 1,000 Zs.');output[key]=Number(output[key]);}
   for(const [key,min,max] of [['question_interval_minutes',5,1440],['answer_seconds',15,300],['kicks_per_z',1,1000000],['botrix_points_per_z',1,10000000]]) if(!Number.isInteger(output[key])||output[key]<min||output[key]>max) throw new Error(`Invalid ${key}.`);
   for(const key of ['questions_enabled','kicks_enabled','botrix_enabled']) if(typeof output[key]!=='boolean')throw new Error(`Invalid ${key}.`);
   output.subscription_z=0;output.gift_z=0;output.renewal_z=0;output.kicks_enabled=false;

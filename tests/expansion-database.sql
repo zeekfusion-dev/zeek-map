@@ -1,0 +1,27 @@
+do $$declare a bigint:=933000001;b bigint:=933000002;h uuid:=gen_random_uuid();m uuid:=gen_random_uuid();d uuid:=gen_random_uuid();step uuid:=gen_random_uuid();cash uuid:=gen_random_uuid();x jsonb;y jsonb;t uuid:=gen_random_uuid();begin
+ perform z_award(a,'expansion_test_a',100,'test','expansion-a');perform z_award(b,'expansion_test_b',100,'test','expansion-b');
+ x:=z_run_start(h,a,'expansion_test_a','higher',10,7,null);
+ x:=z_run_step(h,step,a,0,'higher',null,8);
+ if x->>'status'<>'playing' or (x->>'payout')::numeric<>21.01 then raise exception 'Higher calculation failed %',x;end if;
+ y:=z_run_step(h,step,a,0,'higher',null,1);if x<>y then raise exception 'Higher replay changed outcome';end if;
+ begin perform z_run_step(h,gen_random_uuid(),a,0,'higher',null,1);raise exception 'Stale version accepted';exception when others then if sqlerrm<>'Game changed; refresh and try again' then raise;end if;end;
+ x:=z_run_step(h,cash,a,1,'cashout');y:=z_run_step(h,cash,a,1,'cashout');
+ if x<>y or (select zs_balance from z_users where kick_user_id=a)<>111.01 then raise exception 'Cashout duplicated';end if;
+ update z_games set created_at=now()-interval '1 minute' where id=h;
+ x:=z_run_start(m,a,'expansion_test_a','mines',10,null,array[0,1]);
+ if (x->'result')?'board' then raise exception 'Hidden mines exposed';end if;
+ x:=z_run_step(m,gen_random_uuid(),a,0,'reveal',2);
+ if (x->>'payout')::numeric<>10.54 then raise exception 'Mines odds failed %',x;end if;
+ begin perform z_run_step(m,gen_random_uuid(),a,1,'reveal',2);raise exception 'Repeated tile accepted';exception when others then if sqlerrm<>'Choose an unrevealed tile' then raise;end if;end;
+ x:=z_run_step(m,gen_random_uuid(),a,1,'reveal',0);
+ if x->>'status'<>'resolved' or (x->>'payout')::numeric<>0 or not((x->'result')?'board') then raise exception 'Mine loss failed';end if;
+ begin perform z_run_step(m,gen_random_uuid(),a,2,'cashout');raise exception 'Lost game collected';exception when others then if sqlerrm<>'Game already finished' then raise;end if;end;
+ update z_games set created_at=now()-interval '1 minute' where id=m;
+ perform z_play(d,a,'expansion_test_a','dice',10,'high');x:=z_coin_action(d,b,'expansion_test_b',false,'[5,2]');
+ if (x->>'winner')::bigint<>a or x->'result'->'dice'<>'[5,2]'::jsonb then raise exception 'Dice winner failed %',x;end if;
+ if has_table_privilege('anon','z_run_secrets','select') or has_function_privilege('anon','z_run_step(uuid,uuid,bigint,integer,text,integer,integer)','execute') then raise exception 'Hidden state publicly accessible';end if;
+ update z_config set settings=settings||'{"botrix_enabled":true,"botrix_points_per_z":1000}' where id=1;
+ x:=z_conversion(b,'expansion_test_b',100000,t);if (x->>'zs')::numeric<>100 then raise exception 'Conversion still capped';end if;
+ if z_label(1)<>'1 Z' or z_label(0)<>'0 Zs' or z_label(1.5)<>'1.5 Zs' then raise exception 'Currency format failed';end if;
+end$$;
+select 'PASS: progressive odds, retries, stale moves, cashout, hidden mines, dice settlement, uncapped conversions, currency labels' as result;

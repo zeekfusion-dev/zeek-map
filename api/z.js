@@ -17,7 +17,7 @@ export default async function handler(req,res){res.setHeader('Cache-Control','no
  const b=typeof req.body==='string'?JSON.parse(req.body):req.body||{};const u=await requireUser(req);let result;
  if(b.action==='logout'){await db(`z_sessions?token_hash=eq.${hash(cookie(req,'z_session'))}`,{method:'DELETE'});setCookie(res,'z_session','',0);return res.json({ok:true});}
  if(b.action==='redeem')result=await rpc('z_redeem',{p_user:u.kick_user_id,p_name:u.username,p_reward:uuid(b.rewardId),p_request:uuid(b.requestId)});
- else if(b.action==='convert'){if(b.freeEarned!==true)throw Object.assign(new Error('Confirm that these BotRix points were earned only through free activity.'),{status:400});if(!Number.isSafeInteger(b.points))throw Object.assign(new Error('Enter a whole number of BotRix points.'),{status:400});result=await rpc('z_conversion',{p_user:u.kick_user_id,p_name:u.username,p_points:b.points,p_id:uuid(b.requestId)});}
+ else if(b.action==='convert'){if(!Number.isSafeInteger(b.points))throw Object.assign(new Error('Enter a whole number of BotRix points.'),{status:400});result=await rpc('z_conversion',{p_user:u.kick_user_id,p_name:u.username,p_points:b.points,p_id:uuid(b.requestId)});}
  else if(b.action==='enter')result=await rpc('z_enter_giveaway',{p_id:uuid(b.id),p_user:u.kick_user_id,p_name:u.username});
  else{await requireAdmin(req);
   if(b.action==='settings'){let settings;try{settings=validConfig(b.settings);}catch(e){e.status=400;throw e;}await db('z_config?id=eq.1',{method:'PATCH',body:{settings}});await db('z_admin_log',{method:'POST',body:{actor:u.kick_user_id,action:'settings',details:settings}});}

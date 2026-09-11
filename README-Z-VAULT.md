@@ -7,7 +7,7 @@ transactions, questions, redemptions, giveaway entries, sessions and the schedul
 
 - Question winner: 1 Z, every 30 minutes while live, 60 seconds to answer.
 - Paid subscriptions, renewals, gifts, KICKs, and donations never award Zs.
-- BotRix conversions: enabled, 1,000 verified free-earned points per Z, cap 5 Zs/week.
+- BotRix conversions: enabled, 1,000 BotRix points → 1 Z; no weekly cap.
 - Decimals: two places. The legacy KICKs award function is retired.
 - No reward products or giveaways are automatically opened. Owner creates them.
 - Giveaways use one free entry per Kick account, independent of Z balance.
@@ -15,7 +15,7 @@ transactions, questions, redemptions, giveaway entries, sessions and the schedul
 
 ## Installation
 
-Apply migrations 001, 003, 004, 005, then 002 and 006–009 in Supabase SQL Editor. Existing
+Apply migrations 001, 003, 004, 005, then 002 and 006–011 in Supabase SQL Editor. Existing
 balances remain numerically unchanged. Run `tests/database.sql` inside a
 transaction and ROLLBACK to validate against a disposable/isolated test state.
 The first deployment uses the already configured SUPABASE_URL,
@@ -52,7 +52,7 @@ proceed. Owner Controls can reconnect tokens and check live status.
 Rewards deduct balances atomically with stock and the request ledger. Refunds
 are idempotent. Manual adjustments require reasons. BotRix conversions require
 manual verification AND deduction in BotRix before owner approval; the website
-does not imply or attempt a BotRix API integration. Defaults and caps are edited
+does not imply or attempt a BotRix API integration. Conversion rates are edited
 in Controls.
 
 Giveaway draws use crypto.randomInt across the full entry count after closing,
@@ -82,10 +82,10 @@ face remains in place until Zeek's own animation is ready.
 
 ## Community Arena
 
-The Overview has a balance/rank/recent-result header, horizontal Top 5, and a
+The Overview has a balance/rank/recent-result header, Top 3 podium with a compact #4/#5 strip, and a
 real activity feed. The complete leaderboard has its own paginated section.
-Arcade, How It Works, Rewards, Giveaways, My activity, and owner Controls are
-separate tabs. No missions or fabricated production activity are seeded.
+Arcade scrolls to the animated Arena below the Overview feed. How It Works,
+Rewards, Giveaways, My activity, and owner Controls retain their own sections. No missions or fabricated production activity are seeded.
 
 Coin Flip reserves 1–100 whole Zs when posted; it remains open while the creator
 is offline. Up to five open challenges per player. The opponent matches the
@@ -116,3 +116,30 @@ Rollback verification covers escrow, settlement, duplicate requests, immutable
 outcomes on retries, self/third-player rejection, cancellation, legacy exclusions,
 paid-credit rejection, activity publishing, and denied public database privileges.
 Browser layout checks used local-only fixtures that are never deployed.
+
+
+## Expanded Arena
+
+Dice Duel uses the same escrow and atomic settlement as Coin Flip. The creator
+chooses high or low for their die; the server rolls both dice and rerolls ties.
+Each side has a 50% chance, and the winner receives the full pot.
+
+Higher or Lower uses independent A–K draws (Ace low, equal cards lose). A success
+multiplies the current return by 0.97 / win probability. Returns are capped at
+1,000× and automatically collected at that cap or 50 successful turns.
+Mines uses a fixed, shuffled 25-cell board with 1–20 mines. The mine locations live
+in a separate private table and are disclosed only after the game ends. Safe
+reveals increase the return using a 97% factor and the conditional safe-tile odds.
+Both games persist across visits and support collection between moves.
+
+Step request receipts, version checks and row locks prevent repeated moves or
+collections from changing or duplicating outcomes. The API accepts player choices
+only, generates outcomes with crypto.randomInt, and never exposes active mine
+positions. Browser animations delay local result, balance and feed refresh until
+reveal completion. Reduced-motion preferences are respected.
+
+Run tests/expansion-database.sql inside BEGIN/ROLLBACK after migrations 010–011.
+It covers progressive payouts, repeated requests, stale moves, concealed mines,
+dice settlement, uncapped conversions, and exact singular/plural Z labels.
+Local browser checks use disposable PostgreSQL fixtures and exercised Plinko,
+Higher or Lower, Mines collection, Dice Duel acceptance, and a 390px mobile layout.
