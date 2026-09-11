@@ -1,6 +1,8 @@
 import React, {lazy,Suspense} from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 
+import SiteNav from "./components/SiteNav";
+import "./components/SiteShell.css";
 import Home from "./pages/Home.jsx";
 const Map = lazy(() => import("./Map.jsx"));
 
@@ -10,6 +12,7 @@ import Merch from "./pages/Merch.jsx";
 export default function App() {
   return (
     <HashRouter>
+      <div className="site-header-shell"><SiteNav/></div>
       <Suspense fallback={<p style={{padding:40}}>Loading…</p>}><Routes>
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<Map />} />

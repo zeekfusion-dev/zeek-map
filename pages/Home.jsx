@@ -1,10 +1,12 @@
-import React from "react";
-import SiteNav from "../components/SiteNav";
+import React,{useEffect,useState} from "react";
+import "./Home.css";
+import {amountZ} from "../server/z-format.mjs";
 import { Link } from "react-router-dom";
 
 import {
   FaKickstarterK,
   FaYoutube,
+  FaTwitch,
   FaInstagram,
   FaTiktok,
   FaXTwitter,
@@ -12,11 +14,11 @@ import {
 
 export default function Home() {
   return (
-    <div style={page}>
-      <SiteNav/>
+    <div className="home-page" style={page}>
 
-      <main style={layout}>
-        <section style={hero}>
+
+      <main className="home-layout" style={layout}>
+        <section className="home-hero" style={hero}>
           <div>
             <p style={welcome}>WELCOME TO</p>
             <h1 style={title}>
@@ -26,9 +28,11 @@ export default function Home() {
             <p style={heroText}>IRL STREAMER. TRAVELER. CONTENT CREATOR.</p>
             <p style={heroTextBlue}>CHAOS EVERYTIME.</p>
 
-            <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={heroButton}>
+            <div className="home-watch-stack"><a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={heroButton}>
               <span style={kickSmall}>K</span> WATCH LIVE ON KICK →
             </a>
+            <a href="https://twitch.tv/zeekfusion" target="_blank" rel="noreferrer" style={heroButton}><FaTwitch color="#a970ff"/> WATCH LIVE ON TWITCH →</a>
+            <a href="https://youtube.com/@zeekfusion" target="_blank" rel="noreferrer" style={heroButton}><FaYoutube color="#ff4343"/> WATCH LIVE ON YOUTUBE →</a></div>
           </div>
 
           <div style={heroFace}>
@@ -40,7 +44,7 @@ export default function Home() {
         <div style={cardContent}>
             <h2 style={cardTitle}>TRAVEL MAP</h2>
             <p style={cardText}>See everywhere I’ve been and where I’m going next.</p>
-            <button style={smallBtn}>EXPLORE MAP →</button>
+            <span style={smallBtn}>EXPLORE MAP →</span>
         </div>
         </Link>
 
@@ -48,7 +52,7 @@ export default function Home() {
         <div style={cardContent}>
             <h2 style={cardTitle}>THE Z VAULT</h2>
             <p style={cardText}>Earn Zs in chat. Unlock rewards. Join the community.</p>
-            <button style={smallBtn}>ENTER VAULT →</button>
+            <span style={smallBtn}>ENTER VAULT →</span>
         </div>
         </Link>
 
@@ -89,7 +93,23 @@ export default function Home() {
         </a>
         </section>
 
-        <section style={connectCard}>
+        <HomeLeaders/>
+
+
+        <Link to="/merch" style={merchCard}>
+          <h3>MERCH</h3>
+          <h2>LIMITED DROPS<br />COMING SOON</h2>
+          <span style={smallBtn}>SHOP MERCH →</span>
+        </Link>
+
+        <section style={stats}>
+          <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
+          <div><strong>500+</strong><span>VIDEOS</span></div>
+          <div><strong>VISITING ALL OF USA </strong><span>BY 2027</span></div>
+          <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
+          <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
+        </section>
+        <section className="home-connect" style={connectCard}>
           <h3>CONNECT WITH ME</h3>
             <div style={socials}>
         <a
@@ -151,21 +171,8 @@ export default function Home() {
             <span>›</span>
           </a>
         </section>
-
-        <Link to="/merch" style={merchCard}>
-          <h3>MERCH</h3>
-          <h2>LIMITED DROPS<br />COMING SOON</h2>
-          <button style={smallBtn}>SHOP MERCH →</button>
-        </Link>
-
-        <section style={stats}>
-          <div><strong>5M+</strong><span>TOTAL VIEWS</span></div>
-          <div><strong>500+</strong><span>VIDEOS</span></div>
-          <div><strong>VISITING ALL OF USA </strong><span>BY 2027</span></div>
-          <div><strong>LIVE </strong><span>ALMOST EVERY DAY</span></div>
-          <div><strong>ALL ENERGY </strong><span>ALL CHAOS</span></div>
-        </section>
       </main>
+      <footer className="home-footer">ZEEKFUSION · ALL ENERGY. ALL CHAOS.</footer>
     </div>
   );
 }
@@ -175,7 +182,7 @@ const page = {
   background: "#02040a",
   color: "white",
   fontFamily: "Impact, Arial Black, Arial, sans-serif",
-  padding: "22px",
+  padding: "0 22px 22px",
 };
 
 const nav = {
@@ -348,7 +355,7 @@ const cardContent = {
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "flex-start",
-  maxWidth: "42%",
+  maxWidth: "70%",
 };
 
 const cardTitle = {
@@ -552,3 +559,4 @@ const latestTitle = {
 };
 
 const statsDiv = {};
+function HomeLeaders(){const [leaders,setLeaders]=useState(null),[error,setError]=useState(false);useEffect(()=>{let active=true;const load=()=>fetch('/api/arcade?balanceLeaders=1').then(r=>{if(!r.ok)throw Error();return r.json()}).then(j=>{if(active){setLeaders(j.leaders);setError(false)}}).catch(()=>{if(active)setError(true)});load();const timer=setInterval(load,30000);return()=>{active=false;clearInterval(timer)}},[]);return <section className="home-leaders"><span className="home-eyebrow">THE VAULT'S HEAVY HITTERS</span><h2>Z VAULT LEADERBOARD</h2><p>Most Zs in the Vault. Who’s taking the crown?</p>{error?<p>Leaderboard temporarily unavailable.</p>:leaders===null?<p>Loading players…</p>:!leaders.length?<p>The first spot is waiting for you.</p>:leaders.map((u,i)=><div className={'home-leader place-'+(i+1)} key={u.username}><span>{i===0?'♛':'#'+(i+1)}</span><strong>@{u.username}</strong><b>{amountZ(u.zs_balance)}</b></div>)}<Link to="/vault">ENTER THE Z VAULT →</Link></section>}

@@ -15,7 +15,7 @@ transactions, questions, redemptions, giveaway entries, sessions and the schedul
 
 ## Installation
 
-Apply migrations 001, 003, 004, 005, then 002 and 006–011 in Supabase SQL Editor. Existing
+Apply migrations 001, 003, 004, 005, then 002 and 006–012 in Supabase SQL Editor. Existing
 balances remain numerically unchanged. Run `tests/database.sql` inside a
 transaction and ROLLBACK to validate against a disposable/isolated test state.
 The first deployment uses the already configured SUPABASE_URL,
@@ -84,10 +84,11 @@ face remains in place until Zeek's own animation is ready.
 
 The Overview has a balance/rank/recent-result header, Top 3 podium with a compact #4/#5 strip, and a
 real activity feed. The complete leaderboard has its own paginated section.
-Arcade scrolls to the animated Arena below the Overview feed. How It Works,
+Arcade scrolls to the animated Arena below the Overview feed, with one selected
+single-player game and one selected head-to-head game in separate columns. How It Works,
 Rewards, Giveaways, My activity, and owner Controls retain their own sections. No missions or fabricated production activity are seeded.
 
-Coin Flip reserves 1–100 whole Zs when posted; it remains open while the creator
+Coin Flip reserves whole Zs up to the available balance when posted; it remains open while the creator
 is offline. Up to five open challenges per player. The opponent matches the
 stake and a cryptographically random server coin decides the winner. The full
 pot is paid atomically; cancelled open challenges refund the creator once.
@@ -143,3 +144,25 @@ It covers progressive payouts, repeated requests, stale moves, concealed mines,
 dice settlement, uncapped conversions, and exact singular/plural Z labels.
 Local browser checks use disposable PostgreSQL fixtures and exercised Plinko,
 Higher or Lower, Mines collection, Dice Duel acceptance, and a 390px mobile layout.
+
+
+## Shared site layout and Z management
+
+App renders SiteNav once above all routes, including Map and Merch. Home adds
+Twitch and YouTube watch buttons and a public current-balance Top 5 endpoint;
+the Vault rank continues to use lifetime earnings. Social links sit near the footer.
+
+Migration 012 sets a 10-Z maximum for new Plinko, Higher or Lower, and Mines wagers.
+Existing runs remain playable. Coin Flip, Dice Duel and RPS have no product wager
+cap beyond available balances (requests must remain exactly representable).
+RPS choices are stored outside the public games table. Acceptance locks both
+accounts, charges the opponent and resolves the two chosen moves atomically.
+Ties return each stake once; cancelled open challenges refund only their creator.
+All nine matchups and network retry paths are covered in duels-management.sql.
+
+Controls → Manage Zs provides paginated username search, current/lifetime balances,
+reasoned signed adjustments, and searchable paginated adjustment history. Both
+API and SQL require the owner account. Usernames come from existing user records;
+positive adjustments count as lifetime earnings and negative ones do not erase
+lifetime earnings. Adjustment IDs prevent duplicate credits on retries. No
+production test users or balance adjustments are needed to validate this feature.
