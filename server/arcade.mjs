@@ -6,3 +6,4 @@ export function coinResult(){return crypto.randomInt(2)?'tails':'heads';}
 export function diceResult(){const first=crypto.randomInt(1,7);let second;do{second=crypto.randomInt(1,7)}while(first===second);return [first,second];}
 export const nextCard=()=>crypto.randomInt(1,14);
 export function mineBoard(count){if(!Number.isInteger(count)||count<1||count>20)throw Object.assign(new Error('Choose 1–20 mines.'),{status:400});const cells=Array.from({length:25},(_,i)=>i);for(let i=cells.length-1;i>0;i--){const j=crypto.randomInt(i+1);[cells[i],cells[j]]=[cells[j],cells[i]];}return cells.slice(0,count);}
+export function blackjackDeck(){const deck=Array.from({length:52},(_,i)=>i);for(let i=51;i>0;i--){const j=crypto.randomInt(i+1);[deck[i],deck[j]]=[deck[j],deck[i]]}return deck;}

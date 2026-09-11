@@ -450,7 +450,7 @@ export default function TravelMap() {
 
   const commonGlobeProps = {
     width: mapSize.width,
-    height: mapSize.height,
+    height: mapSize.height + 300,
     ref: globeRef,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
     backgroundColor: "#020617",
@@ -493,7 +493,7 @@ export default function TravelMap() {
     textDecoration: "none"
   };
 
-  const activeInfoPanel = selectedPlace || hoveredPlace;
+  const activeInfoPanel = selectedPlace;
 
   const worldVoteItems = useMemo(() => {
     return countries
@@ -560,47 +560,8 @@ export default function TravelMap() {
   }
 
   return (
-    <div ref={mapRoot} className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "hidden" }}>
-      <div
-        style={{
-          position: "absolute",
-          top: isMobile ? 14 : 26,
-          left: isMobile ? 0 : 24,
-          width: isMobile ? "100%" : 250,
-          textAlign: "center",
-          zIndex: 30,
-          pointerEvents: "none"
-        }}
-      >
-        {[3, 1.5, 0].map((offset, index) => (
-          <div
-            key={index}
-            style={{
-              position: index === 2 ? "relative" : "absolute",
-              width: "100%",
-              transform: index === 2 ? "none" : `translate(${offset}px, ${offset}px)`,
-              color:
-                index === 0
-                  ? "rgba(8,47,73,0.95)"
-                  : index === 1
-                  ? "rgba(14,116,144,0.95)"
-                  : "#e0f2fe",
-              fontSize: isMobile ? 18 : 25,
-              fontWeight: 900,
-              letterSpacing: isMobile ? "0.02em" : "0.04em",
-              textTransform: "uppercase",
-              textShadow:
-                index === 2
-                  ? "0 0 8px rgba(255,255,255,0.45), 0 0 18px rgba(56,189,248,0.65), 0 0 36px rgba(37,99,235,0.55)"
-                  : "none"
-            }}
-          >
-            ZEEKFUSION MAP TRAVELS ON STREAM
-          </div>
-        ))}
-      </div>
-
-
+    <div ref={mapRoot} className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "visible" }}>
+      <header className="map-title"><span>ZEEKFUSION MAP</span><h1>TRAVELS<br className="map-title-break"/> ON STREAM</h1></header>
 
       <div
         style={{
@@ -984,7 +945,7 @@ export default function TravelMap() {
         </div>
       )}
 
-      {viewMode === "world" ? (
+      <div className="map-globe-stage">{viewMode === "world" ? (
         <Globe
           {...commonGlobeProps}
           polygonsData={countries}
@@ -1021,18 +982,18 @@ export default function TravelMap() {
             });
           }}
           onPolygonClick={(d) => {
-            if (!d?.isVisited && !d?.isPlanned) return;
+            if (!d) return;
 
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
               note: d.note,
-              type: d.isVisited ? "Visited Country" : "Planned Country"
+              type: d.isVisited ? "Visited Country" : d.isPlanned ? "Planned Country" : "Country"
             });
 
             zoomToPlace(d);
           }}
-          polygonLabel={(d) => d.name}
+          polygonLabel={() => ''}
         />
       ) : (
         <Globe
@@ -1071,26 +1032,27 @@ export default function TravelMap() {
             });
           }}
           onPolygonClick={(d) => {
-            if (!d?.isVisited && !d?.isPlanned) return;
+            if (!d) return;
 
             setSelectedPlace({
               name: d.name,
               youtube: d.youtube,
               note: d.note,
-              type: d.isVisited ? "Visited State" : "Planned State"
+              type: d.isVisited ? "Visited State" : d.isPlanned ? "Planned State" : "State"
             });
 
             zoomToPlace(d);
           }}
-          polygonLabel={(d) => d.name}
+          polygonLabel={() => ''}
         />
       )}
 
+      </div>
       {!isMobile && (
         <div
           style={{
             position: "absolute",
-            bottom: 65,
+            bottom: 22,
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 20,

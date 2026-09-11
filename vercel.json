@@ -1,0 +1,3 @@
+{
+  "rewrites": [{"source": "/api/clips/callback/:platform", "destination": "/api/clips?callback=:platform"}]
+}

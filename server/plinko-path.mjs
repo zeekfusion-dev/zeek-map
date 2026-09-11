@@ -1,0 +1,2 @@
+// The server's eight turns determine all collisions and the final bucket.
+export function plinkoPoint(bits,progress){const t=Math.max(0,Math.min(1,progress));const span=.105;const initial=.1;if(t<initial)return {x:180,y:12+24*(t/initial)**2};let x=180;for(let row=0;row<8;row++){const dir=bits[row]===1?1:-1;const start=initial+row*span;const u=Math.min(1,Math.max(0,(t-start)/span));if(t<start+span){return {x:x+dir*18*u,y:36+row*30-30*u+60*u*u}}x+=dir*18;}const u=Math.min(1,(t-(initial+8*span))/(1-initial-8*span));return {x,y:276+10*u-7*Math.sin(Math.PI*u)};}
