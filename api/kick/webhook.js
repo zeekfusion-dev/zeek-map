@@ -24,8 +24,8 @@ export default async function handler(req,res){
  if(type!=='chat.message.sent')await db('z_runtime?id=eq.1',{method:'PATCH',body:{last_webhook_at:new Date().toISOString()}});
  if(type==='chat.message.sent'&&body.sender?.user_id&&!body.sender.is_anonymous){
  const who=body.sender,content=String(body.content||'');let send=false;
- if(/^!zs(?:\s|$)/i.test(content)){await rpc('z_balance_command',{p_user:who.user_id,p_name:who.username,p_message:body.message_id});send=true;}
- else if(body.created_at&&Number.isFinite(Date.parse(body.created_at)))send=!!await rpc('z_answer',{p_user:who.user_id,p_name:who.username,p_answer:normalizeAnswer(content),p_message:body.message_id,p_created:body.created_at});
+ if(typeof id!=='string'||id.length>200||typeof body.message_id!=='string'||body.message_id.length>200||typeof who.username!=='string'||who.username.length>100||!Number.isSafeInteger(who.user_id)||who.user_id<=0||content.length>5000||!Number.isFinite(Date.parse(body.created_at)))return res.status(400).end();
+ send=await rpc('z_process_chat',{p_event:id,p_user:who.user_id,p_name:who.username,p_message:body.message_id,p_answer:normalizeAnswer(content),p_created:body.created_at,p_balance:/^!zs(?:\s|$)/i.test(content)});
  try{if(send)await flushOutbox();}catch(e){console.error('Chat delivery deferred:',e.message);}
  }
  return res.json({received:true});

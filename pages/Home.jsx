@@ -1,3 +1,4 @@
+import FollowingEyes from '../components/FollowingEyes';
 import {SiKick} from 'react-icons/si';
 import React,{useEffect,useState} from "react";
 import "./Home.css";
@@ -6,6 +7,7 @@ import { Link } from "react-router-dom";
 
 import {
 
+  FaDiscord,
   FaYoutube,
   FaTwitch,
   FaInstagram,
@@ -29,15 +31,15 @@ export default function Home() {
             <p style={heroText}>IRL STREAMER. TRAVELER. CONTENT CREATOR.</p>
             <p style={heroTextBlue}>CHAOS EVERYTIME.</p>
 
-            <div className="home-watch-stack"><a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={heroButton}>
-              <span style={kickSmall}>K</span> WATCH LIVE ON KICK →
-            </a>
-            <a href="https://twitch.tv/zeekfusion" target="_blank" rel="noreferrer" style={heroButton}><FaTwitch color="#a970ff"/> WATCH LIVE ON TWITCH →</a>
-            <a href="https://youtube.com/@zeekfusion" target="_blank" rel="noreferrer" style={heroButton}><FaYoutube color="#ff4343"/> WATCH LIVE ON YOUTUBE →</a></div>
+            <div className="home-watch-stack">{[
+ {url:'https://kick.com/zeekfusion',Icon:SiKick,label:'WATCH LIVE ON KICK',color:'#53fc18'},
+ {url:'https://twitch.tv/zeekfusion',Icon:FaTwitch,label:'WATCH LIVE ON TWITCH',color:'#a970ff'},
+ {url:'https://youtube.com/@zeekfusion',Icon:FaYoutube,label:'WATCH LIVE ON YOUTUBE',color:'#ff4343'}
+].map(({url,Icon,label,color})=><a key={url} href={url} target="_blank" rel="noreferrer" className="home-stream-button"><Icon color={color} aria-hidden="true"/><span>{label}</span><span aria-hidden="true">→</span></a>)}</div>
           </div>
 
           <div style={heroFace}>
-            <img src="/images/zeekhomepage.png" alt="ZeekFusion" style={heroImg} />
+            <FollowingEyes/>
           </div>
         </section>
 
@@ -49,7 +51,7 @@ export default function Home() {
         </div>
         </Link>
 
-        <Link to="/vault" style={{ ...imageCard, backgroundImage: "url('/images/schedule.png')", backgroundPosition: "72% center"}}>
+        <Link to="/vault" style={{ ...imageCard, backgroundImage: "linear-gradient(90deg,rgba(1,5,13,.8),transparent 85%),url('/images/z-vault-arena.png')", backgroundPosition: "72% center"}}>
         <div style={cardContent}>
             <h2 style={cardTitle}>THE Z VAULT</h2>
             <p style={cardText}>Earn Zs in chat. Unlock rewards. Join the community.</p>
@@ -157,10 +159,10 @@ export default function Home() {
         </a>
         </div>
 
-          <a href="https://kick.com/zeekfusion" target="_blank" rel="noreferrer" style={community}>
+          <a href="https://discord.gg/AdduJ22Ven" target="_blank" rel="noreferrer" style={community} className="home-discord"><FaDiscord aria-hidden="true"/>
             <div>
-              <strong>JOIN THE COMMUNITY</strong>
-              <p>LIVE CHAT • GIVEAWAYS • BE PART OF THE JOURNEY</p>
+              <strong>JOIN THE DISCORD COMMUNITY</strong>
+              <p>HANG OUT • STREAM UPDATES • JOIN THE CHAOS</p>
             </div>
             <span>›</span>
           </a>

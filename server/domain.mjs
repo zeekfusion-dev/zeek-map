@@ -24,6 +24,6 @@ export function rewardForEvent(type,b,cfg) {
 }
 
 export function verifySignature(key,id,timestamp,signature,raw,now=Date.now()) {
-  if(!id||!timestamp||!signature||!Number.isFinite(Date.parse(timestamp))||Math.abs(now-Date.parse(timestamp))>300000) return false;
+  if(typeof id!=='string'||id.length>200||typeof timestamp!=='string'||timestamp.length>64||typeof signature!=='string'||signature.length>2048||!Number.isFinite(Date.parse(timestamp))||Math.abs(now-Date.parse(timestamp))>300000) return false;
   try{return crypto.verify('RSA-SHA256',Buffer.concat([Buffer.from(`${id}.${timestamp}.`),raw]),key,Buffer.from(signature,'base64'));}catch{return false;}
 }
