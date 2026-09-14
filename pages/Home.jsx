@@ -51,7 +51,7 @@ export default function Home() {
         </div>
         </Link>
 
-        <Link to="/vault" style={{ ...imageCard, backgroundImage: "linear-gradient(90deg,rgba(1,5,13,.8),transparent 85%),url('/images/z-vault-arena.png')", backgroundPosition: "72% center"}}>
+        <Link to="/vault" style={{ ...imageCard, backgroundImage: "linear-gradient(90deg,rgba(1,5,13,.8),transparent 85%),url('/images/z-market.png')", backgroundPosition: "72% center"}}>
         <div style={cardContent}>
             <h2 style={cardTitle}>THE Z VAULT</h2>
             <p style={cardText}>Earn Zs in chat. Unlock rewards. Join the community.</p>
