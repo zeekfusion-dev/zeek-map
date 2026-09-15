@@ -3,6 +3,10 @@
     {
       "source": "/api/clips/callback/:platform",
       "destination": "/api/clips?callback=:platform"
+    },
+    {
+      "source": "/admin",
+      "destination": "/api/site?adminPage=1"
     }
   ],
   "headers": [
@@ -38,13 +42,13 @@
   ],
   "redirects": [
     {
-      "source": "/admin",
-      "destination": "/#/admin",
+      "source": "/market",
+      "destination": "/#/market",
       "permanent": false
     },
     {
-      "source": "/market",
-      "destination": "/#/market",
+      "source": "/mc-server",
+      "destination": "/#/mc-server",
       "permanent": false
     }
   ]

@@ -1,6 +1,6 @@
 # ZeekFusion creator content
 
-Open https://www.zeekfusion.com/admin and sign in with the ZeekFusion Kick account. Only the existing verified owner ID can read the editor or save updates. The homepage footer also has a Creator admin link.
+Sign in through Z Market with the ZeekFusion Kick account, then use Creator Admin in the homepage footer. The server checks the verified Kick account ID before showing the link or opening the editor. Other accounts and anonymous visitors are redirected away from the admin page; protected reads and saves independently enforce the same owner check.
 
 ## Latest video
 Paste a normal YouTube watch/share/Short/live URL. Optionally edit the title, then choose **Update Video**. The saved video becomes the homepage card and watch link; its thumbnail comes from YouTube. Unavailable, private or removed videos may have a placeholder thumbnail until replaced.

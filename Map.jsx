@@ -376,7 +376,7 @@ export default function TravelMap() {
 
     if (viewMode === "world") {
       globeRef.current.pointOfView(
-        { lat: 20, lng: -20, altitude: isMobile ? 4.5 : 2.5 },
+        { lat: 20, lng: -20, altitude: 2.5 },
         1000
       );
     } else {
@@ -388,7 +388,7 @@ export default function TravelMap() {
   }, [viewMode, isMobile, isTV]);
 
   function zoomToPlace(d) {
-    if (!globeRef.current || !d?.geometry) return;
+    if (!globeRef.current || !d?.geometry || isMobile) return;
 
     let latSum = 0;
     let lngSum = 0;
@@ -426,7 +426,7 @@ export default function TravelMap() {
 
   const commonGlobeProps = {
     width: mapSize.width,
-    height: mapSize.height + (isMobile ? 0 : 300),
+    height: mapSize.height,
     ref: globeRef,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
     backgroundColor: "#020617",
@@ -536,11 +536,11 @@ export default function TravelMap() {
   }
 
   return (
-    <div ref={mapRoot} className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "visible" }}>
-      <aside className="map-info-grid"><header className="map-title"><span>ZEEKFUSION / TRAVEL MAP</span><h1>Travels<br/>on stream.</h1></header><div className="map-stat"><span>{viewMode==='world'?'COUNTRIES VISITED':'STATES VISITED'}</span><strong>{viewMode==='world'?visitedCountryData.length:visitedStateData.length}</strong><small>{viewMode==='world'?'Around the world':'Across the USA'}</small></div><div className="map-stat map-upcoming"><span>UPCOMING</span><strong>{viewMode==='world'?plannedCountryData.length:plannedStateData.length}</strong><small>Next on the map</small></div></aside>
+    <div className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "visible" }}>
+      <aside className="map-info-grid"><header className="map-title"><span>ZEEKFUSION / TRAVEL MAP</span><h1>Travels <br/>on stream.</h1></header><div className="map-stat"><span>{viewMode==='world'?'COUNTRIES VISITED':'STATES VISITED'}</span><strong>{viewMode==='world'?visitedCountryData.length:visitedStateData.length}</strong><small>{viewMode==='world'?'Around the world':'Across the USA'}</small></div><div className="map-stat map-upcoming"><span>UPCOMING</span><strong>{viewMode==='world'?plannedCountryData.length:plannedStateData.length}</strong><small>Next on the map</small></div></aside>
       <nav className="map-view-controls" aria-label="Map region">{[['world','World'],['usa','USA']].map(([value,label])=><button key={value} aria-pressed={viewMode===value} onClick={()=>{setViewMode(value);setSelectedPlace(null);setHoveredPlace(null);setVoteSearch('');}} style={buttonStyle(viewMode===value,value==='world'?'#3b82f6':'#22d3ee')}>{label}</button>)}</nav>
 
-      <div
+      <div className="map-votes"
         style={{
           position: "absolute",
           bottom: isMobile ? 74 : 24,
@@ -551,7 +551,7 @@ export default function TravelMap() {
           color: "white"
         }}
       >
-        <div
+        <div role="button" tabIndex={0} aria-expanded={votesOpen} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setVotesOpen(v=>!v);}}}
           onClick={() => setVotesOpen((prev) => !prev)}
           style={{
             cursor: "pointer",
@@ -823,7 +823,7 @@ export default function TravelMap() {
         </div>
       )}
 
-      <div className="map-globe-stage">{viewMode === "world" ? (
+      <div ref={mapRoot} className="map-globe-stage">{viewMode === "world" ? (
         <Globe
           {...commonGlobeProps}
           polygonsData={countries}
@@ -930,8 +930,8 @@ export default function TravelMap() {
       )}
 
       </div>
-      {!isMobile && (
-        <div
+      {(
+        <div className="map-legend"
           style={{
             position: "absolute",
             bottom: 22,
@@ -954,7 +954,7 @@ export default function TravelMap() {
         </div>
       )}
 
-      <div
+      <div className="map-socials"
         style={{
           position: "absolute",
           right: isMobile ? 12 : 24,
