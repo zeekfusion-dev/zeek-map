@@ -1,6 +1,6 @@
 # ZeekFusion MC menu
 
-The MC route is a full-screen game-menu experience. The shared website navbar remains on all other routes; Back to ZeekFusion.com returns to the homepage. Join Server, Java, Bedrock, instructions and Server Info are separate URL-addressable menu screens. Browser history and Escape/Back navigation are supported. The existing IP addresses, version, Discord link and access process are retained.
+The MC route is a game-menu experience below the shared website navbar. Back to ZeekFusion.com also returns to the homepage. The menu fills the available viewport below the navbar. Join Server, Java, Bedrock, instructions and Server Info are separate URL-addressable menu screens. Browser history and Escape/Back navigation are supported. The existing IP addresses, version, Discord link and access process are retained.
 
 Menu sounds are synthesized locally with Web Audio and off by default. There is no autoplay audio, tracking or external font request. The panorama and splash animations respect reduced motion. The pixel font is Press Start 2P, distributed with its SIL Open Font License under public/fonts.
 

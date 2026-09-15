@@ -1,5 +1,5 @@
 @font-face{font-family:'ZeekPixel';src:url('/fonts/PressStart2P-Regular.ttf') format('truetype');font-display:swap;font-weight:400}
-.mc-menu-world{--pixel:'ZeekPixel',ui-monospace,monospace;position:relative;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;margin:0;color:#fff;background:#26352b;font:400 12px/1.8 var(--pixel);text-shadow:2px 2px #151515;-webkit-font-smoothing:none;overflow-x:clip;color-scheme:dark}
+.mc-menu-world{--pixel:'ZeekPixel',ui-monospace,monospace;position:relative;isolation:isolate;min-height:calc(100svh - var(--header-height,0px));display:flex;flex-direction:column;margin:0;color:#fff;background:#26352b;font:400 12px/1.8 var(--pixel);text-shadow:2px 2px #151515;-webkit-font-smoothing:none;overflow-x:clip;color-scheme:dark}
 .mc-panorama{position:fixed;inset:-3%;z-index:-3;background:#557f9e url('/images/mc-menu-panorama.png') center 48%/cover no-repeat;filter:blur(1.4px);animation:mc-panorama-drift 100s ease-in-out infinite alternate;will-change:transform}
 .mc-vignette{position:fixed;inset:0;z-index:-2;background:linear-gradient(#0002,#0001 35%,#0005),radial-gradient(ellipse at center,transparent 15%,#0006 100%)}
 .mc-is-submenu .mc-vignette{background:#0008}
@@ -33,3 +33,16 @@
 @media(prefers-reduced-motion:reduce){.mc-menu-world *{animation:none!important;transition:none!important}.mc-panorama{will-change:auto}}
 
 @media(max-width:700px){.mc-menu-pair .mc-menu-button{font-size:10px}}
+
+/* Readability pass: retain the original menu geometry and pixel typeface. */
+.mc-menu-world{letter-spacing:-.025em;text-shadow:1px 1px #151515}
+.mc-menu-button,.mc-ip-field{letter-spacing:-.035em;text-shadow:1px 1px #333}
+.mc-logo-edition{letter-spacing:0}
+.mc-screen-heading{text-shadow:2px 2px #171717;letter-spacing:-.035em}
+.mc-access-note{font-size:11px;line-height:1.9;color:#eee}
+.mc-small-note{font-size:10px;color:#d0d0d0}
+.mc-address-panel>label,.mc-info-panel dt{color:#d0d0d0}
+.mc-server-entry p{font-size:11px}
+@media(min-width:701px) and (max-width:1999px){.mc-menu-button{font-size:14px}.mc-join-main{font-size:16px}.mc-mini-button,.mc-sound-toggle{font-size:10px}}
+@media(max-width:700px){.mc-access-note,.mc-instructions li{font-size:11px}.mc-server-entry p{font-size:10px}.mc-menu-pair .mc-menu-button{letter-spacing:-.04em}}
+@media(min-width:2000px){.mc-access-note{font-size:13px}}
