@@ -1,5 +1,5 @@
 import {SiKick} from 'react-icons/si';
-import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok} from 'react-icons/fa6';
+import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok,FaTwitch} from 'react-icons/fa6';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import './pages/Map.css';
 import useSiteContent from './components/useSiteContent';
@@ -819,7 +819,7 @@ export default function TravelMap() {
             </div>
           )}
 
-          <div className="map-destination-links">{activeInfoPanel.entries?.length?activeInfoPanel.entries.map(entry=><article key={entry.id}><strong>{entry.location||entry.name}</strong><span>{entry.status==='visited'?'Visited':'Upcoming'}</span>{entry.note&&<p>{entry.note}</p>}{entry.link&&<a href={entry.link} target="_blank" rel="noreferrer">Destination details ↗</a>}{entry.video&&<a href={entry.video} target="_blank" rel="noreferrer">Watch stream / video ↗</a>}</article>):<p>No stops added here yet.</p>}</div><button className="map-panel-close" onClick={()=>setSelectedPlace(null)}>Close</button>
+          <div className="map-destination-links">{activeInfoPanel.entries?.length?activeInfoPanel.entries.map(entry=><article key={entry.id}><strong>{entry.location||entry.name}</strong><span>{entry.status==='visited'?'Visited':'Upcoming'}</span>{entry.note&&<p>{entry.note}</p>}{entry.link&&<a href={entry.link} target="_blank" rel="noreferrer">Destination details ↗</a>}{(entry.videos??(entry.video?[{title:'Watch stream / video',url:entry.video}]:[])).map((video,i)=><a key={i} href={video.url} target="_blank" rel="noreferrer">▶ {video.title} ↗</a>)}</article>):<p>No stops added here yet.</p>}</div><button className="map-panel-close" onClick={()=>setSelectedPlace(null)}>Close</button>
         </div>
       )}
 
@@ -971,7 +971,7 @@ export default function TravelMap() {
           boxShadow: "0 0 20px rgba(37,99,235,0.18)"
         }}
       >
-        <a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }} aria-label="Kick"><SiKick/></a>
+        <a href="https://twitch.tv/zeekfusion" target="_blank" rel="noreferrer" style={{...socialIconStyle,background:"#9146ff"}} aria-label="Twitch"><FaTwitch/></a><a href={socialLinks.kick} target="_blank" rel="noreferrer" style={{ ...socialIconStyle, background: "#22c55e" }} aria-label="Kick"><SiKick/></a>
 
         <a
           href={socialLinks.instagram}
