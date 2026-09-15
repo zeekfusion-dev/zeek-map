@@ -14,7 +14,7 @@ twIDAQAB
 
 
 export default async function handler(req,res){
- if(req.method==='GET')return res.json({ok:true,message:'ZeekFusion Kick webhook is online',version:'z-vault-1'});
+ if(req.method==='GET')return res.json({ok:true,message:'ZeekFusion Kick webhook is online',version:'z-market-1'});
  if(req.method!=='POST')return res.status(405).end();
  try{const chunks=[];let size=0;for await(const chunk of req){const b=Buffer.from(chunk);size+=b.length;if(size>1048576)return res.status(413).end();chunks.push(b);}const raw=Buffer.concat(chunks);
  const id=req.headers['kick-event-message-id'],ts=req.headers['kick-event-message-timestamp'],sig=req.headers['kick-event-signature'],type=req.headers['kick-event-type'];

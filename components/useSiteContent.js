@@ -1,0 +1,3 @@
+import {useEffect,useState} from 'react';
+import defaults from '../data/site-defaults.json';
+export default function useSiteContent(){const [content,setContent]=useState(defaults);useEffect(()=>{let alive=true;const controller=new AbortController();const load=()=>{if(document.hidden)return;fetch('/api/site',{signal:controller.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(j=>{if(alive)setContent(j.content)}).catch(()=>{});};load();const timer=setInterval(load,60000);window.addEventListener('focus',load);return()=>{alive=false;controller.abort();clearInterval(timer);window.removeEventListener('focus',load);};},[]);return content;}

@@ -1,1 +1,1 @@
-export default function handler(req,res){return res.status(410).json({error:'The setup test is retired. Use Vault controls.'});}
+export default function handler(req,res){return res.status(410).json({error:'The setup test is retired. Use Z Market controls.'});}

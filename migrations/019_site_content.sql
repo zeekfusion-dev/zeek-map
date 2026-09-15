@@ -1,0 +1,17 @@
+begin;
+create table if not exists public.z_site_content(id integer primary key check(id=1),content jsonb not null,revision integer not null default 0,updated_at timestamptz not null default now());
+alter table public.z_site_content enable row level security;
+revoke all on public.z_site_content from public,anon,authenticated;
+grant all on public.z_site_content to service_role;
+insert into public.z_site_content(id,content) values(1,$content${"latestVideo": {"id": "7QLze6D0ODY", "title": "We Tried The World's Most Disgusting Smoothies!!"}, "locations": [{"id": "7d745e0e-ff0b-4f67-a5f8-71a6a642c2df", "scope": "world", "placeId": "Austria", "name": "Austria", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "52fd1d23-8349-4915-879b-1debcf8b2315", "scope": "world", "placeId": "United States of America", "name": "United States of America", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "196056cd-7878-4b9d-b560-9f9f99325ea8", "scope": "world", "placeId": "Italy", "name": "Italy", "location": "", "status": "upcoming", "note": "Europe Summer July-August", "link": "", "video": ""}, {"id": "916d31ef-2d34-42e6-a8ff-eac97013aa5d", "scope": "world", "placeId": "Czechia", "name": "Czechia", "location": "", "status": "upcoming", "note": "Europe Summer July-August", "link": "", "video": ""}, {"id": "8291a938-1995-479e-bbdb-4c11aa1de597", "scope": "usa", "placeId": "12", "name": "Florida", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "453dbee9-841e-4097-a407-471fcc1a6d60", "scope": "usa", "placeId": "22", "name": "Louisiana", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "f5ed2e92-cb75-4cbf-a27e-6747ac48bdc4", "scope": "usa", "placeId": "36", "name": "New York", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "2ff702d6-d645-4345-a53b-4d742e13e0d5", "scope": "usa", "placeId": "48", "name": "Texas", "location": "", "status": "visited", "note": "", "link": "", "video": ""}, {"id": "23458e5b-fb64-48e6-a377-b75fccb410f4", "scope": "usa", "placeId": "32", "name": "Nevada", "location": "", "status": "upcoming", "note": "Brand Risk & Vegas", "link": "", "video": ""}, {"id": "22096f69-a065-411f-9b1e-d8caba5a9cb5", "scope": "usa", "placeId": "39", "name": "Ohio", "location": "", "status": "upcoming", "note": "Randomly Picked by End of May", "link": "", "video": ""}]}$content$::jsonb) on conflict(id) do nothing;
+create or replace function public.z_save_site_content(p_actor bigint,p_revision integer,p_content jsonb) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare result jsonb;
+begin
+ if p_actor is distinct from 20306616 or jsonb_typeof(p_content) is distinct from 'object' or jsonb_typeof(p_content->'locations') is distinct from 'array' or jsonb_typeof(p_content->'latestVideo') is distinct from 'object' or pg_column_size(p_content)>500000 then raise exception 'Invalid content update'; end if;
+ update public.z_site_content set content=p_content,revision=revision+1,updated_at=now() where id=1 and revision=p_revision returning jsonb_build_object('content',content,'revision',revision,'updated_at',updated_at) into result;
+ return result;
+end $$;
+revoke all on function public.z_save_site_content(bigint,integer,jsonb) from public,anon,authenticated;
+grant execute on function public.z_save_site_content(bigint,integer,jsonb) to service_role;
+notify pgrst,'reload schema';
+commit;

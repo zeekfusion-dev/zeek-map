@@ -2,6 +2,7 @@ import {SiKick} from 'react-icons/si';
 import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok} from 'react-icons/fa6';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import './pages/Map.css';
+import useSiteContent from './components/useSiteContent';
 import Globe from "react-globe.gl";
 import { feature } from "topojson-client";
 
@@ -247,39 +248,12 @@ export default function TravelMap() {
 
   const titleFontSize = isMobile ? "18px" : isTablet ? "26px" : isTV ? "44px" : "34px";
 
-  const visitedCountryData = useMemo(
-    () => [
-      { name: "Austria", youtube: "https://youtube.com/" },
-      { name: "United States of America", youtube: "https://youtube.com/" }
-    ],
-    []
-  );
-
-  const visitedStateData = useMemo(
-    () => [
-      { id: "12", name: "Florida", youtube: "https://youtube.com/" },
-      { id: "22", name: "Louisiana", youtube: "https://youtube.com/" },
-      { id: "36", name: "New York", youtube: "https://youtube.com/" },
-      { id: "48", name: "Texas", youtube: "https://youtube.com/" }
-    ],
-    []
-  );
-
-  const plannedCountryData = useMemo(
-    () => [
-      { name: "Italy", note: "Europe Summer July-August" },
-      { name: "Czechia", note: "Europe Summer July-August" }
-    ],
-    []
-  );
-
-  const plannedStateData = useMemo(
-    () => [
-      { id: "32", name: "Nevada", note: "Brand Risk & Vegas" },
-      { id: "39", name: "Ohio", note: "Randomly Picked by End of May" }
-    ],
-    []
-  );
+  const siteContent=useSiteContent();
+  const groups=useMemo(()=>{const result={world:[],usa:[]};for(const entry of siteContent.locations){let group=result[entry.scope].find(x=>x.key===entry.placeId);if(!group){group={key:entry.placeId,id:entry.placeId,name:entry.name,entries:[],visited:false,upcoming:false};result[entry.scope].push(group);}group.entries.push(entry);group[entry.status==='visited'?'visited':'upcoming']=true;}return result;},[siteContent]);
+  const visitedCountryData=useMemo(()=>groups.world.filter(x=>x.visited),[groups]);
+  const visitedStateData=useMemo(()=>groups.usa.filter(x=>x.visited),[groups]);
+  const plannedCountryData=useMemo(()=>groups.world.filter(x=>x.upcoming),[groups]);
+  const plannedStateData=useMemo(()=>groups.usa.filter(x=>x.upcoming),[groups]);
 
   const visitedCountriesMap = useMemo(() => {
     const map = new Map();
@@ -346,7 +320,8 @@ export default function TravelMap() {
             name,
             isVisited: Boolean(visitedInfo),
             isPlanned: Boolean(plannedInfo),
-            youtube: visitedInfo?.youtube || null,
+            entries: (visitedInfo||plannedInfo)?.entries||[],
+            youtube: null,
             note: plannedInfo?.note || null,
             placeType: "Country"
           };
@@ -364,7 +339,8 @@ export default function TravelMap() {
             name: visitedInfo?.name || plannedInfo?.name || realName,
             isVisited: Boolean(visitedInfo),
             isPlanned: Boolean(plannedInfo),
-            youtube: visitedInfo?.youtube || null,
+            entries: (visitedInfo||plannedInfo)?.entries||[],
+            youtube: null,
             note: plannedInfo?.note || null,
             placeType: "State"
           };
@@ -450,7 +426,7 @@ export default function TravelMap() {
 
   const commonGlobeProps = {
     width: mapSize.width,
-    height: mapSize.height + 300,
+    height: mapSize.height + (isMobile ? 0 : 300),
     ref: globeRef,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
     backgroundColor: "#020617",
@@ -561,82 +537,8 @@ export default function TravelMap() {
 
   return (
     <div ref={mapRoot} className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "visible" }}>
-      <header className="map-title"><span>ZEEKFUSION MAP</span><h1>TRAVELS<br className="map-title-break"/> ON STREAM</h1></header>
-
-      <div
-        style={{
-          position: "absolute",
-          top: isMobile ? 52 : 24,
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          gap: isMobile ? "8px" : "12px",
-          zIndex: 20
-        }}
-      >
-        <button
-          onClick={() => {
-            setViewMode("world");
-            setSelectedPlace(null);
-            setHoveredPlace(null);
-            setVoteSearch("");
-          }}
-          style={buttonStyle(viewMode === "world", "#3b82f6")}
-        >
-          World
-        </button>
-
-        <button
-          onClick={() => {
-            setViewMode("usa");
-            setSelectedPlace(null);
-            setHoveredPlace(null);
-            setVoteSearch("");
-          }}
-          style={buttonStyle(viewMode === "usa", "#22d3ee")}
-        >
-          USA
-        </button>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          top: isMobile ? 96 : 120,
-          left: isMobile ? 12 : 24,
-          zIndex: 20,
-          width: isMobile ? 145 : isTV ? 260 : 220,
-          padding: isMobile ? "10px 12px" : "16px 18px",
-          ...panelStyle
-        }}
-      >
-        <div
-          style={{
-            fontSize: isMobile ? 10 : 13,
-            color: "#93c5fd",
-            letterSpacing: "0.08em",
-            fontWeight: 800
-          }}
-        >
-          {viewMode === "world" ? "COUNTRIES VISITED" : "STATES VISITED"}
-        </div>
-
-        <div
-          style={{
-            fontSize: isMobile ? 32 : isTV ? 58 : 48,
-            fontWeight: 900,
-            lineHeight: 1,
-            marginTop: 8,
-            color: "#22d3ee"
-          }}
-        >
-          {viewMode === "world" ? visitedCountryData.length : visitedStateData.length}
-        </div>
-
-        <div style={{ marginTop: 8, fontSize: isMobile ? 11 : 14, color: "#e2e8f0" }}>
-          {viewMode === "world" ? "Tracked on globe" : "Tracked in USA mode"}
-        </div>
-      </div>
+      <aside className="map-info-grid"><header className="map-title"><span>ZEEKFUSION / TRAVEL MAP</span><h1>Travels<br/>on stream.</h1></header><div className="map-stat"><span>{viewMode==='world'?'COUNTRIES VISITED':'STATES VISITED'}</span><strong>{viewMode==='world'?visitedCountryData.length:visitedStateData.length}</strong><small>{viewMode==='world'?'Around the world':'Across the USA'}</small></div><div className="map-stat map-upcoming"><span>UPCOMING</span><strong>{viewMode==='world'?plannedCountryData.length:plannedStateData.length}</strong><small>Next on the map</small></div></aside>
+      <nav className="map-view-controls" aria-label="Map region">{[['world','World'],['usa','USA']].map(([value,label])=><button key={value} aria-pressed={viewMode===value} onClick={()=>{setViewMode(value);setSelectedPlace(null);setHoveredPlace(null);setVoteSearch('');}} style={buttonStyle(viewMode===value,value==='world'?'#3b82f6':'#22d3ee')}>{label}</button>)}</nav>
 
       <div
         style={{
@@ -876,7 +778,7 @@ export default function TravelMap() {
       </div>
 
       {activeInfoPanel && (
-        <div
+        <div className="map-selected-panel"
           style={{
             position: "absolute",
             right: isMobile ? 12 : 24,
@@ -917,31 +819,7 @@ export default function TravelMap() {
             </div>
           )}
 
-          {activeInfoPanel.youtube ? (
-            <a
-              href={activeInfoPanel.youtube}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: "inline-block",
-                marginTop: 12,
-                padding: "10px 14px",
-                borderRadius: "999px",
-                background: "#22d3ee",
-                color: "#020617",
-                textDecoration: "none",
-                fontWeight: 800,
-                fontSize: isMobile ? 13 : 14,
-                boxShadow: "0 0 16px rgba(34,211,238,0.45)"
-              }}
-            >
-              Watch YouTube Video
-            </a>
-          ) : (
-            <div style={{ marginTop: 12, color: "#94a3b8", fontSize: isMobile ? 12 : 14 }}>
-              No video link added yet.
-            </div>
-          )}
+          <div className="map-destination-links">{activeInfoPanel.entries?.length?activeInfoPanel.entries.map(entry=><article key={entry.id}><strong>{entry.location||entry.name}</strong><span>{entry.status==='visited'?'Visited':'Upcoming'}</span>{entry.note&&<p>{entry.note}</p>}{entry.link&&<a href={entry.link} target="_blank" rel="noreferrer">Destination details ↗</a>}{entry.video&&<a href={entry.video} target="_blank" rel="noreferrer">Watch stream / video ↗</a>}</article>):<p>No stops added here yet.</p>}</div><button className="map-panel-close" onClick={()=>setSelectedPlace(null)}>Close</button>
         </div>
       )}
 
@@ -976,6 +854,7 @@ export default function TravelMap() {
 
             setHoveredPlace({
               name: d.name,
+              entries: d.entries,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited Country" : d.isPlanned ? "Planned Country" : "Country"
@@ -986,6 +865,7 @@ export default function TravelMap() {
 
             setSelectedPlace({
               name: d.name,
+              entries: d.entries,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited Country" : d.isPlanned ? "Planned Country" : "Country"
@@ -1026,6 +906,7 @@ export default function TravelMap() {
 
             setHoveredPlace({
               name: d.name,
+              entries: d.entries,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited State" : d.isPlanned ? "Planned State" : "State"
@@ -1036,6 +917,7 @@ export default function TravelMap() {
 
             setSelectedPlace({
               name: d.name,
+              entries: d.entries,
               youtube: d.youtube,
               note: d.note,
               type: d.isVisited ? "Visited State" : d.isPlanned ? "Planned State" : "State"
