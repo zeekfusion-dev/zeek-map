@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 export const BROADCASTER = 20306616;
-export const defaults = {subscription_z:0,gift_z:0,renewal_z:0,question_z:1,question_interval_minutes:30,answer_seconds:60,questions_enabled:true,kicks_enabled:false,kicks_per_z:100,botrix_enabled:false,botrix_points_per_z:1000};
+export const defaults = {subscription_z:0,gift_z:0,renewal_z:0,question_z:100,question_interval_minutes:30,answer_seconds:60,questions_enabled:true,kicks_enabled:false,kicks_per_z:100,botrix_enabled:false,botrix_points_per_z:1};
 export function cents(value) {
   const s=String(value);
   if(!/^-?\d+(\.\d{1,2})?$/.test(s)) throw new Error('Use a number with at most two decimal places.');

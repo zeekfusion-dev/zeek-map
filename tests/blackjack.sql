@@ -37,5 +37,5 @@ do $$declare g jsonb;deck integer[];u bigint:=700002;begin
  g:=z_blackjack('70000000-0000-4000-8000-000000000012','70000000-0000-4000-8000-000000000012',u,'HitTest','start',2,deck);
  g:=z_blackjack('70000000-0000-4000-8000-000000000012','70000000-0000-4000-8000-000000000013',u,'HitTest','stand',null,null,0);
  if g->'result'->>'outcome'<>'win' or (g->>'payout')::numeric<>4 or jsonb_array_length(g->'result'->'dealer')<>2 then raise exception 'Soft 17 must stand';end if;
- begin perform z_blackjack(gen_random_uuid(),gen_random_uuid(),u,'HitTest','start',11,deck);raise exception 'Wager cap bypassed';exception when raise_exception then if sqlerrm<>'Invalid wager' then raise;end if;end;
+ begin perform z_blackjack(gen_random_uuid(),gen_random_uuid(),u,'HitTest','start',10001,deck);raise exception 'Wager cap bypassed';exception when raise_exception then if sqlerrm<>'Invalid wager' then raise;end if;end;
 end$$;

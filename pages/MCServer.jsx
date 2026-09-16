@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Link,useSearchParams} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import './MCServer.css';
 
 const SERVER={java:'208.115.225.34:25568',bedrock:'208.115.225.34',port:'25568',version:'1.21.8'};
@@ -33,7 +33,6 @@ export default function MCServer(){
      <div className="mc-menu-pair"><button className="mc-menu-button" onClick={()=>go('java')}>Java Edition</button><button className="mc-menu-button" onClick={()=>go('bedrock')}>Bedrock Edition</button></div>
      <button className="mc-menu-button" onClick={()=>go('how')}>How to Join</button>
      <div className="mc-menu-pair mc-menu-gap"><button className="mc-menu-button" onClick={()=>go('info')}>Server Info</button><a className="mc-menu-button" href={DISCORD} target="_blank" rel="noreferrer" onClick={click}>Discord ↗</a></div>
-     <Link className="mc-menu-button mc-quit" to="/" onClick={click}>Back to ZeekFusion.com</Link>
     </div>}
     {screen==='join'&&<><div className="mc-dirt-panel"><div className="mc-server-entry"><span className="mc-server-icon" aria-hidden="true">Z</span><div><h2>ZeekFusion</h2><p className="mc-yellow">Your next spawn point.</p><p>Java + Bedrock · {SERVER.version}</p></div><span className="mc-server-bars" aria-hidden="true">▂▄▆</span></div><p className="mc-access-note">First, join Discord and send your Minecraft username in <strong>MC Announcements</strong> to get access.</p></div><p className="mc-prompt">Choose your edition</p><div className="mc-menu-pair"><button className="mc-menu-button" onClick={()=>go('java')}>Java Edition</button><button className="mc-menu-button" onClick={()=>go('bedrock')}>Bedrock Edition</button></div><a className="mc-menu-button" href={DISCORD} target="_blank" rel="noreferrer" onClick={click}>Join Discord ↗</a></>}
     {isAddress&&<><div className="mc-dirt-panel mc-address-panel"><label htmlFor="mc-ip">{edition==='java'?'Java IP':'Bedrock IP'}</label><input id="mc-ip" ref={copyField} className="mc-ip-field" readOnly value={SERVER[edition]} onFocus={e=>e.target.select()}/>{edition==='bedrock'&&<div className="mc-port-row"><span>Port <strong>{SERVER.port}</strong></span><button className="mc-menu-button mc-mini-button" disabled={copying} onClick={()=>copy(SERVER.port,'Port')}>Copy Port</button></div>}<p className="mc-version-line">Version <strong>{SERVER.version}</strong></p><p className="mc-access-note">Access through Discord’s <strong>MC Announcements</strong> section.</p></div><button className="mc-menu-button" disabled={copying} onClick={()=>copy(SERVER[edition],'IP address')}>{copying?'Copying…':'Copy IP'}</button><button className="mc-menu-button" onClick={()=>go('how-'+edition)}>How to Join</button></>}
