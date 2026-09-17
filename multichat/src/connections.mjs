@@ -280,9 +280,21 @@ export class Connections {
       "youtube",
       "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=active&broadcastType=all",
     );
-    const broadcast = broadcasts.items?.[0];
+    let broadcast = broadcasts.items?.find((b) => b.snippet?.liveChatId);
     if (!broadcast) {
-      status("Waiting for live stream");
+      const upcoming = await this.oauth.api(
+        "youtube",
+        "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=upcoming&broadcastType=all&maxResults=50",
+      );
+      broadcast = upcoming.items
+        ?.filter((b) => b.snippet?.liveChatId)
+        .sort((a, b) =>
+          Date.parse(a.snippet.scheduledStartTime || "9999-01-01") -
+          Date.parse(b.snippet.scheduledStartTime || "9999-01-01"),
+        )[0];
+    }
+    if (!broadcast) {
+      status("Waiting for a scheduled or live stream with chat enabled");
       await sleep(30000, undefined, { signal });
       return;
     }

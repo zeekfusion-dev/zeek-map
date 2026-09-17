@@ -2,6 +2,32 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { RemoteStore } from "../src/remote-store.mjs";
 import { LiveConnection } from "../public/live-client.js";
+import { Connections } from "../src/connections.mjs";
+
+test("YouTube attaches to scheduled chat before going live and prefers active chat", async () => {
+  for (const active of [false, true]) {
+    const calls = [];
+    let attached;
+    const c = Object.create(Connections.prototype);
+    c.oauth = { api: async (_, url) => {
+      calls.push(url);
+      if (url.includes("broadcastStatus=active")) return { items: active ? [{id:"live",snippet:{liveChatId:"live-chat"}}] : [] };
+      return {items:[
+        {id:"later",snippet:{liveChatId:"later-chat",scheduledStartTime:"2030-01-02T00:00:00Z"}},
+        {id:"next",snippet:{liveChatId:"next-chat",scheduledStartTime:"2030-01-01T00:00:00Z"}},
+        {id:"disabled",snippet:{scheduledStartTime:"2029-01-01T00:00:00Z"}},
+      ]};
+    }};
+    c.store = {token:()=>({user:{id:"owner"}})};
+    c.emotes = {load:()=>{}};
+    c.states = {};
+    c.youtubeRich = (_,__,signal)=>new Promise(resolve=>signal.addEventListener("abort",resolve,{once:true}));
+    c.youtubeStream = async (chat,channel)=>{attached={chat,channel};};
+    await c.youtube(new AbortController().signal,()=>{});
+    assert.deepEqual(attached,{chat:active?"live-chat":"next-chat",channel:"owner"});
+    assert.equal(calls.length,active?1:2);
+  }
+});
 const makeBackend = () => {
   let state = { revision: 0, cipher: null };
   let requests = 0;
