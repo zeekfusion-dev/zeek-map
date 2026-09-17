@@ -9,7 +9,8 @@ export function rewardInput(b){
  const title=str(b.title,80,true),description=str(b.description??'',500),cost=number(b.cost,.01,1000000,'Z price');if(Math.round(cost*100)!==cost*100&&Math.abs(Math.round(cost*100)-cost*100)>1e-7)throw invalid('Use up to two decimal places.');
  const stock=b.stock===null?null:number(b.stock,0,2147483647,'stock');if(stock!==null&&!Number.isInteger(stock))throw invalid('Use whole-number stock.');
  const duration=number(b.alert_duration??8,2,120,'alert duration'),volume=number(b.alert_volume??80,0,100,'volume'),cooldown=number(b.cooldown_seconds??0,0,86400,'cooldown');if(!Number.isInteger(cooldown))throw invalid('Cooldown must be whole seconds.');
- return {title,description,cost,stock,enabled:b.enabled===true,thumbnail_url:safeLink(b.thumbnail_url),image_url:safeLink(b.image_url),audio_url:safeLink(b.audio_url),alert_duration:duration,alert_volume:volume,cooldown_seconds:cooldown};
+ const command_name=str(b.command_name,80,true).replace(/\s+/g,' ').toLowerCase();if(/[\u0000-\u001f\u007f]/.test(b.command_name)||/^!buy(?:\s|$)/i.test(command_name))throw invalid('Enter only the command name, without !buy or line breaks.');
+ return {title,command_name,description,cost,stock,enabled:b.enabled===true,thumbnail_url:safeLink(b.thumbnail_url),image_url:safeLink(b.image_url),audio_url:safeLink(b.audio_url),alert_duration:duration,alert_volume:volume,cooldown_seconds:cooldown};
 }
 export function uploadInput(b){const ext=MEDIA_TYPES[b.type];if(!ext||!Number.isSafeInteger(b.size)||b.size<1||b.size>(b.type.startsWith('image/')?10:20)*1024*1024)throw invalid('Use PNG, JPEG, GIF or WebP (up to 10 MB), or MP3, WAV, OGG or M4A (up to 20 MB).');return {path:crypto.randomUUID()+'.'+ext,type:b.type};}
 export function overlayToken(nonce){if(!process.env.KICK_CLIENT_SECRET)throw Error('Missing configuration');return crypto.createHmac('sha256',process.env.KICK_CLIENT_SECRET).update('zeek-reward-overlay-v1:'+nonce).digest('base64url');}

@@ -2,3 +2,5 @@
 @media(prefers-reduced-motion:reduce){.reward-alert-stage{transition:none}}
 
 .is-reward-overlay{scrollbar-gutter:auto}.reward-enable-audio{background:#007bd6;color:white;border:1px solid #8ddfff;border-radius:8px;padding:12px 20px;font:700 16px Arial;cursor:pointer}.v-controls>.v-grid{align-items:start}
+
+.reward-chat-command{line-height:1.65;overflow-wrap:anywhere}.reward-chat-command code{color:#71d4ff;font-weight:700}

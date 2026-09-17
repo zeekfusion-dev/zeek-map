@@ -4,7 +4,7 @@ export const MARKET_URL='https://www.zeekfusion.com/#/market';
 // Help and dispatch share one registry. Aliases are listed alongside the canonical command.
 export const COMMANDS=Object.freeze([
  Object.freeze({name:'z',aliases:['zs'],command:'balance',usage:'!z',description:'Check your Z balance'}),
- Object.freeze({name:'buy',aliases:[],command:'buy',usage:'!buy <reward>',description:'Buy a Z Market reward'}),
+ Object.freeze({name:'buy',aliases:[],command:'buy',usage:'!buy <command name>',description:'Buy a Z Market reward'}),
  Object.freeze({name:'zcommand',aliases:['zcommands'],command:'help',usage:'!zcommand',description:'Show Z commands'})
 ]);
 export const CHAT_COMMANDS=Object.freeze(Object.fromEntries(COMMANDS.flatMap(c=>[c.name,...c.aliases].map(name=>[name,c.command]))));
