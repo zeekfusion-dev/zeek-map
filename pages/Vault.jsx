@@ -54,7 +54,7 @@ function Controls({onChange}){
  const [a,setA]=useState(null),[msg,setMsg]=useState(''),[busy,setBusy]=useState(false),[selectedQuestion,setSelectedQuestion]=useState(null);
  const reload=useCallback(async()=>{const r=await fetch('/api/z?admin=1');const j=await r.json();if(!r.ok)throw new Error(j.error);setA(j);},[]);
  useEffect(()=>{reload().catch(e=>setMsg(e.message));},[reload]);
- async function save(body){setBusy(true);setMsg('');try{const j=await request(body);setMsg(j.result?.username?`Winner: @${j.result.username}`:'Saved.');await reload();await onChange();}catch(e){setMsg(e.message);}finally{setBusy(false);}}
+ async function save(body){setBusy(true);setMsg('');try{const j=await request(body);setMsg(j.result?.username?`Winner: @${j.result.username}`:'Saved.');await reload();await onChange();return j.result;}catch(e){setMsg(e.message);}finally{setBusy(false);}}
  function form(e,action){e.preventDefault();const f=Object.fromEntries(new FormData(e.currentTarget));save({action,...f});}
  if(!a)return <p>{msg||'Loading your controls…'}</p>;
  const labels={question_z:'Question winner · Zs',question_interval_minutes:'Minutes between questions',answer_seconds:'Seconds to answer',botrix_points_per_z:'BotRix points for 1 Z'};
