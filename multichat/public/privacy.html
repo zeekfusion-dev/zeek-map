@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy · ZeekFusion Multichat</title>
+<style>body{font:17px/1.6 system-ui,sans-serif;max-width:760px;margin:60px auto;padding:0 24px;color:#e8eef8;background:#10151f}a{color:#a7c9ff}h1,h2{line-height:1.2}</style>
+<main>
+<h1>ZeekFusion Multichat privacy</h1>
+<p>ZeekFusion Multichat is a private streaming dashboard and OBS chat overlay operated by ZeekFusion. It combines chat from connected Kick, Twitch, and YouTube channels.</p>
+<h2>Information used</h2>
+<p>The service reads connected account identifiers, broadcast information, chat messages, public user names, avatars, badges, emotes, and chat moderation events to display and maintain the overlay. Account authorization tokens allow the service to reconnect without a new sign-in for every stream.</p>
+<h2>Storage and display</h2>
+<p>Account tokens, settings, the overlay access key, and connection and message-deduplication metadata are stored encrypted in the dedicated Supabase database. Render runs the application. Recent chat messages are held in application memory for the live display. Anyone with the private overlay URL can view its chat; chat shown in a broadcast is visible to that broadcast's audience.</p>
+<p>The service fetches public badge, avatar, and emote images from the platforms and supported emote providers, including 7TV, BetterTTV, and FrankerFaceZ. Those providers receive the network requests needed to load their images. Hosting providers may maintain operational logs under their own policies.</p>
+<h2>Use of Google data</h2>
+<p>Google account access is used to find the connected channel's broadcasts and display YouTube live chat. This application does not sell Google user data, use it for advertising, or use it to train AI models. Its use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+<h2>Control and contact</h2>
+<p>You can revoke Google access in <a href="https://myaccount.google.com/connections">Google Account connections</a>, or revoke other platform access in that platform's account settings. Revocation prevents further authorized access. For deletion of stored multichat account data or privacy questions, contact <a href="mailto:zeekfuseyt@gmail.com">zeekfuseyt@gmail.com</a>.</p>
+<p><a href="/dashboard">Open the dashboard</a></p>
+</main>
+</html>
