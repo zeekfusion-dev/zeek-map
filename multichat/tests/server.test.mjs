@@ -181,3 +181,72 @@ test("concurrent refresh calls only rotate once and persist refreshed credential
     f.store.db.close();
   }
 });
+
+test("Twitch handoff keeps old socket until welcome and preserves subscriptions", async () => {
+  const f = await fixture();
+  try {
+    f.store.token("twitch", {
+      access_token: "token",
+      expiresAt: Date.now() + 3600000,
+      user: { id: "u" },
+    });
+    const c = f.connections;
+    let subscriptions = 0,
+      oldClosed = false,
+      welcomed = false;
+    c.emotes.load = async () => {};
+    f.oauth.api = async (url, path, opts) => {
+      if (opts?.method === "POST") subscriptions++;
+      return { data: [] };
+    };
+    c.socket = async (url, signal, handler, options) => {
+      assert.equal(options.pingOutbound, false);
+      if (url.endsWith("/ws")) {
+        await new Promise(async (resolve, reject) => {
+          const finish = (e) => {
+            oldClosed = true;
+            e ? reject(e) : resolve();
+          };
+          await handler(
+            {
+              metadata: { message_type: "session_welcome" },
+              payload: { session: { id: "first" } },
+            },
+            {},
+            finish,
+          );
+          await handler(
+            {
+              metadata: { message_type: "session_reconnect" },
+              payload: {
+                session: {
+                  reconnect_url: "wss://eventsub.wss.twitch.tv/migrate",
+                },
+              },
+            },
+            {},
+            finish,
+          );
+        });
+      } else {
+        assert.equal(oldClosed, false);
+        await handler(
+          {
+            metadata: { message_type: "session_welcome" },
+            payload: { session: { id: "second" } },
+          },
+          {},
+          () => {},
+        );
+        welcomed = true;
+        assert.equal(oldClosed, true);
+      }
+    };
+    await c.twitch(new AbortController().signal, () => {});
+    assert.equal(subscriptions, 4);
+    assert.equal(welcomed, true);
+  } finally {
+    f.close();
+    f.store.db.close();
+  }
+});

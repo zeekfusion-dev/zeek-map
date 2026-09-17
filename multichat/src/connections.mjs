@@ -57,7 +57,7 @@ export class Connections {
     url,
     signal,
     handler,
-    { onOpen, onClose, timeout = 90000 } = {},
+    { onOpen, onClose, timeout = 90000, pingOutbound = true } = {},
   ) {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);
@@ -77,9 +77,10 @@ export class Connections {
       const timer = setInterval(() => {
         if (Date.now() - last > timeout)
           finish(new Error("Connection heartbeat expired"));
-        else if (ws.readyState === WebSocket.OPEN) ws.ping();
+        else if (pingOutbound && ws.readyState === WebSocket.OPEN) ws.ping();
       }, 15000);
       ws.on("pong", () => (last = Date.now()));
+      ws.on("ping", () => (last = Date.now()));
       ws.on("open", () => Promise.resolve(onOpen?.(ws)).catch(finish));
       ws.on("message", (raw) => {
         last = Date.now();
@@ -174,92 +175,106 @@ export class Connections {
         for (const b of result.value.data || [])
           for (const v of b.versions)
             this.badges.set(`${b.set_id}/${v.id}`, v.image_url_2x);
-    let url = "wss://eventsub.wss.twitch.tv/ws",
-      migrating = false;
     const seen = new Set();
-    while (!signal.aborted) {
+    const session = async (url, migrating = false, onWelcome) => {
       let next;
-      await this.socket(url, signal, async (m, ws, finish) => {
-        const type = m.metadata?.message_type;
-        if (type === "session_welcome") {
-          if (!migrating) {
-            for (const event of [
-              "channel.chat.message",
-              "channel.chat.message_delete",
-              "channel.chat.clear",
-              "channel.chat.clear_user_messages",
-            ])
-              await this.oauth.api(
-                "twitch",
-                "https://api.twitch.tv/helix/eventsub/subscriptions",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    type: event,
-                    version: "1",
-                    condition: {
-                      broadcaster_user_id: channel,
-                      user_id: channel,
+      try {
+        await this.socket(
+          url,
+          signal,
+          async (m, ws, finish) => {
+            const type = m.metadata?.message_type;
+            if (type === "session_welcome") {
+              if (!migrating) {
+                for (const event of [
+                  "channel.chat.message",
+                  "channel.chat.message_delete",
+                  "channel.chat.clear",
+                  "channel.chat.clear_user_messages",
+                ])
+                  await this.oauth.api(
+                    "twitch",
+                    "https://api.twitch.tv/helix/eventsub/subscriptions",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        type: event,
+                        version: "1",
+                        condition: {
+                          broadcaster_user_id: channel,
+                          user_id: channel,
+                        },
+                        transport: {
+                          method: "websocket",
+                          session_id: m.payload.session.id,
+                        },
+                      }),
                     },
-                    transport: {
-                      method: "websocket",
-                      session_id: m.payload.session.id,
-                    },
-                  }),
-                },
+                  );
+              }
+              onWelcome?.();
+              status("Connected");
+            }
+            if (type === "session_reconnect") {
+              const target = new URL(m.payload.session.reconnect_url);
+              if (
+                target.protocol !== "wss:" ||
+                !target.hostname.endsWith(".twitch.tv")
+              )
+                throw new Error("Invalid reconnect destination");
+              if (!next) {
+                // Keep the old transport until the new session welcomes us.
+                next = session(target.href, true, () => finish());
+                next.catch(finish);
+              }
+            }
+            if (type === "revocation")
+              throw Object.assign(new Error("Authorization revoked"), {
+                status: 401,
+              });
+            if (type !== "notification") return;
+            const id = m.metadata.message_id;
+            if (seen.has(id)) return;
+            seen.add(id);
+            if (seen.size > 10000) seen.delete(seen.values().next().value);
+            const e = m.payload.event,
+              t = m.payload.subscription.type;
+            if (t === "channel.chat.message") {
+              this.feed.push(
+                twitchMessage(
+                  { ...e, timestamp: m.metadata.message_timestamp },
+                  channel,
+                  this.emotes,
+                  this.badges,
+                ),
               );
-          }
-          status("Connected");
-        }
-        if (type === "session_reconnect") {
-          const target = new URL(m.payload.session.reconnect_url);
-          if (
-            target.protocol !== "wss:" ||
-            !target.hostname.endsWith(".twitch.tv")
-          )
-            throw new Error("Invalid reconnect destination");
-          next = target.href;
-          finish();
-        }
-        if (type === "revocation")
-          throw Object.assign(new Error("Authorization revoked"), {
-            status: 401,
-          });
-        if (type !== "notification") return;
-        const id = m.metadata.message_id;
-        if (seen.has(id)) return;
-        seen.add(id);
-        if (seen.size > 10000) seen.delete(seen.values().next().value);
-        const e = m.payload.event,
-          t = m.payload.subscription.type;
-        if (t === "channel.chat.message") {
-          this.feed.push(
-            twitchMessage(
-              { ...e, timestamp: m.metadata.message_timestamp },
-              channel,
-              this.emotes,
-              this.badges,
-            ),
-          );
-          void this.emotes.load("twitch", channel);
-        } else if (t === "channel.chat.message_delete")
-          this.feed.moderate({ platform: "twitch", channel, id: e.message_id });
-        else if (t === "channel.chat.clear_user_messages")
-          this.feed.moderate({
-            platform: "twitch",
-            channel,
-            userId: e.target_user_id,
-          });
-        else if (t === "channel.chat.clear")
-          this.feed.moderate({ platform: "twitch", channel });
-      });
-      if (next) {
-        url = next;
-        migrating = true;
-      } else return;
-    }
+              void this.emotes.load("twitch", channel);
+            } else if (t === "channel.chat.message_delete")
+              this.feed.moderate({
+                platform: "twitch",
+                channel,
+                id: e.message_id,
+              });
+            else if (t === "channel.chat.clear_user_messages")
+              this.feed.moderate({
+                platform: "twitch",
+                channel,
+                userId: e.target_user_id,
+              });
+            else if (t === "channel.chat.clear")
+              this.feed.moderate({ platform: "twitch", channel });
+          },
+          { pingOutbound: false, timeout: 45000 },
+        );
+      } catch (error) {
+        if (!next) throw error;
+      }
+      if (next) await next;
+    };
+    await session("wss://eventsub.wss.twitch.tv/ws");
   }
+
   async youtube(signal, status) {
     const broadcasts = await this.oauth.api(
       "youtube",
