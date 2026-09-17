@@ -121,7 +121,7 @@ function overlay(preview = false) {
         nodes.set(id, n);
         if (!animate) n.style.animation = "none";
       }
-      if (n.previousSibling !== previous) {
+      if (n.parentNode !== feed || n.previousSibling !== previous) {
         if (previous) previous.after(n);
         else feed.prepend(n);
       }
