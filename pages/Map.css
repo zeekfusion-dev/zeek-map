@@ -12,3 +12,7 @@
 .map-socials{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:0!important;justify-self:end}
 .map-legend{justify-self:center;width:fit-content;max-width:100%;padding:8px 12px!important}
 @media(max-width:768px){.map-socials{justify-self:center}.map-page{padding-top:0}}
+
+/* The grid controls layout; the canvas cannot supply an intrinsic minimum width. */
+.map-globe-stage{min-width:0;overflow:visible;border-radius:0}.map-globe-render{position:fixed;inset:0;min-width:0}.map-globe-render canvas{max-width:none;max-height:none}
+@media(max-width:768px){.map-globe-stage{width:100%;max-width:100%;justify-self:center}.map-globe-render{position:absolute;inset:0;width:100%;height:100%;min-width:0}}

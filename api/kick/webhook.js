@@ -1,5 +1,6 @@
-import {db,rpc} from '../../server/db.mjs';
-import {BROADCASTER,verifySignature,normalizeAnswer} from '../../server/domain.mjs';
+import {processChat} from '../../server/chat-commands.mjs';
+import {db} from '../../server/db.mjs';
+import {BROADCASTER,verifySignature} from '../../server/domain.mjs';
 import {flushOutbox} from '../../server/kick.mjs';
 export const config={api:{bodyParser:false},maxDuration:60};
 const KICK_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -25,7 +26,7 @@ export default async function handler(req,res){
  if(type==='chat.message.sent'&&body.sender?.user_id&&!body.sender.is_anonymous){
  const who=body.sender,content=String(body.content||'');let send=false;
  if(typeof id!=='string'||id.length>200||typeof body.message_id!=='string'||body.message_id.length>200||typeof who.username!=='string'||who.username.length>100||!Number.isSafeInteger(who.user_id)||who.user_id<=0||content.length>5000||!Number.isFinite(Date.parse(body.created_at)))return res.status(400).end();
- send=await rpc('z_process_chat',{p_event:id,p_user:who.user_id,p_name:who.username,p_message:body.message_id,p_answer:normalizeAnswer(content),p_created:body.created_at,p_balance:/^!zs(?:\s|$)/i.test(content)});
+ send=await processChat({event:id,user:who.user_id,username:who.username,message:body.message_id,content,created:body.created_at});
  try{if(send)await flushOutbox();}catch(e){console.error('Chat delivery deferred:',e.message);}
  }
  return res.json({received:true});

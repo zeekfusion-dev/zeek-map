@@ -1,6 +1,7 @@
+import {globeProjection} from './components/globe-viewport.mjs';
 import {SiKick} from 'react-icons/si';
 import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok,FaTwitch} from 'react-icons/fa6';
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import './pages/Map.css';
 import useSiteContent from './components/useSiteContent';
 import Globe from "react-globe.gl";
@@ -216,8 +217,12 @@ export default function TravelMap() {
   const globeRef = useRef();
 
   const mapRoot=useRef(null);
-  const [mapSize,setMapSize]=useState({width:1200,height:650});
-  useEffect(()=>{const el=mapRoot.current;if(!el)return;const observer=new ResizeObserver(([entry])=>setMapSize({width:entry.contentRect.width,height:entry.contentRect.height}));observer.observe(el);return()=>observer.disconnect()},[]);
+  const [mapSize,setMapSize]=useState({width:1,height:1,centerX:0,centerY:0});
+  const [globeReady,setGlobeReady]=useState(0);
+  useLayoutEffect(()=>{const el=mapRoot.current;if(!el)return;let frame;
+    const measure=()=>{const r=el.getBoundingClientRect();setMapSize(old=>{const next={width:r.width,height:r.height,centerX:r.left+r.width/2,centerY:r.top+r.height/2};return Object.keys(next).every(k=>next[k]===old[k])?old:next;})};
+    const schedule=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure)};const observer=new ResizeObserver(schedule);observer.observe(el);const header=document.querySelector('.site-header-shell');if(header)observer.observe(header);window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);measure();return()=>{observer.disconnect();cancelAnimationFrame(frame);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule)};
+  },[]);
   const [screen, setScreen] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 1200,
     height: typeof window !== "undefined" ? window.innerHeight : 800
@@ -245,6 +250,12 @@ export default function TravelMap() {
   const isMobile = screen.width <= 768;
   const isTablet = screen.width > 768 && screen.width <= 1100;
   const isTV = screen.width >= 1800;
+
+  const projection=globeProjection(mapSize,screen,isMobile);
+  useLayoutEffect(()=>{const globe=globeRef.current;if(!globe)return;const camera=globe.camera();camera.fov=projection.fov;camera.near=.01;
+    if(isMobile)camera.clearViewOffset();else camera.setViewOffset(projection.width,projection.height,projection.offsetX,projection.offsetY,projection.width,projection.height);
+    camera.updateProjectionMatrix();globe.controls().minDistance=100.02;
+  },[projection.width,projection.height,projection.fov,projection.offsetX,projection.offsetY,isMobile,globeReady,viewMode]);
 
   const titleFontSize = isMobile ? "18px" : isTablet ? "26px" : isTV ? "44px" : "34px";
 
@@ -425,11 +436,12 @@ export default function TravelMap() {
   }
 
   const commonGlobeProps = {
-    width: mapSize.width,
-    height: mapSize.height,
+    width: projection.width,
+    height: projection.height,
+    onGlobeReady: ()=>setGlobeReady(n=>n+1),
     ref: globeRef,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-    backgroundColor: "#020617",
+    backgroundColor: "rgba(0,0,0,0)",
     atmosphereColor: "#3b82f6",
     atmosphereAltitude: 0.25
   };
@@ -823,7 +835,7 @@ export default function TravelMap() {
         </div>
       )}
 
-      <div ref={mapRoot} className="map-globe-stage">{viewMode === "world" ? (
+      <div ref={mapRoot} className="map-globe-stage"><div className="map-globe-render">{viewMode === "world" ? (
         <Globe
           {...commonGlobeProps}
           polygonsData={countries}
@@ -929,7 +941,7 @@ export default function TravelMap() {
         />
       )}
 
-      </div>
+      </div></div>
       {(
         <div className="map-legend"
           style={{

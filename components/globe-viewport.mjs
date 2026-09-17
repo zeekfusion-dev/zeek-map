@@ -1,0 +1,2 @@
+// Preserve the stage's original projection while rendering across the desktop viewport.
+export function globeProjection(stage,viewport,mobile){const width=Math.max(1,mobile?stage.width:viewport.width),height=Math.max(1,mobile?stage.height:viewport.height);return {width,height,fov:mobile?50:2*Math.atan(Math.tan(25*Math.PI/180)*height/Math.max(1,stage.height))*180/Math.PI,offsetX:mobile?0:width/2-stage.centerX,offsetY:mobile?0:height/2-stage.centerY};}
