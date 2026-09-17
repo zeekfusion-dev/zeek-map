@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import './MCServer.css';
+import useSiteContent from '../components/useSiteContent';
 
 const SERVER={java:'208.115.225.34:25568',bedrock:'208.115.225.34',port:'25568',version:'1.21.8'};
 const DISCORD='https://discord.gg/AdduJ22Ven';
@@ -10,12 +11,15 @@ const PARENTS={join:'main',java:'join',bedrock:'join',how:'main','how-java':'how
 const STEPS={java:['Open Minecraft: Java Edition.','Select Multiplayer, then Add Server.','Name it ZeekFusion. Paste the Java IP into Server Address.','Click Done, select ZeekFusion, then Join Server.'],bedrock:['Open Minecraft: Bedrock Edition.','Select Play, then Servers and Add Server.','Name it ZeekFusion. Enter the Bedrock IP and port separately.','Save the server, then select Join Server.']};
 
 export default function MCServer(){
+ const content=useSiteContent(),music=useRef(null);
  const [params,setParams]=useSearchParams();
  const screen=SCREENS.has(params.get('screen'))?params.get('screen'):'main';
  const [sound,setSound]=useState(false),[notice,setNotice]=useState(''),[copying,setCopying]=useState(false);
  const audio=useRef(null),heading=useRef(null),first=useRef(true),copyField=useRef(null);
  useEffect(()=>{setNotice('');window.scrollTo({top:0,left:0,behavior:'instant'});if(first.current){first.current=false;return;}heading.current?.focus({preventScroll:true});},[screen]);
  useEffect(()=>()=>{audio.current?.close().catch(()=>{});},[]);
+ useEffect(()=>{setSound(false);music.current?.pause();music.current=content.mcMusicUrl?new Audio(content.mcMusicUrl):null;if(music.current){music.current.loop=true;music.current.volume=.35;}return()=>{music.current?.pause();music.current=null}},[content.mcMusicUrl]);
+ async function toggleSound(){if(sound){music.current?.pause();setSound(false);return;}if(!music.current){setNotice('Music track is not configured yet.');return;}try{await music.current.play();setSound(true);setNotice('')}catch{setNotice('Music could not play. Try again or check the track.');setSound(false)}}
  function click(){if(!sound)return;try{const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;const context=audio.current||(audio.current=new Context());context.resume().catch(()=>{});const o=context.createOscillator(),g=context.createGain();o.type='square';o.frequency.setValueAtTime(650,context.currentTime);o.frequency.exponentialRampToValueAtTime(180,context.currentTime+.035);g.gain.setValueAtTime(.025,context.currentTime);g.gain.exponentialRampToValueAtTime(.001,context.currentTime+.045);o.connect(g);g.connect(context.destination);o.start();o.stop(context.currentTime+.05);}catch{/* Sound is optional. */}}
  function go(next){click();setParams(next==='main'?{}:{screen:next});}
  function back(){go(PARENTS[screen]||'main');}
@@ -43,6 +47,6 @@ export default function MCServer(){
     <p className="mc-copy-notice" role="status" aria-live="polite">{notice}</p>
    </section>
   </div>
-  <footer className="mc-game-footer"><span>ZeekFusion {SERVER.version}<small>Java + Bedrock</small></span><button className="mc-menu-button mc-sound-toggle" aria-pressed={sound} onClick={()=>setSound(x=>!x)}>Sound: {sound?'ON':'OFF'}</button><span className="mc-footer-caption">A world for the community.</span></footer>
+  <footer className="mc-game-footer"><span>ZeekFusion {SERVER.version}<small>Java + Bedrock</small></span><button className="mc-menu-button mc-sound-toggle" aria-pressed={sound} onClick={toggleSound}>Sound: {sound?'ON':'OFF'}</button><span className="mc-footer-caption">A world for the community.</span></footer>
  </main>;
 }

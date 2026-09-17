@@ -1,0 +1,32 @@
+-- Run appended to migration 021 inside a ROLLBACK transaction. No stream alerts escape.
+do $$declare r uuid:=gen_random_uuid();a uuid:=gen_random_uuid();b uuid:=gen_random_uuid();c uuid:=gen_random_uuid();cl uuid:=gen_random_uuid();other uuid:=gen_random_uuid();x jsonb;n integer;begin
+ insert into z_users(kick_user_id,username,zs_balance,lifetime_zs) values(9999999001,'z_test_alerts',10,10);
+ insert into z_rewards(id,title,description,cost,stock,enabled,image_url,audio_url,alert_duration,alert_volume) values(r,'Test alert','Test',2,2,true,'https://example.com/a.gif','https://example.com/a.mp3',5,25);
+ perform z_redeem(9999999001,'z_test_alerts',r,a);
+ perform z_redeem(9999999001,'z_test_alerts',r,a);
+ if (select count(*) from z_reward_alerts where redemption_id=a)<>1 or (select zs_balance from z_users where kick_user_id=9999999001)<>8 or (select stock from z_rewards where id=r)<>1 then raise exception 'Duplicate redemption failed';end if;
+ update z_rewards set cooldown_seconds=60 where id=r;
+ begin perform z_redeem(9999999001,'z_test_alerts',r,b);raise exception 'Cooldown accepted';exception when others then if sqlerrm<>'Reward is cooling down. Please try again shortly.' then raise;end if;end;
+ update z_rewards set cooldown_seconds=0,image_url='https://example.com/new.gif' where id=r;
+ perform z_redeem(9999999001,'z_test_alerts',r,b);
+ begin perform z_redeem(9999999001,'z_test_alerts',r,c);raise exception 'Out of stock accepted';exception when others then if sqlerrm<>'Reward unavailable' then raise;end if;end;
+ update z_rewards set stock=null,cost=100 where id=r;
+ begin perform z_redeem(9999999001,'z_test_alerts',r,c);raise exception 'Overdraft accepted';exception when others then if sqlerrm<>'Insufficient Zs' then raise;end if;end;
+ if exists(select 1 from z_reward_alerts where redemption_id=c) then raise exception 'Failed purchase queued';end if;
+ x:=z_claim_alert(cl);if x->'alert'->>'redemption_id'<>a::text or x->'alert'->>'image_url'<>'https://example.com/a.gif' then raise exception 'Snapshot or FIFO failed';end if;
+ if (z_claim_alert(cl)->'alert'->>'id')<>(x->'alert'->>'id') then raise exception 'Claim retry not idempotent';end if;
+ if not(z_claim_alert(other)?'retryAfter') then raise exception 'Concurrent player admitted';end if;
+ if z_finish_alert((x->'alert'->>'id')::uuid,other,false) then raise exception 'Wrong owner ack accepted';end if;
+ if not z_finish_alert((x->'alert'->>'id')::uuid,cl,false) or not z_finish_alert((x->'alert'->>'id')::uuid,cl,false) then raise exception 'Ack retry failed';end if;
+ x:=z_claim_alert(other);if x->'alert'->>'redemption_id'<>b::text then raise exception 'Second claim failed';end if;
+ update z_reward_alerts set lease_until=now()-interval '1 second' where redemption_id=b;
+ x:=z_claim_alert(cl);if x->'alert'->>'redemption_id'<>b::text then raise exception 'Lease recovery failed';end if;
+ perform z_finish_alert((x->'alert'->>'id')::uuid,cl,false);
+ if z_claim_alert(cl)->'alert'<>'null'::jsonb then raise exception 'Queue not empty';end if;
+ update z_rewards set cost=1 where id=r;
+ perform z_redeem(9999999001,'z_test_alerts',r,c);
+ update z_redemptions set status='refunded' where id=c;
+ if (select status from z_reward_alerts where redemption_id=c)<>'cancelled' then raise exception 'Refund did not cancel';end if;
+ if has_table_privilege('anon','z_reward_alerts','SELECT') or has_table_privilege('authenticated','z_overlay_settings','SELECT') or has_function_privilege('anon','z_claim_alert(uuid)','EXECUTE') then raise exception 'Queue exposed';end if;
+end$$;
+select 'PASS: atomic purchase, duplicates, cooldown, stock, overdraft, settings snapshot, FIFO, lease recovery, ack ownership, refunds, permissions' as result;

@@ -9,3 +9,5 @@
 .offline-message>span{display:grid;place-items:center;width:2.6em;height:2.6em;margin:0 auto .7em;border-radius:50%;border:1px solid #27baff66;background:#008cff15;color:#55c9ff;font-size:2em;box-shadow:0 0 2em #008cff33}
 .offline-message h2{font-size:clamp(26px,2.4vw,68px);line-height:1.15;letter-spacing:-.035em;margin:.5em 0}
 .offline-message p{color:#a9bfd9;font-size:.9em}.offline-message a{display:inline-block;color:#69cbff;font-size:.8em;text-decoration:none;margin-top:.7em}
+
+.home-rank-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0}.home-rank-tabs button{border:1px solid #234864;background:#071321;color:#a6bed5;padding:9px 12px;border-radius:8px;font:700 12px var(--font-ui);cursor:pointer}.home-rank-tabs button[aria-pressed=true]{background:#005ba0;border-color:#009cff;color:white}

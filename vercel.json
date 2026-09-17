@@ -35,7 +35,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self' https://unpkg.com; font-src 'self' data:; frame-src https://player.kick.com https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://www.instagram.com; worker-src 'self' blob:; media-src 'self' https: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self' https://unpkg.com https://mxrjjwkeqjgahoxsqzfc.supabase.co wss://mxrjjwkeqjgahoxsqzfc.supabase.co; font-src 'self' data:; frame-src https://player.kick.com https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://www.instagram.com; worker-src 'self' blob:; media-src 'self' https: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         }
       ]
     }
