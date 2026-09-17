@@ -8,6 +8,8 @@ export class Feed extends EventEmitter {
     this.seen = new Map(store?.get("seen", []) || []);
     this.tombstones = new Map(store?.get("tombstones", []) || []);
     this.sequence = 0;
+    this.replayFloor = store?.get("feed-watermark", 0) || 0;
+    this.watermark = this.replayFloor;
   }
   key(m) {
     return `${m.platform}:${m.channel}:${m.id}`;
@@ -33,7 +35,8 @@ export class Feed extends EventEmitter {
           : now,
       receivedAt: now,
     };
-    if (this.blocked(m)) return;
+    if (this.blocked(m) || m.timestamp <= this.replayFloor) return;
+    this.watermark = Math.max(this.watermark, m.timestamp);
     const key = this.key(m);
     if (this.seen.has(key)) {
       if (enrich) {
@@ -91,8 +94,9 @@ export class Feed extends EventEmitter {
     }
   }
   checkpoint() {
-    this.store?.set("seen", [...this.seen]);
-    this.store?.set("tombstones", [...this.tombstones]);
+    this.store?.set("seen", [...this.seen].slice(-1000));
+    this.store?.set("feed-watermark", this.watermark);
+    this.store?.set("tombstones", [...this.tombstones].slice(-5000));
   }
   close() {
     clearTimeout(this.timer);

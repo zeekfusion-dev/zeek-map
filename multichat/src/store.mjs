@@ -23,6 +23,10 @@ export class Store {
       .run(key, JSON.stringify(value));
     return value;
   }
+  async flush() {}
+  health() {
+    return { durable: false, saved: true, error: null };
+  }
   seal(value) {
     const iv = crypto.randomBytes(12),
       c = crypto.createCipheriv("aes-256-gcm", this.key, iv);

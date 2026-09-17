@@ -250,3 +250,27 @@ test("Twitch handoff keeps old socket until welcome and preserves subscriptions"
     f.store.db.close();
   }
 });
+
+test("authenticated OBS heartbeat receives live service health during quiet chat", async () => {
+  const f = await fixture();
+  let ws;
+  try {
+    ws = new WebSocket(f.url.replace("http:", "ws:") + "/live", {
+      origin: f.origin,
+    });
+    await once(ws, "open");
+    let response = once(ws, "message");
+    ws.send(JSON.stringify({ key: f.store.get("overlayKey") }));
+    await response;
+    response = once(ws, "message");
+    ws.send(JSON.stringify({ type: "ping" }));
+    const event = JSON.parse((await response)[0]);
+    assert.equal(event.type, "pong");
+    assert.equal(typeof event.at, "number");
+    assert.equal(typeof event.platforms, "object");
+  } finally {
+    ws?.terminate();
+    await f.close();
+    f.store.db.close();
+  }
+});

@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
 import { fileURLToPath } from "node:url";
 import { Store, secret, equal } from "./store.mjs";
+import { RemoteStore } from "./remote-store.mjs";
 import { Feed } from "./feed.mjs";
 import { Emotes } from "./emotes.mjs";
 import { OAuth, providers } from "./oauth.mjs";
@@ -168,6 +169,10 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           },
         ]),
       ),
+      storage: store.health(),
+      ready:
+        Object.values(connections.states).length === 3 &&
+        Object.values(connections.states).every((s) => s.state === "Connected"),
       settings: settings(),
       overlayUrl: `${origin}/overlay#${overlayKey}`,
       kickChannel: store.get("kickChannel", ""),
@@ -176,7 +181,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
       ),
     }),
   );
-  app.post("/api/settings", sameOrigin, owner, (req, res) => {
+  app.post("/api/settings", sameOrigin, owner, async (req, res) => {
     const b = req.body;
     const next = {
       fontSize: Math.max(12, Math.min(48, Number(b.fontSize) || 19)),
@@ -186,16 +191,18 @@ export function createApp({ store, origin, password, connect = true } = {}) {
       maxMessages: Math.max(20, Math.min(200, Number(b.maxMessages) || 120)),
     };
     store.set("settings", next);
+    await store.flush();
     broadcast({ type: "settings", settings: next });
     res.json(next);
   });
-  app.post("/api/kick", sameOrigin, owner, (req, res) => {
+  app.post("/api/kick", sameOrigin, owner, async (req, res) => {
     const channel = String(req.body.channel || "")
       .trim()
       .toLowerCase();
     if (!/^[a-z0-9_-]{1,64}$/.test(channel))
       return res.status(400).json({ error: "Enter your Kick channel name." });
     store.set("kickChannel", channel);
+    await store.flush();
     connections.start("kick");
     res.json({ ok: true });
   });
@@ -246,6 +253,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           store.set("kickWebhook", false);
         }
       }
+      await store.flush();
       connections.start(p);
       res.redirect("/dashboard");
     } catch (e) {
@@ -265,14 +273,12 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     const status = [400, 401, 403, 409, 429].includes(e.status)
       ? e.status
       : 502;
-    res
-      .status(status)
-      .json({
-        error:
-          status === 502
-            ? "The platform could not complete this connection. Return to the dashboard and try again."
-            : e.message,
-      });
+    res.status(status).json({
+      error:
+        status === 502
+          ? "The platform could not complete this connection. Return to the dashboard and try again."
+          : e.message,
+    });
   });
   function send(ws, data) {
     if (ws.readyState !== 1) return;
@@ -305,9 +311,19 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     const deadline = setTimeout(() => ws.close(1008), 5000);
     ws.on("close", () => clearTimeout(deadline));
     ws.on("message", (raw) => {
-      if (ws.authorized) return;
       try {
         const data = JSON.parse(raw);
+        if (ws.authorized) {
+          if (data.type === "ping") {
+            ws.alive = true;
+            send(ws, {
+              type: "pong",
+              at: Date.now(),
+              platforms: connections.states,
+            });
+          }
+          return;
+        }
         if (!equal(data.key, overlayKey)) {
           ws.close(1008);
           return;
@@ -325,7 +341,6 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     });
   });
   const interval = setInterval(() => {
-    feed.checkpoint();
     for (const ws of sockets.clients) {
       if (!ws.alive) ws.terminate();
       else {
@@ -337,6 +352,10 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     for (const [ip, a] of attempts)
       if (a.until < Date.now()) attempts.delete(ip);
   }, 15000);
+  const checkpoint = setInterval(() => {
+    feed.checkpoint();
+    void store.flush().catch(() => {});
+  }, 60000);
   if (connect) connections.startAll();
   return {
     app,
@@ -344,19 +363,23 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     feed,
     connections,
     oauth,
-    close: () => {
+    close: async () => {
       clearInterval(interval);
+      clearInterval(checkpoint);
       connections.stop();
       feed.close();
       for (const ws of sockets.clients) ws.terminate();
       sockets.close();
       server.close();
+      await store.flush();
     },
   };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const origin =
-    process.env.PUBLIC_ORIGIN || `http://localhost:${process.env.PORT || 8787}`;
+    process.env.PUBLIC_ORIGIN ||
+    process.env.RENDER_EXTERNAL_URL ||
+    `http://localhost:${process.env.PORT || 8787}`;
   if (!process.env.ENCRYPTION_KEY || !process.env.ADMIN_PASSWORD)
     throw new Error(
       "Set ENCRYPTION_KEY and ADMIN_PASSWORD in the hosting environment.",
@@ -368,21 +391,43 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     throw new Error(
       "Use at least 32 characters for ENCRYPTION_KEY and 16 for ADMIN_PASSWORD.",
     );
-  const store = new Store(
-    process.env.DATA_PATH || ".data/chat.sqlite",
-    process.env.ENCRYPTION_KEY,
-  );
+  let store;
+  if (process.env.RENDER && !process.env.STATE_URL)
+    throw new Error(
+      "Render Free requires external STATE_URL, STATE_API_KEY and STATE_ACCESS_KEY. Local files are not durable.",
+    );
+  if (process.env.STATE_URL) {
+    if (!process.env.STATE_API_KEY || !process.env.STATE_ACCESS_KEY)
+      throw new Error("Complete the encrypted storage configuration.");
+    store = await new RemoteStore({
+      url: process.env.STATE_URL,
+      apiKey: process.env.STATE_API_KEY,
+      stateKey: process.env.STATE_ACCESS_KEY,
+      encryptionKey: process.env.ENCRYPTION_KEY,
+    }).initialize();
+  } else
+    store = new Store(
+      process.env.DATA_PATH || ".data/chat.sqlite",
+      process.env.ENCRYPTION_KEY,
+    );
   const service = createApp({
     store,
     origin,
     password: process.env.ADMIN_PASSWORD,
   });
+  await store.flush();
   service.server.listen(Number(process.env.PORT || 8787), "0.0.0.0", () =>
     console.log("Multichat is listening."),
   );
   for (const signal of ["SIGINT", "SIGTERM"])
-    process.on(signal, () => {
-      service.close();
-      setTimeout(() => process.exit(), 500).unref();
+    process.on(signal, async () => {
+      const timeout = setTimeout(() => process.exit(1), 25000).unref();
+      try {
+        await service.close();
+        clearTimeout(timeout);
+        process.exit(0);
+      } catch {
+        process.exit(1);
+      }
     });
 }

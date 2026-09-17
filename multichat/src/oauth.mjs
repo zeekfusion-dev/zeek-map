@@ -124,6 +124,7 @@ export class OAuth {
       user,
       expiresAt: Date.now() + token.expires_in * 1000,
     });
+    await this.store.flush();
     return user;
   }
   async exchange(p, params) {
@@ -137,7 +138,10 @@ export class OAuth {
     if (this.locks.has(p)) return this.locks.get(p);
     const t = this.store.token(p);
     if (!t) throw Object.assign(new Error("Connect account"), { status: 401 });
-    if (!force && t.expiresAt > Date.now() + 120000) return t.access_token;
+    if (!force && t.expiresAt > Date.now() + 120000) {
+      await this.store.flush();
+      return t.access_token;
+    }
     const task = (async () => {
       try {
         const next = await this.exchange(p, {
@@ -150,6 +154,7 @@ export class OAuth {
           refresh_token: next.refresh_token || t.refresh_token,
           expiresAt: Date.now() + next.expires_in * 1000,
         });
+        await this.store.flush();
         return next.access_token;
       } catch (e) {
         if (e.status === 400) e.status = 401;

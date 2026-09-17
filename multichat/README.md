@@ -2,13 +2,23 @@
 
 A standalone hosted Node service in the ZeekFusion repository. It serves a private `/dashboard`, transparent `/overlay`, and one authenticated WebSocket mixed feed. No AI calls or local streaming companion are used.
 
-## Deployment
+## Render Free deployment
 
-Render web service, Node 22.16+, root `multichat`, build `npm ci --ignore-scripts`, start `npm start`, health `/healthz`. Use an always-running paid instance and a 1 GB persistent disk at `/var/data`; set `DATA_PATH=/var/data/chat.sqlite`. Run only one instance because the feed and SQLite writer are single-process. The included `render.yaml` describes this setup. Free sleeping instances and ephemeral disks do not meet the reliability requirement.
+Render web service, Node 22.16+, root `multichat`, build `npm ci --ignore-scripts`, start `npm start`, health `/healthz`, plan **Free**, no disk. The included `render.yaml` uses only the free instance.
 
-Set PUBLIC_ORIGIN to the actual HTTPS service origin (without a trailing slash), ADMIN_PASSWORD to a unique password of at least 16 characters, and ENCRYPTION_KEY to a randomly generated value of at least 32 characters. Preserve the encryption key and disk across redeployments. Do not commit secrets. The private overlay key is generated once and stored on the disk; its URL fragment is not sent in HTTP requests. It is passed as the first WebSocket frame. It authorizes read-only chat access, never dashboard management.
+Render loses its local filesystem on sleep/restart/deploy. All durable state is held in a separate free Supabase project through `migrations/001_state.sql`. A dedicated high-entropy STATE_ACCESS_KEY protects just one encrypted state row; Render uses a publishable/anon STATE_API_KEY, never a Supabase service-role key. Run the migration and provision the singleton with the SHA-256 hash of the dedicated state key. Existing ZeekFusion website tables are not involved.
 
-Add the custom domain `chat.zeekfusion.com` in Render and its CNAME in the domain’s DNS. After the domain is verified, use it for PUBLIC_ORIGIN and provider callbacks, then restart the service.
+Set STATE_URL, STATE_API_KEY, STATE_ACCESS_KEY, ADMIN_PASSWORD (16+ characters) and ENCRYPTION_KEY (32+ random characters) in Render. Preserve these values. PUBLIC_ORIGIN is the actual HTTPS origin without a trailing slash; RENDER_EXTERNAL_URL is the default when omitted. External state loads before the HTTP server starts. Initialization fails closed if state is unavailable; it cannot silently replace the OBS key. OAuth grants, refreshed tokens, and settings are saved remotely before reporting success. Routine checkpoints only write changes and run at most once per minute. Optimistic revisions prevent two instances overwriting each other.
+
+The overlay key is generated once and stored in the encrypted external state. The private URL fragment is not sent in HTTP requests, only in the authenticated WebSocket handshake. Read-only overlay access never authorizes dashboard management.
+
+Before streaming, open `/dashboard` or the private overlay URL and allow roughly a minute for Render to wake. Connections start automatically using the restored tokens. The dashboard reports each platform's actual state; YouTube waits for an active broadcast before its live chat can be connected. A linked account alone is not reported as a connected live chat.
+
+The open overlay sends application heartbeat messages to Render every 20 seconds. Render answers, and native ping/pong detects dead peers. A 60-second stale connection reconnects with capped exponential backoff using the same key. The dashboard polls status while open. These are actual inbound requests to Render; responses over server-initiated Twitch/Kick/YouTube connections are not assumed to reset Render's public-ingress idle timer. Kick's signed public HTTP webhooks do count as inbound activity when configured.
+
+After streaming, close the dashboard/overlay and disable the OBS source or use “Shutdown source when not visible”. Otherwise its heartbeats intentionally keep the service awake. No external keep-awake cron or local companion is required. With no inbound traffic, Render can sleep after 15 minutes. Render Free still has monthly usage limits and may restart/suspend services; this is not an uptime guarantee. A separate free Supabase project may pause after prolonged inactivity and need resuming in its dashboard. Render's expiring free Postgres and non-durable free Key Value are intentionally not used.
+
+Add `chat.zeekfusion.com` in Render and its CNAME in DNS. Once verified, use the domain for PUBLIC_ORIGIN and OAuth callbacks. Keep that domain and the saved OBS key unchanged thereafter.
 
 ## Connect accounts
 
@@ -21,11 +31,11 @@ Add the custom domain `chat.zeekfusion.com` in Render and its CNAME in the domai
 
 Messages use platform timestamps where available, a 40 ms buffer, and stable chronological insertion. Cross-platform order cannot be perfect when providers deliver late events or omit timestamps. No extra network wait is added for emote catalogs. The overlay keeps at most 200 messages. Third-party emote catalogs cache for five minutes, loading independently so one failed provider does not block chat.
 
-Tokens are AES-256-GCM encrypted in SQLite with automatic refresh and single-flight rotation. Provider loops back off independently. YouTube uses the official gRPC streamList for low-latency messages and resumes by page token, plus Moblin’s web-chat continuation endpoint for native emoji, custom membership badge imagery, and deletion events omitted by the official stream. The web endpoint is unofficial and can change. The dashboard must not imply graphical enrichment works when it is unavailable. Role labels are used when the platform supplies a role but no image, rather than inventing a badge or level.
+Tokens and the external state snapshot are AES-256-GCM encrypted with automatic refresh and single-flight rotation. SQLite is only an in-memory cache in the free deployment. Provider loops back off independently. YouTube uses the official gRPC streamList for low-latency messages and resumes by page token, plus Moblin’s web-chat continuation endpoint for native emoji, custom membership badge imagery, and deletion events omitted by the official stream. The web endpoint is unofficial and can change. The dashboard must not imply graphical enrichment works when it is unavailable. Role labels are used when the platform supplies a role but no image, rather than inventing a badge or level.
 
 The current build still requires live authorized platform testing, screenshots for exact visual matching, and deployment verification. Automated fixture tests do not establish production platform compatibility. Initial sample messages are confined to `/preview`; the actual `/overlay` never generates fake chat.
 
-The recent feed is intentionally not replayed after a server restart; deduplication and deletion tombstones persist to prevent old/deleted messages resurfacing. Checkpoints occur every 15 seconds and on graceful shutdown. Platform events during an outage cannot always be recovered. A single persistent-disk instance has a short interruption on deployment; OBS reconnects automatically.
+The recent feed is intentionally not replayed after a server restart; deduplication and deletion tombstones persist to prevent old/deleted messages resurfacing. Checkpoints occur every 60 seconds and on graceful shutdown; security-critical token writes are immediate. Platform events during an outage cannot always be recovered. Cold starts and deployments interrupt connections; OBS reconnects automatically.
 
 ## Tests and development
 

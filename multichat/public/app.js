@@ -1,3 +1,4 @@
+import { LiveConnection } from "/live-client.js";
 const app = document.querySelector("#app");
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
@@ -199,32 +200,27 @@ function overlay(preview = false) {
   const warning = el("div", "connection-warning");
   warning.title = "Reconnecting";
   app.append(warning);
-  let delay = 1000,
-    ws,
-    last = Date.now();
-  function connect() {
-    ws = new WebSocket(location.origin.replace(/^http/, "ws") + "/live");
-    ws.onopen = () => ws.send(JSON.stringify({ key: token }));
-    ws.onmessage = (e) => {
-      last = Date.now();
-      try {
-        handle(JSON.parse(e.data));
-        warning.hidden = true;
-        delay = 1000;
-      } catch {}
-    };
-    ws.onclose = () => {
-      warning.hidden = false;
-      setTimeout(connect, delay + Math.random() * 300);
-      delay = Math.min(delay * 2, 15000);
-    };
-    ws.onerror = () => ws.close();
-  }
-  connect();
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && ws.readyState === 3) warning.hidden = false;
-  });
+  const connection = new LiveConnection({
+    url: location.origin.replace(/^http/, "ws") + "/live",
+    key: token,
+    onEvent: handle,
+    onState: (state, platforms) => {
+      const healthy =
+        state === "connected" &&
+        (!platforms ||
+          Object.values(platforms).every((p) => p.state === "Connected"));
+      warning.hidden = healthy;
+      warning.title =
+        state === "unauthorized"
+          ? "The overlay link is invalid. Copy it again from the dashboard."
+          : state === "connected"
+            ? "A chat platform is reconnecting or waiting for a stream"
+            : "Waking or reconnecting to chat";
+    },
+  }).start();
+  window.addEventListener("pagehide", () => connection.stop(), { once: true });
 }
+
 function samples() {
   const time = Date.now();
   return [
@@ -302,8 +298,14 @@ async function api(path, body) {
     method: body === undefined ? "GET" : "POST",
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(15000),
   });
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("Chat is waking up or reconnecting. Please wait.");
+  }
   if (!response.ok)
     throw Object.assign(new Error(data.error || "Please try again."), {
       status: response.status,
@@ -316,14 +318,15 @@ async function dashboard() {
     state = await api("/api/status");
   } catch (e) {
     if (e.status !== 401) {
-      app.textContent = e.message;
+      app.textContent = "Waking up multichat… This can take about a minute.";
+      setTimeout(dashboard, 5000);
       return;
     }
     login();
     return;
   }
   app.innerHTML =
-    '<header><div class="brand">ZEEK<span>FUSION</span></div><div class="row"><small>MULTICHAT</small><button id="logout">Sign out</button></div></header><div class="layout"><section><div class="eyebrow">Your stream, together</div><h1>Multichat</h1><p>Connect your channels. Add one URL to OBS.</p><div class="connections" id="platforms"></div><div class="panel"><h2>OBS browser source</h2><input class="url" id="overlayUrl" aria-label="Private OBS browser source URL" readonly><div class="row"><button class="primary" id="copy">Copy URL</button><a class="button" id="open" target="_blank" rel="noreferrer">Open overlay</a></div><p class="help">Paste into an OBS Browser Source. Start at 450 × 800. This dashboard can stay closed while you stream.</p></div><div class="notice">Your OBS link stays the same across streams. Keep the link private.</div><p class="error" id="error" role="status"></p></section><aside class="preview"><div class="row spread"><h2>Overlay preview</h2><span class="sample-label">Sample messages</span></div><div class="preview-frame"><iframe src="/preview" title="Sample multichat overlay"></iframe></div><div class="panel"><h2>Appearance</h2><div class="controls"><label>Text size<input id="font" type="range" min="12" max="48"></label><label>Background opacity<input id="background" type="range" min="0" max="0.9" step="0.05"></label><label class="check"><input id="bold" type="checkbox">Bold messages</label><label class="check"><input id="avatars" type="checkbox">Profile images</label></div><button id="save" class="primary" style="margin-top:20px">Save appearance</button></div></aside></div>';
+    '<header><div class="brand">ZEEK<span>FUSION</span></div><div class="row"><small>MULTICHAT</small><button id="logout">Sign out</button></div></header><div class="layout"><section><div class="eyebrow">Your stream, together</div><h1>Multichat</h1><p>Connect your channels. Add one URL to OBS.</p><div class="notice" id="readiness" role="status"></div><div class="connections" id="platforms"></div><div class="panel"><h2>OBS browser source</h2><input class="url" id="overlayUrl" aria-label="Private OBS browser source URL" readonly><div class="row"><button class="primary" id="copy">Copy URL</button><a class="button" id="open" target="_blank" rel="noreferrer">Open overlay</a></div><p class="help">Paste into an OBS Browser Source. Start at 450 × 800. This dashboard can stay closed while you stream.</p></div><div class="notice">Open this page or your overlay before streaming to wake chat. After streaming, close both or shut down the OBS source to allow sleep. Your private OBS link stays the same.</div><p class="error" id="error" role="status"></p></section><aside class="preview"><div class="row spread"><h2>Overlay preview</h2><span class="sample-label">Sample messages</span></div><div class="preview-frame"><iframe src="/preview" title="Sample multichat overlay"></iframe></div><div class="panel"><h2>Appearance</h2><div class="controls"><label>Text size<input id="font" type="range" min="12" max="48"></label><label>Background opacity<input id="background" type="range" min="0" max="0.9" step="0.05"></label><label class="check"><input id="bold" type="checkbox">Bold messages</label><label class="check"><input id="avatars" type="checkbox">Profile images</label></div><button id="save" class="primary" style="margin-top:20px">Save appearance</button></div></aside></div>';
   const error = document.querySelector("#error");
   const action = (fn) => async () => {
     try {
@@ -334,6 +337,11 @@ async function dashboard() {
     }
   };
   function updatePlatforms() {
+    document.querySelector("#readiness").textContent = state.storage?.error
+      ? "Saved connections need attention: " + state.storage.error
+      : state.ready
+        ? "All three chats are connected. Ready to stream."
+        : "Connecting your chats. Check each platform below before streaming.";
     const root = document.querySelector("#platforms");
     root.replaceChildren();
     for (const [p, title] of [
@@ -445,9 +453,18 @@ async function dashboard() {
     state = await api("/api/status");
     updatePlatforms();
   }
-  setInterval(() => {
+  const statusTimer = setInterval(() => {
     if (!document.querySelector(".subform input:focus"))
-      refresh().catch(() => {});
+      refresh().catch((e) => {
+        document.querySelector("#readiness").textContent =
+          e.status === 401
+            ? "Please sign in again after the service restarted."
+            : "Reconnecting to the chat service…";
+        if (e.status === 401) {
+          clearInterval(statusTimer);
+          login();
+        }
+      });
   }, 10000);
 }
 function login() {
