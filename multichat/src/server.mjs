@@ -334,6 +334,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           type: "snapshot",
           messages: feed.messages,
           settings: settings(),
+          platforms: connections.states,
         });
       } catch {
         ws.close(1008);

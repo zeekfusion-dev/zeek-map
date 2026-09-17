@@ -67,6 +67,9 @@ test("dashboard is private; login rejects CSRF; overlay key only returned to own
 });
 test("WebSocket requires correct read-only key and streams moderation", async () => {
   const f = await fixture();
+  f.connections.status("kick", "Connected");
+  f.connections.status("twitch", "Connecting");
+  f.connections.status("youtube", "Not connected");
   let ws;
   try {
     ws = new WebSocket(f.url.replace("http:", "ws:") + "/live", {
@@ -75,7 +78,10 @@ test("WebSocket requires correct read-only key and streams moderation", async ()
     await once(ws, "open");
     const snapshot = once(ws, "message");
     ws.send(JSON.stringify({ key: f.store.get("overlayKey") }));
-    assert.equal(JSON.parse((await snapshot)[0]).type, "snapshot");
+    const initial = JSON.parse((await snapshot)[0]);
+    assert.equal(initial.type, "snapshot");
+    assert.deepEqual(Object.keys(initial.platforms).sort(), ["kick", "twitch", "youtube"]);
+    assert.equal(initial.platforms.twitch.state, "Connecting");
     const incoming = once(ws, "message");
     f.feed.push({
       id: "1",
