@@ -279,6 +279,8 @@ p {
 }
 .chat-feed {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 4px 5px;
   display: flex;
   flex-direction: column;
@@ -286,6 +288,11 @@ p {
   flex-shrink: 0;
 }
 .chat-line {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  word-break: normal;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-size: var(--font);
   font-weight: var(--weight);
@@ -300,6 +307,12 @@ p {
   animation: arrive 0.13s ease-out;
 }
 .chat-content {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
   background: rgb(0 0 0 / var(--bubble));
   border-radius: 4px;
   box-decoration-break: clone;
@@ -354,8 +367,9 @@ p {
   padding: 2px 7px;
   font-size: 0.8em;
   color: #ddd;
-  max-height: 2.9em;
-  overflow: hidden;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .mention {
   color: #d4e8ff;
