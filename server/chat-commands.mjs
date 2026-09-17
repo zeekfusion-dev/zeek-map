@@ -1,6 +1,6 @@
 import {rpc} from './db.mjs';
 import {normalizeAnswer} from './domain.mjs';
-export const MARKET_URL='zeekfusion.com/#/market';
+export const MARKET_URL='https://www.zeekfusion.com/#/market';
 // Help and dispatch share one registry. Aliases are listed alongside the canonical command.
 export const COMMANDS=Object.freeze([
  Object.freeze({name:'z',aliases:['zs'],command:'balance',usage:'!z',description:'Check your Z balance'}),
