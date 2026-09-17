@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: zeekfusion-chat
+    runtime: node
+    plan: starter
+    rootDir: multichat
+    buildCommand: npm ci --ignore-scripts
+    startCommand: npm start
+    healthCheckPath: /healthz
+    disk:
+      name: chat-state
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: DATA_PATH
+        value: /var/data/chat.sqlite
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: TWITCH_CLIENT_ID
+        sync: false
+      - key: TWITCH_CLIENT_SECRET
+        sync: false
+      - key: YOUTUBE_CLIENT_ID
+        sync: false
+      - key: YOUTUBE_CLIENT_SECRET
+        sync: false

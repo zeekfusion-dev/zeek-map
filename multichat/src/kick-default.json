@@ -1,0 +1,66 @@
+{
+  "slug": "zeekfusion",
+  "id": 19330932,
+  "user": {
+    "id": 20306616
+  },
+  "chatroom": {
+    "id": 19067374
+  },
+  "subscriber_badges": [
+    {
+      "id": 190835,
+      "channel_id": 19330932,
+      "months": 2,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/190835/conversion/original-fullsize.png"
+      }
+    },
+    {
+      "id": 190837,
+      "channel_id": 19330932,
+      "months": 3,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/190837/conversion/original-fullsize.png"
+      }
+    },
+    {
+      "id": 190838,
+      "channel_id": 19330932,
+      "months": 6,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/190838/conversion/original-fullsize.png"
+      }
+    },
+    {
+      "id": 326860,
+      "channel_id": 19330932,
+      "months": 9,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/326860/conversion/original-fullsize.png"
+      }
+    },
+    {
+      "id": 326861,
+      "channel_id": 19330932,
+      "months": 12,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/326861/conversion/original-fullsize.png"
+      }
+    },
+    {
+      "id": 684207,
+      "channel_id": 19330932,
+      "months": 18,
+      "badge_image": {
+        "srcset": "",
+        "src": "https://files.kick.com/channel_subscriber_badges/684207/conversion/original-fullsize.png"
+      }
+    }
+  ]
+}

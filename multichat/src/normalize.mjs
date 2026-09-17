@@ -1,0 +1,140 @@
+import { https, timestamp } from "./net.mjs";
+export function kickMessage(e, channel, emotes, subscriberBadges = []) {
+  const u = e.sender || {},
+    identity = u.identity || {};
+  const badges = (identity.badges_v2 || [])
+    .filter((b) => b.selected && https(b.image_url))
+    .map((b) => ({
+      label: b.title || b.type || "Kick status",
+      url: b.image_url,
+    }));
+  for (const b of identity.badges || []) {
+    let url;
+    if (b.type === "subscriber")
+      url = subscriberBadges
+        .filter((s) => s.months <= (b.count || 0))
+        .sort((a, b) => b.months - a.months)[0]?.badge_image?.src;
+    else if (
+      [
+        "verified",
+        "staff",
+        "moderator",
+        "og",
+        "vip",
+        "bot",
+        "broadcaster",
+        "founder",
+        "sub_gifter",
+      ].includes(b.type)
+    )
+      url = `https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main/kick-${b.type}.png`;
+    badges.push({ label: b.text || b.type, count: b.count, url: https(url) });
+  }
+  return {
+    platform: "kick",
+    channel: String(channel),
+    id: String(e.id || e.message_id || ""),
+    timestamp: timestamp(e.created_at),
+    user: {
+      id: String(u.id || u.user_id || ""),
+      name: u.username || u.name || "",
+      color: identity.color,
+      avatar: u.profile_picture,
+      badges,
+    },
+    segments: emotes.kick(e.content || "", channel),
+    reply: e.metadata?.original_sender
+      ? {
+          name: e.metadata.original_sender.username,
+          segments: emotes.kick(
+            e.metadata.original_message?.content || "",
+            channel,
+          ),
+        }
+      : null,
+  };
+}
+export function twitchMessage(e, channel, emotes, badgeMap) {
+  return {
+    platform: "twitch",
+    channel: String(channel),
+    id: e.message_id,
+    timestamp: timestamp(e.timestamp),
+    user: {
+      id: e.chatter_user_id,
+      name: e.chatter_user_name,
+      color: e.color,
+      badges: (e.badges || []).map((b) => ({
+        label: b.set_id + (b.info ? " " + b.info : ""),
+        version: b.id,
+        url: badgeMap.get(`${b.set_id}/${b.id}`),
+      })),
+    },
+    segments: emotes.twitch(
+      e.message?.fragments || [{ type: "text", text: e.message?.text || "" }],
+      channel,
+    ),
+    reply: e.reply
+      ? {
+          name: e.reply.parent_user_name,
+          segments: emotes.text(e.reply.parent_message_body, "twitch", channel),
+        }
+      : null,
+  };
+}
+export function youtubeMessage(e, channel, emotes) {
+  const s = e.snippet || {},
+    u = e.authorDetails || {};
+  return {
+    platform: "youtube",
+    channel: String(channel),
+    id: e.id,
+    timestamp: timestamp(s.publishedAt),
+    user: {
+      id: u.channelId || s.authorChannelId,
+      name: u.displayName || "",
+      avatar: u.profileImageUrl,
+      color: u.isChatOwner
+        ? "#ffd600"
+        : u.isChatModerator
+          ? "#5e84f1"
+          : u.isChatSponsor
+            ? "#2ba640"
+            : "#ffffff",
+      badges: [
+        ["isChatOwner", "Owner"],
+        ["isChatModerator", "Moderator"],
+        ["isChatSponsor", "Member"],
+        ["isVerified", "Verified"],
+      ]
+        .filter(([key]) => u[key])
+        .map(([, label]) => ({ label })),
+    },
+    segments: emotes.text(
+      s.displayMessage || s.textMessageDetails?.messageText || "",
+      "youtube",
+      channel,
+    ),
+  };
+}
+export function youtubeRenderer(r, channel, emotes) {
+  return {
+    platform: "youtube",
+    channel: String(channel),
+    id: r.id,
+    timestamp: Number(r.timestampUsec) / 1000 || Date.now(),
+    user: {
+      id: r.authorExternalChannelId,
+      name: r.authorName?.simpleText || "",
+      avatar: r.authorPhoto?.thumbnails?.at(-1)?.url,
+      badges: (r.authorBadges || [])
+        .map((b) => b.liveChatAuthorBadgeRenderer)
+        .filter(Boolean)
+        .map((b) => ({
+          label: b.tooltip || b.icon?.iconType || "Member",
+          url: https(b.customThumbnail?.thumbnails?.at(-1)?.url),
+        })),
+    },
+    segments: emotes.youtube(r.message?.runs || r.headerSubtext?.runs, channel),
+  };
+}

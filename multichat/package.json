@@ -1,0 +1,1 @@
+{"name":"zeekfusion-multichat","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22.13"},"scripts":{"start":"node src/server.mjs","test":"node --test tests/*.test.mjs"},"dependencies":{"@grpc/grpc-js":"^1.14.0","@grpc/proto-loader":"^0.8.0","express":"^5.1.0","ws":"^8.18.3"}}
