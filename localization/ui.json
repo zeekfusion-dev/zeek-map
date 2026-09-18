@@ -1774,5 +1774,77 @@
     "zh": "03 / 游戏",
     "de": "03 / SPIELEN",
     "ru": "03 / ИГРАЙ"
+  },
+  "EARN · SPEND · PLAY": {
+    "es": "GANA · USA · JUEGA",
+    "zh": "赚取 · 使用 · 游玩",
+    "de": "VERDIENEN · EINLÖSEN · SPIELEN",
+    "ru": "ЗАРАБАТЫВАЙ · ТРАТЬ · ИГРАЙ"
+  },
+  "How Zs Work": {
+    "es": "Cómo funcionan los Zs",
+    "zh": "Zs 使用指南",
+    "de": "So funktionieren Zs",
+    "ru": "Как работают Zs"
+  },
+  "Answer questions correctly in ZeekFusion's Kick chat to earn Zs.": {
+    "es": "Responde correctamente a las preguntas en el chat de Kick de ZeekFusion para ganar Zs.",
+    "zh": "在 ZeekFusion 的 Kick 聊天中正确回答问题，即可赚取 Zs.",
+    "de": "Beantworte Fragen im Kick-Chat von ZeekFusion richtig, um Zs zu verdienen.",
+    "ru": "Правильно отвечай на вопросы в чате ZeekFusion на Kick, чтобы получать Zs."
+  },
+  "Use your Zs": {
+    "es": "Usa tus Zs",
+    "zh": "使用你的 Zs",
+    "de": "Nutze deine Zs",
+    "ru": "Используй свои Zs"
+  },
+  "Use your Zs to buy stream rewards, interactions, challenges, and forfeits.": {
+    "es": "Usa tus Zs para comprar recompensas, interacciones, retos y penitencias en directo.",
+    "zh": "使用 Zs 兑换直播奖励、互动、挑战和惩罚。",
+    "de": "Nutze deine Zs für Stream-Belohnungen, Interaktionen, Herausforderungen und Strafaufgaben.",
+    "ru": "Трать Zs на награды, взаимодействия, испытания и фанты на стриме."
+  },
+  "Want even more Zs?": {
+    "es": "¿Quieres aún más Zs?",
+    "zh": "想获得更多 Zs？",
+    "de": "Du willst noch mehr Zs?",
+    "ru": "Хочешь ещё больше Zs?"
+  },
+  "Risk them in the Arcade.": {
+    "es": "Arriésgalos en el Arcade.",
+    "zh": "在 Arcade 中冒险一试。",
+    "de": "Setze sie in der Arcade ein.",
+    "ru": "Рискни ими в Arcade."
+  },
+  "Find stream rewards →": {
+    "es": "Ver recompensas del directo →",
+    "zh": "查看直播奖励 →",
+    "de": "Stream-Belohnungen entdecken →",
+    "ru": "Найти награды стрима →"
+  },
+  "Your Zs": {
+    "es": "Tus Zs",
+    "zh": "你的 Zs",
+    "de": "Deine Zs",
+    "ru": "Твои Zs"
+  },
+  "Your Rank": {
+    "es": "Tu posición",
+    "zh": "你的排名",
+    "de": "Dein Rang",
+    "ru": "Твоё место"
+  },
+  "Last Game": {
+    "es": "Última partida",
+    "zh": "最近一局",
+    "de": "Letztes Spiel",
+    "ru": "Последняя игра"
+  },
+  "No games yet": {
+    "es": "Aún no hay partidas",
+    "zh": "暂无游戏记录",
+    "de": "Noch keine Spiele",
+    "ru": "Пока нет игр"
   }
 }
