@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {translate,languages,setLanguage,getLanguage,subscribeLanguage} from '../localization/language.mjs';
+import dictionary from '../localization/ui.json' with {type:'json'};
+test('all supported languages have nonempty translations for every UI key',()=>{for(const row of Object.values(dictionary))for(const [code] of languages.slice(1))assert.ok(row[code]?.trim());});
+test('language choice validates, persists and notifies; private/user text stays unchanged',()=>{let saved,notices=0;globalThis.localStorage={setItem:(k,v)=>saved=[k,v]};const off=subscribeLanguage(()=>notices++);setLanguage('es');assert.equal(getLanguage(),'es');assert.deepEqual(saved,['zeek-language','es']);assert.equal(translate('Rewards shop'),'Tienda de recompensas');for(const s of ['@ZeekFusion','!buy hydrate','https://www.zeekfusion.com/#/market','My custom reward'])assert.equal(translate(s),s);setLanguage('invalid');assert.equal(getLanguage(),'en');assert.equal(translate('Rewards shop'),'Rewards shop');assert.equal(notices,2);off();delete globalThis.localStorage;});

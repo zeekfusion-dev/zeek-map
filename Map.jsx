@@ -1,3 +1,4 @@
+import {translate as tr} from './localization/language.mjs';
 import {globeProjection} from './components/globe-viewport.mjs';
 import {SiKick} from 'react-icons/si';
 import {FaInstagram,FaYoutube,FaXTwitter,FaTiktok,FaTwitch} from 'react-icons/fa6';
@@ -549,8 +550,8 @@ export default function TravelMap() {
 
   return (
     <div className="map-page" style={{ width: "100%", height: "calc(100vh - 150px)", minHeight: isMobile ? "650px" : "420px", background: "#020617", position: "relative", overflow: "visible" }}>
-      <aside className="map-info-grid"><header className="map-title"><span>ZEEKFUSION / TRAVEL MAP</span><h1>Travels <br/>on stream.</h1></header><div className="map-stat"><span>{viewMode==='world'?'COUNTRIES VISITED':'STATES VISITED'}</span><strong>{viewMode==='world'?visitedCountryData.length:visitedStateData.length}</strong><small>{viewMode==='world'?'Around the world':'Across the USA'}</small></div><div className="map-stat map-upcoming"><span>UPCOMING</span><strong>{viewMode==='world'?plannedCountryData.length:plannedStateData.length}</strong><small>Next on the map</small></div></aside>
-      <nav className="map-view-controls" aria-label="Map region">{[['world','World'],['usa','USA']].map(([value,label])=><button key={value} aria-pressed={viewMode===value} onClick={()=>{setViewMode(value);setSelectedPlace(null);setHoveredPlace(null);setVoteSearch('');}} style={buttonStyle(viewMode===value,value==='world'?'#3b82f6':'#22d3ee')}>{label}</button>)}</nav>
+      <aside className="map-info-grid"><header className="map-title"><span>ZEEKFUSION / TRAVEL MAP</span><h1>{tr("Travels ")}<br/>{tr("on stream.")}</h1></header><div className="map-stat"><span>{viewMode==='world'?'COUNTRIES VISITED':'STATES VISITED'}</span><strong>{viewMode==='world'?visitedCountryData.length:visitedStateData.length}</strong><small>{viewMode==='world'?'Around the world':'Across the USA'}</small></div><div className="map-stat map-upcoming"><span>{tr("UPCOMING")}</span><strong>{viewMode==='world'?plannedCountryData.length:plannedStateData.length}</strong><small>{tr("Next on the map")}</small></div></aside>
+      <nav className="map-view-controls" aria-label="Map region">{[['world','World'],['usa','USA']].map(([value,label])=><button key={value} aria-pressed={viewMode===value} onClick={()=>{setViewMode(value);setSelectedPlace(null);setHoveredPlace(null);setVoteSearch('');}} style={buttonStyle(viewMode===value,value==='world'?'#3b82f6':'#22d3ee')}>{tr(label)}</button>)}</nav>
 
       <div className="map-votes"
         style={{
@@ -684,7 +685,7 @@ export default function TravelMap() {
 
             <div style={{ display: "grid", gap: 10 }}>
               {filteredVotes.length === 0 && (
-                <div style={{ color: "#94a3b8", fontSize: 14 }}>No results found.</div>
+                <div style={{ color: "#94a3b8", fontSize: 14 }}>{tr("No results found.")}</div>
               )}
 
               {filteredVotes.map((item, index) => {
@@ -831,7 +832,7 @@ export default function TravelMap() {
             </div>
           )}
 
-          <div className="map-destination-links">{activeInfoPanel.entries?.length?activeInfoPanel.entries.map(entry=><article key={entry.id}><strong>{entry.location||entry.name}</strong><span>{entry.status==='visited'?'Visited':'Upcoming'}</span>{entry.note&&<p>{entry.note}</p>}{entry.link&&<a href={entry.link} target="_blank" rel="noreferrer">Destination details ↗</a>}{(entry.videos??(entry.video?[{title:'Watch stream / video',url:entry.video}]:[])).map((video,i)=><a key={i} href={video.url} target="_blank" rel="noreferrer">▶ {video.title} ↗</a>)}</article>):<p>No stops added here yet.</p>}</div><button className="map-panel-close" onClick={()=>setSelectedPlace(null)}>Close</button>
+          <div className="map-destination-links">{activeInfoPanel.entries?.length?activeInfoPanel.entries.map(entry=><article key={entry.id}><strong>{entry.location||entry.name}</strong><span>{entry.status==='visited'?'Visited':'Upcoming'}</span>{entry.note&&<p>{entry.note}</p>}{entry.link&&<a href={entry.link} target="_blank" rel="noreferrer">{tr("Destination details ↗")}</a>}{(entry.videos??(entry.video?[{title:'Watch stream / video',url:entry.video}]:[])).map((video,i)=><a key={i} href={video.url} target="_blank" rel="noreferrer">▶ {video.title} ↗</a>)}</article>):<p>{tr("No stops added here yet.")}</p>}</div><button className="map-panel-close" onClick={()=>setSelectedPlace(null)}>{tr("Close")}</button>
         </div>
       )}
 
@@ -960,9 +961,9 @@ export default function TravelMap() {
             border: "1px solid rgba(96,165,250,0.18)"
           }}
         >
-          <span><span style={{ color: "#3b82f6" }}>■</span> Visited Area</span>
-          <span><span style={{ color: "#facc15" }}>■</span> Going Soon</span>
-          <span><span style={{ color: "#93c5fd" }}>Hover / Click</span> for info</span>
+          <span><span style={{ color: "#3b82f6" }}>■</span>{tr(" Visited Area")}</span>
+          <span><span style={{ color: "#facc15" }}>■</span>{tr(" Going Soon")}</span>
+          <span><span style={{ color: "#93c5fd" }}>{tr("Hover / Click")}</span>{tr(" for info")}</span>
         </div>
       )}
 

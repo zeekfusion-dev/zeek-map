@@ -1,0 +1,4 @@
+import React from 'react';
+import {amountZ} from '../server/z-format.mjs';
+import './RankingList.css';
+export default function RankingList({players=[],field='zs_balance',offset=0}){const podium=offset===0?players.slice(0,3):[],rest=offset===0?players.slice(3):players;return <div className="ranking-list"><div className="ranking-podium">{podium.map((u,i)=><article className={'ranking-card ranking-place-'+(i+1)} key={u.username}><span className="ranking-badge" aria-label={'#'+(i+1)}>{['🥇','🥈','🥉'][i]} <b>#{i+1}</b></span><strong className="ranking-name">@{u.username}</strong><span className="ranking-points">{amountZ(u[field])}</span></article>)}</div>{rest.length>0&&<ol className="ranking-runners" start={offset||4}>{rest.map((u,i)=><li key={u.username}><span className="ranking-number">#{(offset||3)+i+1}</span><strong>@{u.username}</strong><span>{amountZ(u[field])}</span></li>)}</ol>}</div>}

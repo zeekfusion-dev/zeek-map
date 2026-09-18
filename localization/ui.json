@@ -1,0 +1,1778 @@
+{
+  "HOME": {
+    "es": "INICIO",
+    "zh": "首页",
+    "de": "START",
+    "ru": "ГЛАВНАЯ"
+  },
+  "MAP": {
+    "es": "MAPA",
+    "zh": "地图",
+    "de": "KARTE",
+    "ru": "КАРТА"
+  },
+  "Z MARKET": {
+    "es": "MERCADO Z",
+    "zh": "Z 市场",
+    "de": "Z-MARKT",
+    "ru": "Z МАРКЕТ"
+  },
+  "MC SERVER": {
+    "es": "SERVIDOR MC",
+    "zh": "MC 服务器",
+    "de": "MC-SERVER",
+    "ru": "MC СЕРВЕР"
+  },
+  "CLIPS": {
+    "es": "CLIPS",
+    "zh": "短视频",
+    "de": "CLIPS",
+    "ru": "КЛИПЫ"
+  },
+  "WATCH LIVE": {
+    "es": "VER EN VIVO",
+    "zh": "观看直播",
+    "de": "LIVE ANSEHEN",
+    "ru": "СМОТРЕТЬ ЭФИР"
+  },
+  "WELCOME TO": {
+    "es": "BIENVENIDO A",
+    "zh": "欢迎来到",
+    "de": "WILLKOMMEN BEI",
+    "ru": "ДОБРО ПОЖАЛОВАТЬ В"
+  },
+  "IRL STREAMER. TRAVELER.": {
+    "es": "STREAMER IRL. VIAJERO.",
+    "zh": "户外主播。旅行者。",
+    "de": "IRL-STREAMER. REISENDER.",
+    "ru": "IRL-СТРИМЕР. ПУТЕШЕСТВЕННИК."
+  },
+  "CONTENT CREATOR.": {
+    "es": "CREADOR DE CONTENIDO.",
+    "zh": "内容创作者。",
+    "de": "CONTENT-CREATOR.",
+    "ru": "СОЗДАТЕЛЬ КОНТЕНТА."
+  },
+  "WATCH LIVE ON KICK": {
+    "es": "VER EN VIVO EN KICK",
+    "zh": "在 KICK 观看直播",
+    "de": "LIVE AUF KICK",
+    "ru": "ЭФИР НА KICK"
+  },
+  "WATCH LIVE ON TWITCH": {
+    "es": "VER EN VIVO EN TWITCH",
+    "zh": "在 TWITCH 观看直播",
+    "de": "LIVE AUF TWITCH",
+    "ru": "ЭФИР НА TWITCH"
+  },
+  "WATCH LIVE ON YOUTUBE": {
+    "es": "VER EN VIVO EN YOUTUBE",
+    "zh": "在 YOUTUBE 观看直播",
+    "de": "LIVE AUF YOUTUBE",
+    "ru": "ЭФИР НА YOUTUBE"
+  },
+  "TRAVEL MAP": {
+    "es": "MAPA DE VIAJES",
+    "zh": "旅行地图",
+    "de": "REISEKARTE",
+    "ru": "КАРТА ПУТЕШЕСТВИЙ"
+  },
+  "See everywhere I’ve been and where I’m going next.": {
+    "es": "Mira dónde he estado y adónde iré después.",
+    "zh": "看看我去过哪里，接下来又要去哪里。",
+    "de": "Sieh, wo ich war und wohin es als Nächstes geht.",
+    "ru": "Узнай, где я был и куда отправлюсь дальше."
+  },
+  "EXPLORE MAP →": {
+    "es": "EXPLORAR MAPA →",
+    "zh": "探索地图 →",
+    "de": "KARTE ENTDECKEN →",
+    "ru": "ОТКРЫТЬ КАРТУ →"
+  },
+  "THE Z MARKET": {
+    "es": "EL MERCADO Z",
+    "zh": "Z 市场",
+    "de": "DER Z-MARKT",
+    "ru": "Z МАРКЕТ"
+  },
+  "Earn Zs in chat. Unlock rewards. Join the community.": {
+    "es": "Gana Zs en el chat. Desbloquea recompensas. Únete a la comunidad.",
+    "zh": "在聊天中赢取 Zs，解锁奖励，加入社区。",
+    "de": "Verdiene Zs im Chat. Schalte Belohnungen frei. Werde Teil der Community.",
+    "ru": "Зарабатывай Zs в чате, открывай награды и присоединяйся к сообществу."
+  },
+  "ENTER Z MARKET →": {
+    "es": "ENTRAR AL MERCADO Z →",
+    "zh": "进入 Z 市场 →",
+    "de": "Z-MARKT ÖFFNEN →",
+    "ru": "ОТКРЫТЬ Z МАРКЕТ →"
+  },
+  "ENTER THE Z MARKET →": {
+    "es": "ENTRAR AL MERCADO Z →",
+    "zh": "进入 Z 市场 →",
+    "de": "Z-MARKT ÖFFNEN →",
+    "ru": "ОТКРЫТЬ Z МАРКЕТ →"
+  },
+  "LATEST VIDEO": {
+    "es": "ÚLTIMO VIDEO",
+    "zh": "最新视频",
+    "de": "NEUESTES VIDEO",
+    "ru": "НОВОЕ ВИДЕО"
+  },
+  "WATCH ON YOUTUBE →": {
+    "es": "VER EN YOUTUBE →",
+    "zh": "在 YOUTUBE 观看 →",
+    "de": "AUF YOUTUBE ANSEHEN →",
+    "ru": "СМОТРЕТЬ НА YOUTUBE →"
+  },
+  "CONNECT WITH ME": {
+    "es": "CONECTA CONMIGO",
+    "zh": "关注我",
+    "de": "BLEIB IN KONTAKT",
+    "ru": "МОИ СОЦСЕТИ"
+  },
+  "JOIN THE DISCORD COMMUNITY": {
+    "es": "ÚNETE A LA COMUNIDAD DE DISCORD",
+    "zh": "加入 DISCORD 社区",
+    "de": "DISCORD-COMMUNITY BEITRETEN",
+    "ru": "ПРИСОЕДИНИТЬСЯ К DISCORD"
+  },
+  "Hang out. Stream updates. Join the chaos.": {
+    "es": "Pasa el rato. Novedades del stream. Únete al caos.",
+    "zh": "一起聊天，获取直播动态，加入欢乐。",
+    "de": "Gemeinsam abhängen. Stream-News. Sei dabei.",
+    "ru": "Общайся, следи за эфирами и присоединяйся к веселью."
+  },
+  "TOTAL VIEWS": {
+    "es": "VISTAS TOTALES",
+    "zh": "总播放量",
+    "de": "AUFRUFE INSGESAMT",
+    "ru": "ВСЕГО ПРОСМОТРОВ"
+  },
+  "VIDEOS": {
+    "es": "VIDEOS",
+    "zh": "视频",
+    "de": "VIDEOS",
+    "ru": "ВИДЕО"
+  },
+  "VISIT ALL 50 U.S. STATES": {
+    "es": "VISITAR LOS 50 ESTADOS DE EE. UU.",
+    "zh": "游遍美国全部 50 个州",
+    "de": "ALLE 50 US-BUNDESSTAATEN BESUCHEN",
+    "ru": "ПОСЕТИТЬ ВСЕ 50 ШТАТОВ США"
+  },
+  "BY THE END OF 2027": {
+    "es": "ANTES DE QUE TERMINE 2027",
+    "zh": "截至 2027 年底",
+    "de": "BIS ENDE 2027",
+    "ru": "ДО КОНЦА 2027 ГОДА"
+  },
+  "LIVE": {
+    "es": "EN VIVO",
+    "zh": "直播",
+    "de": "LIVE",
+    "ru": "В ЭФИРЕ"
+  },
+  "ALMOST EVERY DAY": {
+    "es": "CASI TODOS LOS DÍAS",
+    "zh": "几乎每天",
+    "de": "FAST JEDEN TAG",
+    "ru": "ПОЧТИ КАЖДЫЙ ДЕНЬ"
+  },
+  "Start here": {
+    "es": "Empieza aquí",
+    "zh": "从这里开始",
+    "de": "Hier starten",
+    "ru": "Начни здесь"
+  },
+  "Rewards shop": {
+    "es": "Tienda de recompensas",
+    "zh": "奖励商店",
+    "de": "Belohnungsshop",
+    "ru": "Магазин наград"
+  },
+  "Arcade": {
+    "es": "Arcade",
+    "zh": "游戏厅",
+    "de": "Arcade",
+    "ru": "Аркада"
+  },
+  "Giveaways": {
+    "es": "Sorteos",
+    "zh": "抽奖",
+    "de": "Verlosungen",
+    "ru": "Розыгрыши"
+  },
+  "Leaderboard": {
+    "es": "Clasificación",
+    "zh": "排行榜",
+    "de": "Rangliste",
+    "ru": "Рейтинг"
+  },
+  "Live activity": {
+    "es": "Actividad en vivo",
+    "zh": "实时动态",
+    "de": "Live-Aktivität",
+    "ru": "Лента событий"
+  },
+  "My points & history": {
+    "es": "Mis puntos e historial",
+    "zh": "我的积分与记录",
+    "de": "Meine Punkte & Verlauf",
+    "ru": "Мои баллы и история"
+  },
+  "How it works": {
+    "es": "Cómo funciona",
+    "zh": "玩法说明",
+    "de": "So funktioniert’s",
+    "ru": "Как это работает"
+  },
+  "How It Works": {
+    "es": "Cómo funciona",
+    "zh": "玩法说明",
+    "de": "So funktioniert’s",
+    "ru": "Как это работает"
+  },
+  "Owner controls": {
+    "es": "Controles del creador",
+    "zh": "所有者设置",
+    "de": "Inhaber-Einstellungen",
+    "ru": "Настройки владельца"
+  },
+  "Explore Z Market": {
+    "es": "Explora el Mercado Z",
+    "zh": "探索 Z 市场",
+    "de": "Z-Markt entdecken",
+    "ru": "Исследуй Z Маркет"
+  },
+  "EXPLORE": {
+    "es": "EXPLORAR",
+    "zh": "探索",
+    "de": "ENTDECKEN",
+    "ru": "ОБЗОР"
+  },
+  "COMMUNITY": {
+    "es": "COMUNIDAD",
+    "zh": "社区",
+    "de": "COMMUNITY",
+    "ru": "СООБЩЕСТВО"
+  },
+  "YOUR ACCOUNT": {
+    "es": "TU CUENTA",
+    "zh": "你的账户",
+    "de": "DEIN KONTO",
+    "ru": "ТВОЙ АККАУНТ"
+  },
+  "TOP PLAYERS": {
+    "es": "MEJORES JUGADORES",
+    "zh": "顶尖玩家",
+    "de": "TOP-SPIELER",
+    "ru": "ЛУЧШИЕ ИГРОКИ"
+  },
+  "CURRENT ZS · THE ONES TO CATCH": {
+    "es": "ZS ACTUALES · LOS RIVALES A BATIR",
+    "zh": "当前 ZS · 追赶榜首",
+    "de": "AKTUELLE ZS · DIE SPITZENREITER",
+    "ru": "ТЕКУЩИЕ ZS · ЛИДЕРЫ"
+  },
+  "View Full Leaderboard ↗": {
+    "es": "Ver clasificación completa ↗",
+    "zh": "查看完整排行榜 ↗",
+    "de": "Gesamte Rangliste ↗",
+    "ru": "Полный рейтинг ↗"
+  },
+  "EARN YOUR PLACE": {
+    "es": "GÁNATE TU PUESTO",
+    "zh": "赢得你的名次",
+    "de": "ERKÄMPFE DEINEN PLATZ",
+    "ru": "ЗАСЛУЖИ СВОЁ МЕСТО"
+  },
+  "THE LEADERBOARD": {
+    "es": "LA CLASIFICACIÓN",
+    "zh": "排行榜",
+    "de": "DIE RANGLISTE",
+    "ru": "РЕЙТИНГ"
+  },
+  "Current Zs": {
+    "es": "Zs actuales",
+    "zh": "当前 Zs",
+    "de": "Aktuelle Zs",
+    "ru": "Текущие Zs"
+  },
+  "Lifetime Earned": {
+    "es": "Total ganado",
+    "zh": "累计获得",
+    "de": "Insgesamt verdient",
+    "ru": "Заработано за всё время"
+  },
+  "Who has the most Zs available right now. Zs locked in challenges are excluded.": {
+    "es": "Quién tiene más Zs disponibles ahora. No se cuentan los Zs reservados en desafíos.",
+    "zh": "按当前可用 Zs 排名，不包含挑战中锁定的 Zs。",
+    "de": "Wer gerade die meisten verfügbaren Zs hat. In Herausforderungen gebundene Zs zählen nicht.",
+    "ru": "У кого сейчас больше доступных Zs. Ставки в открытых дуэлях не учитываются."
+  },
+  "All Zs earned, ever. Arcade profits count; returned stakes do not.": {
+    "es": "Todos los Zs ganados. Se cuentan las ganancias del Arcade, no las apuestas devueltas.",
+    "zh": "历史累计获得的 Zs，包括游戏净收益，不包含返还的本金。",
+    "de": "Alle jemals verdienten Zs. Arcade-Gewinne zählen, zurückgegebene Einsätze nicht.",
+    "ru": "Все заработанные Zs. Прибыль в Аркаде учитывается, возвращённые ставки — нет."
+  },
+  "Loading rankings…": {
+    "es": "Cargando clasificación…",
+    "zh": "正在加载排名…",
+    "de": "Rangliste wird geladen…",
+    "ru": "Загрузка рейтинга…"
+  },
+  "Load more players ↓": {
+    "es": "Cargar más jugadores ↓",
+    "zh": "加载更多玩家 ↓",
+    "de": "Weitere Spieler laden ↓",
+    "ru": "Показать ещё игроков ↓"
+  },
+  "The first spot is waiting. Win a question in chat to get started.": {
+    "es": "El primer puesto te espera. Gana una trivia en el chat para empezar.",
+    "zh": "榜首虚位以待。在聊天中答对问题即可开始。",
+    "de": "Der erste Platz wartet. Gewinne eine Quizfrage im Chat.",
+    "ru": "Первое место ждёт. Начни с победы в викторине в чате."
+  },
+  "EARN · PLAY · REDEEM": {
+    "es": "GANA · JUEGA · CANJEA",
+    "zh": "赚取 · 游戏 · 兑换",
+    "de": "VERDIENEN · SPIELEN · EINLÖSEN",
+    "ru": "ЗАРАБАТЫВАЙ · ИГРАЙ · ОБМЕНИВАЙ"
+  },
+  "Your points.": {
+    "es": "Tus puntos.",
+    "zh": "你的积分。",
+    "de": "Deine Punkte.",
+    "ru": "Твои баллы."
+  },
+  "Your kind of chaos.": {
+    "es": "Tu estilo de caos.",
+    "zh": "你的欢乐天地。",
+    "de": "Deine Art von Chaos.",
+    "ru": "Твой собственный хаос."
+  },
+  "Win Z Points in live trivia. Spend them on stream interactions, or play in the Arcade to risk and win more.": {
+    "es": "Gana puntos Z en trivias en vivo. Úsalos para interacciones del stream o arriesga y gana más en el Arcade.",
+    "zh": "通过直播答题赢取 Z 积分，用于直播互动，或在游戏厅冒险赢取更多。",
+    "de": "Gewinne Z-Punkte im Live-Quiz. Nutze sie für Stream-Interaktionen oder riskiere sie in der Arcade, um mehr zu gewinnen.",
+    "ru": "Выигрывай Z-баллы в викторинах. Трать их на взаимодействия со стримом или рискуй в Аркаде, чтобы выиграть больше."
+  },
+  "How Z Points work →": {
+    "es": "Cómo funcionan los puntos Z →",
+    "zh": "Z 积分玩法 →",
+    "de": "So funktionieren Z-Punkte →",
+    "ru": "Как работают Z-баллы →"
+  },
+  "YOUR Z POINTS": {
+    "es": "TUS PUNTOS Z",
+    "zh": "你的 Z 积分",
+    "de": "DEINE Z-PUNKTE",
+    "ru": "ТВОИ Z-БАЛЛЫ"
+  },
+  "Rank": {
+    "es": "Puesto",
+    "zh": "排名",
+    "de": "Rang",
+    "ru": "Место"
+  },
+  "Unranked": {
+    "es": "Sin clasificar",
+    "zh": "暂无排名",
+    "de": "Ohne Rang",
+    "ru": "Без рейтинга"
+  },
+  "In challenges": {
+    "es": "En desafíos",
+    "zh": "挑战中",
+    "de": "In Herausforderungen",
+    "ru": "В дуэлях"
+  },
+  "Open Arcade →": {
+    "es": "Abrir Arcade →",
+    "zh": "进入游戏厅 →",
+    "de": "Arcade öffnen →",
+    "ru": "Открыть Аркаду →"
+  },
+  "Log in to view your Z Points": {
+    "es": "Inicia sesión para ver tus puntos Z",
+    "zh": "登录以查看你的 Z 积分",
+    "de": "Anmelden, um deine Z-Punkte zu sehen",
+    "ru": "Войди, чтобы увидеть свои Z-баллы"
+  },
+  "Use the same Kick account you use in Zeek’s chat.": {
+    "es": "Usa la misma cuenta de Kick que usas en el chat de Zeek.",
+    "zh": "请使用你在 Zeek 聊天中使用的 Kick 账户。",
+    "de": "Nutze dasselbe Kick-Konto wie in Zeeks Chat.",
+    "ru": "Используй тот же аккаунт Kick, что и в чате Zeek."
+  },
+  "Log in with Kick ↗": {
+    "es": "Iniciar sesión con Kick ↗",
+    "zh": "使用 Kick 登录 ↗",
+    "de": "Mit Kick anmelden ↗",
+    "ru": "Войти через Kick ↗"
+  },
+  "Connect with Kick ↗": {
+    "es": "Conectar con Kick ↗",
+    "zh": "连接 Kick ↗",
+    "de": "Mit Kick verbinden ↗",
+    "ru": "Подключить Kick ↗"
+  },
+  "Find a stream reward": {
+    "es": "Encuentra una recompensa",
+    "zh": "选择直播奖励",
+    "de": "Stream-Belohnung finden",
+    "ru": "Найди награду для стрима"
+  },
+  "Use your Zs for interactions and forfeits.": {
+    "es": "Usa tus Zs para interacciones y retos.",
+    "zh": "使用 Zs 兑换互动与挑战。",
+    "de": "Nutze deine Zs für Interaktionen und Aufgaben.",
+    "ru": "Используй Zs для взаимодействий и заданий."
+  },
+  "Browse rewards": {
+    "es": "Ver recompensas",
+    "zh": "浏览奖励",
+    "de": "Belohnungen ansehen",
+    "ru": "Смотреть награды"
+  },
+  "Pick your next game": {
+    "es": "Elige tu próximo juego",
+    "zh": "选择下一款游戏",
+    "de": "Wähle dein nächstes Spiel",
+    "ru": "Выбери следующую игру"
+  },
+  "Single-player games and player challenges.": {
+    "es": "Juegos individuales y desafíos entre jugadores.",
+    "zh": "单人游戏和玩家对战。",
+    "de": "Einzelspiele und Spielerduelle.",
+    "ru": "Одиночные игры и дуэли игроков."
+  },
+  "Explore Arcade": {
+    "es": "Explorar Arcade",
+    "zh": "探索游戏厅",
+    "de": "Arcade entdecken",
+    "ru": "Исследуй Аркаду"
+  },
+  "Earn your first Zs": {
+    "es": "Gana tus primeros Zs",
+    "zh": "赢取你的第一笔 Zs",
+    "de": "Verdiene deine ersten Zs",
+    "ru": "Заработай первые Zs"
+  },
+  "Answer trivia in Zeek’s Kick chat.": {
+    "es": "Responde trivias en el chat de Kick de Zeek.",
+    "zh": "在 Zeek 的 Kick 聊天中回答问题。",
+    "de": "Beantworte Quizfragen in Zeeks Kick-Chat.",
+    "ru": "Отвечай на вопросы в Kick-чате Zeek."
+  },
+  "Learn how": {
+    "es": "Aprende cómo",
+    "zh": "了解玩法",
+    "de": "Mehr erfahren",
+    "ru": "Узнай как"
+  },
+  "THE COMMUNITY IN MOTION": {
+    "es": "LA COMUNIDAD EN ACCIÓN",
+    "zh": "社区正在行动",
+    "de": "DIE COMMUNITY IN AKTION",
+    "ru": "ЖИЗНЬ СООБЩЕСТВА"
+  },
+  "THE LIVE FEED": {
+    "es": "ACTIVIDAD EN VIVO",
+    "zh": "实时动态",
+    "de": "DER LIVE-FEED",
+    "ru": "ЛЕНТА СОБЫТИЙ"
+  },
+  "Updates every 15 seconds": {
+    "es": "Se actualiza cada 15 segundos",
+    "zh": "每 15 秒更新",
+    "de": "Aktualisierung alle 15 Sekunden",
+    "ru": "Обновление каждые 15 секунд"
+  },
+  "All": {
+    "es": "Todos",
+    "zh": "全部",
+    "de": "Alle",
+    "ru": "Все"
+  },
+  "Games": {
+    "es": "Juegos",
+    "zh": "游戏",
+    "de": "Spiele",
+    "ru": "Игры"
+  },
+  "Trivia": {
+    "es": "Trivia",
+    "zh": "答题",
+    "de": "Quiz",
+    "ru": "Викторина"
+  },
+  "Redemptions": {
+    "es": "Canjes",
+    "zh": "兑换",
+    "de": "Einlösungen",
+    "ru": "Обмены"
+  },
+  "View All Activity →": {
+    "es": "Ver toda la actividad →",
+    "zh": "查看全部动态 →",
+    "de": "Alle Aktivitäten ansehen →",
+    "ru": "Все события →"
+  },
+  "Put your Zs to work.": {
+    "es": "Pon tus Zs en acción.",
+    "zh": "让你的 Zs 派上用场。",
+    "de": "Setze deine Zs ein.",
+    "ru": "Пусти свои Zs в дело."
+  },
+  "Unlock a stream interaction. Zeek will handle the rest.": {
+    "es": "Desbloquea una interacción del stream. Zeek se encarga del resto.",
+    "zh": "解锁直播互动，剩下的交给 Zeek。",
+    "de": "Schalte eine Stream-Interaktion frei. Zeek kümmert sich um den Rest.",
+    "ru": "Открой взаимодействие со стримом. Остальное сделает Zeek."
+  },
+  "STREAM REWARD": {
+    "es": "RECOMPENSA DEL STREAM",
+    "zh": "直播奖励",
+    "de": "STREAM-BELOHNUNG",
+    "ru": "НАГРАДА СТРИМА"
+  },
+  "Type": {
+    "es": "Escribe",
+    "zh": "输入",
+    "de": "Tippe",
+    "ru": "Введи"
+  },
+  "in chat to buy": {
+    "es": " en el chat para comprar",
+    "zh": "即可在聊天中购买",
+    "de": "im Chat zum Kaufen",
+    "ru": "в чате для покупки"
+  },
+  "Redeem →": {
+    "es": "Canjear →",
+    "zh": "兑换 →",
+    "de": "Einlösen →",
+    "ru": "Обменять →"
+  },
+  "Connect to redeem": {
+    "es": "Conecta para canjear",
+    "zh": "连接账户以兑换",
+    "de": "Zum Einlösen anmelden",
+    "ru": "Войди для обмена"
+  },
+  "Sold out": {
+    "es": "Agotado",
+    "zh": "已售罄",
+    "de": "Ausverkauft",
+    "ru": "Нет в наличии"
+  },
+  "Keep stacking Zs": {
+    "es": "Sigue ganando Zs",
+    "zh": "继续赚取 Zs",
+    "de": "Sammle weiter Zs",
+    "ru": "Копи ещё Zs"
+  },
+  "Edit reward": {
+    "es": "Editar recompensa",
+    "zh": "编辑奖励",
+    "de": "Belohnung bearbeiten",
+    "ru": "Изменить награду"
+  },
+  "Confirm redemption": {
+    "es": "Confirmar canje",
+    "zh": "确认兑换",
+    "de": "Einlösung bestätigen",
+    "ru": "Подтвердить обмен"
+  },
+  "Cancel": {
+    "es": "Cancelar",
+    "zh": "取消",
+    "de": "Abbrechen",
+    "ru": "Отмена"
+  },
+  "Single Player": {
+    "es": "Un jugador",
+    "zh": "单人游戏",
+    "de": "Einzelspieler",
+    "ru": "Одиночная игра"
+  },
+  "Head-to-Head": {
+    "es": "Cara a cara",
+    "zh": "玩家对战",
+    "de": "Spielerduell",
+    "ru": "Дуэли"
+  },
+  "Open Challenges": {
+    "es": "Desafíos abiertos",
+    "zh": "公开挑战",
+    "de": "Offene Herausforderungen",
+    "ru": "Открытые дуэли"
+  },
+  "Play": {
+    "es": "Jugar",
+    "zh": "开始",
+    "de": "Spielen",
+    "ru": "Играть"
+  },
+  "Drop": {
+    "es": "Soltar",
+    "zh": "落球",
+    "de": "Fallen lassen",
+    "ru": "Бросить"
+  },
+  "Create Challenge": {
+    "es": "Crear desafío",
+    "zh": "创建挑战",
+    "de": "Duell erstellen",
+    "ru": "Создать дуэль"
+  },
+  "Cash out": {
+    "es": "Retirar",
+    "zh": "收取收益",
+    "de": "Gewinn sichern",
+    "ru": "Забрать выигрыш"
+  },
+  "Higher": {
+    "es": "Más alta",
+    "zh": "更高",
+    "de": "Höher",
+    "ru": "Выше"
+  },
+  "Lower": {
+    "es": "Más baja",
+    "zh": "更低",
+    "de": "Niedriger",
+    "ru": "Ниже"
+  },
+  "Hit": {
+    "es": "Pedir carta",
+    "zh": "要牌",
+    "de": "Karte ziehen",
+    "ru": "Ещё карту"
+  },
+  "Stand": {
+    "es": "Plantarse",
+    "zh": "停牌",
+    "de": "Halten",
+    "ru": "Хватит"
+  },
+  "Won": {
+    "es": "Ganado",
+    "zh": "获胜",
+    "de": "Gewonnen",
+    "ru": "Победа"
+  },
+  "Lost": {
+    "es": "Perdido",
+    "zh": "失败",
+    "de": "Verloren",
+    "ru": "Поражение"
+  },
+  "World": {
+    "es": "Mundo",
+    "zh": "世界",
+    "de": "Welt",
+    "ru": "Мир"
+  },
+  "USA": {
+    "es": "EE. UU.",
+    "zh": "美国",
+    "de": "USA",
+    "ru": "США"
+  },
+  "COUNTRIES VISITED": {
+    "es": "PAÍSES VISITADOS",
+    "zh": "已访问国家",
+    "de": "BESUCHTE LÄNDER",
+    "ru": "ПОСЕЩЕНО СТРАН"
+  },
+  "STATES VISITED": {
+    "es": "ESTADOS VISITADOS",
+    "zh": "已访问州",
+    "de": "BESUCHTE STAATEN",
+    "ru": "ПОСЕЩЕНО ШТАТОВ"
+  },
+  "Visited Area": {
+    "es": "Zona visitada",
+    "zh": "已访问地区",
+    "de": "Besuchte Region",
+    "ru": "Посещено"
+  },
+  "Going Soon": {
+    "es": "Próximamente",
+    "zh": "即将前往",
+    "de": "Demnächst",
+    "ru": "Скоро"
+  },
+  "Popular": {
+    "es": "Populares",
+    "zh": "热门",
+    "de": "Beliebt",
+    "ru": "Популярное"
+  },
+  "Watch video ↗": {
+    "es": "Ver video ↗",
+    "zh": "观看视频 ↗",
+    "de": "Video ansehen ↗",
+    "ru": "Смотреть видео ↗"
+  },
+  "JOIN SERVER": {
+    "es": "ENTRAR AL SERVIDOR",
+    "zh": "加入服务器",
+    "de": "SERVER BEITRETEN",
+    "ru": "ПРИСОЕДИНИТЬСЯ"
+  },
+  "JAVA EDITION": {
+    "es": "EDICIÓN JAVA",
+    "zh": "JAVA 版",
+    "de": "JAVA EDITION",
+    "ru": "JAVA EDITION"
+  },
+  "BEDROCK EDITION": {
+    "es": "EDICIÓN BEDROCK",
+    "zh": "BEDROCK 版",
+    "de": "BEDROCK EDITION",
+    "ru": "BEDROCK EDITION"
+  },
+  "HOW TO JOIN": {
+    "es": "CÓMO ENTRAR",
+    "zh": "如何加入",
+    "de": "SO TRITTST DU BEI",
+    "ru": "КАК ПРИСОЕДИНИТЬСЯ"
+  },
+  "SERVER INFO": {
+    "es": "INFO DEL SERVIDOR",
+    "zh": "服务器信息",
+    "de": "SERVER-INFOS",
+    "ru": "О СЕРВЕРЕ"
+  },
+  "BACK TO ZEEKFUSION.COM": {
+    "es": "VOLVER A ZEEKFUSION.COM",
+    "zh": "返回 ZEEKFUSION.COM",
+    "de": "ZURÜCK ZU ZEEKFUSION.COM",
+    "ru": "НАЗАД НА ZEEKFUSION.COM"
+  },
+  "Back": {
+    "es": "Volver",
+    "zh": "返回",
+    "de": "Zurück",
+    "ru": "Назад"
+  },
+  "COPY IP": {
+    "es": "COPIAR IP",
+    "zh": "复制 IP",
+    "de": "IP KOPIEREN",
+    "ru": "КОПИРОВАТЬ IP"
+  },
+  "Join Multiplayer": {
+    "es": "Entrar al multijugador",
+    "zh": "加入多人游戏",
+    "de": "Mehrspieler beitreten",
+    "ru": "Сетевая игра"
+  },
+  "How to Join": {
+    "es": "Cómo entrar",
+    "zh": "如何加入",
+    "de": "So trittst du bei",
+    "ru": "Как присоединиться"
+  },
+  "Server Info": {
+    "es": "Info del servidor",
+    "zh": "服务器信息",
+    "de": "Server-Infos",
+    "ru": "О сервере"
+  },
+  "Open Minecraft: Java Edition.": {
+    "es": "Abre Minecraft: Java Edition.",
+    "zh": "打开 Minecraft: Java Edition。",
+    "de": "Öffne Minecraft: Java Edition.",
+    "ru": "Открой Minecraft: Java Edition."
+  },
+  "Select Multiplayer, then Add Server.": {
+    "es": "Selecciona Multijugador y Añadir servidor.",
+    "zh": "选择多人游戏，然后添加服务器。",
+    "de": "Wähle Mehrspieler, dann Server hinzufügen.",
+    "ru": "Выбери «Сетевая игра», затем «Добавить сервер»."
+  },
+  "Name it ZeekFusion. Paste the Java IP into Server Address.": {
+    "es": "Ponle ZeekFusion. Pega la IP de Java en Dirección del servidor.",
+    "zh": "命名为 ZeekFusion，将 Java IP 粘贴到服务器地址中。",
+    "de": "Nenne ihn ZeekFusion. Füge die Java-IP unter Serveradresse ein.",
+    "ru": "Назови его ZeekFusion. Вставь Java IP в адрес сервера."
+  },
+  "Click Done, select ZeekFusion, then Join Server.": {
+    "es": "Pulsa Listo, elige ZeekFusion y entra al servidor.",
+    "zh": "点击完成，选择 ZeekFusion，然后加入服务器。",
+    "de": "Klicke auf Fertig, wähle ZeekFusion und tritt dem Server bei.",
+    "ru": "Нажми «Готово», выбери ZeekFusion и подключись."
+  },
+  "Open Minecraft: Bedrock Edition.": {
+    "es": "Abre Minecraft: Bedrock Edition.",
+    "zh": "打开 Minecraft: Bedrock Edition。",
+    "de": "Öffne Minecraft: Bedrock Edition.",
+    "ru": "Открой Minecraft: Bedrock Edition."
+  },
+  "Select Play, then Servers and Add Server.": {
+    "es": "Selecciona Jugar, Servidores y Añadir servidor.",
+    "zh": "选择游戏、服务器，然后添加服务器。",
+    "de": "Wähle Spielen, dann Server und Server hinzufügen.",
+    "ru": "Выбери «Играть», «Серверы», затем «Добавить сервер»."
+  },
+  "Name it ZeekFusion. Enter the Bedrock IP and port separately.": {
+    "es": "Ponle ZeekFusion. Introduce la IP de Bedrock y el puerto por separado.",
+    "zh": "命名为 ZeekFusion，分别输入 Bedrock IP 和端口。",
+    "de": "Nenne ihn ZeekFusion. Gib Bedrock-IP und Port getrennt ein.",
+    "ru": "Назови его ZeekFusion. Введи Bedrock IP и порт отдельно."
+  },
+  "Save the server, then select Join Server.": {
+    "es": "Guarda el servidor y selecciona Entrar al servidor.",
+    "zh": "保存服务器，然后选择加入服务器。",
+    "de": "Speichere den Server und wähle Server beitreten.",
+    "ru": "Сохрани сервер и подключись к нему."
+  },
+  "1. Earn in chat": {
+    "es": "1. Gana en el chat",
+    "zh": "1. 聊天赚积分",
+    "de": "1. Im Chat verdienen",
+    "ru": "1. Зарабатывай в чате"
+  },
+  "2. Find your reward": {
+    "es": "2. Elige tu recompensa",
+    "zh": "2. 选择奖励",
+    "de": "2. Belohnung finden",
+    "ru": "2. Выбери награду"
+  },
+  "3. Make the stream yours": {
+    "es": "3. Dale tu toque al stream",
+    "zh": "3. 参与直播互动",
+    "de": "3. Den Stream mitgestalten",
+    "ru": "3. Влияй на стрим"
+  },
+  "available balance": {
+    "es": " saldo disponible",
+    "zh": "可用余额",
+    "de": "verfügbares Guthaben",
+    "ru": "доступный баланс"
+  },
+  "BotRix conversions": {
+    "es": "Conversiones de BotRix",
+    "zh": "BotRix 兑换",
+    "de": "BotRix-Umwandlungen",
+    "ru": "Обмен BotRix"
+  },
+  "BotRix points": {
+    "es": "Puntos BotRix",
+    "zh": "BotRix 积分",
+    "de": "BotRix-Punkte",
+    "ru": "Баллы BotRix"
+  },
+  "BotRix tickets": {
+    "es": "Solicitudes de BotRix",
+    "zh": "BotRix 申请",
+    "de": "BotRix-Anträge",
+    "ru": "Заявки BotRix"
+  },
+  "Submit ticket": {
+    "es": "Enviar solicitud",
+    "zh": "提交申请",
+    "de": "Antrag senden",
+    "ru": "Отправить заявку"
+  },
+  "Request a conversion →": {
+    "es": "Solicitar conversión →",
+    "zh": "申请兑换 →",
+    "de": "Umwandlung beantragen →",
+    "ru": "Запросить обмен →"
+  },
+  "Your Z history": {
+    "es": "Tu historial de Zs",
+    "zh": "你的 Z 记录",
+    "de": "Dein Z-Verlauf",
+    "ru": "История Z"
+  },
+  "Your rewards": {
+    "es": "Tus recompensas",
+    "zh": "你的奖励",
+    "de": "Deine Belohnungen",
+    "ru": "Твои награды"
+  },
+  "You haven’t redeemed a reward yet.": {
+    "es": "Aún no has canjeado ninguna recompensa.",
+    "zh": "你尚未兑换奖励。",
+    "de": "Du hast noch keine Belohnung eingelöst.",
+    "ru": "Ты ещё не обменивал награды."
+  },
+  "Your first Z is waiting in chat.": {
+    "es": "Tu primer Z te espera en el chat.",
+    "zh": "你的第一个 Z 在聊天中等你。",
+    "de": "Dein erster Z wartet im Chat.",
+    "ru": "Твой первый Z ждёт в чате."
+  },
+  "Connect the Kick account you use in chat to see your Zs.": {
+    "es": "Conecta tu cuenta de Kick del chat para ver tus Zs.",
+    "zh": "连接你用于聊天的 Kick 账户以查看 Zs。",
+    "de": "Verbinde dein Kick-Konto aus dem Chat, um deine Zs zu sehen.",
+    "ru": "Подключи аккаунт Kick из чата, чтобы увидеть свои Zs."
+  },
+  "Connect with Kick": {
+    "es": "Conectar con Kick",
+    "zh": "连接 Kick",
+    "de": "Mit Kick verbinden",
+    "ru": "Подключить Kick"
+  },
+  "Opening the Market…": {
+    "es": "Abriendo el Mercado…",
+    "zh": "正在打开市场…",
+    "de": "Markt wird geöffnet…",
+    "ru": "Открываем Маркет…"
+  },
+  "Retry": {
+    "es": "Reintentar",
+    "zh": "重试",
+    "de": "Erneut versuchen",
+    "ru": "Повторить"
+  },
+  "Retry Arcade": {
+    "es": "Reintentar Arcade",
+    "zh": "重试游戏厅",
+    "de": "Arcade erneut laden",
+    "ru": "Перезагрузить Аркаду"
+  },
+  "Jump into chat ↗": {
+    "es": "Entrar al chat ↗",
+    "zh": "进入聊天 ↗",
+    "de": "Zum Chat ↗",
+    "ru": "Перейти в чат ↗"
+  },
+  "Last winner": {
+    "es": "Último ganador",
+    "zh": "上次获胜者",
+    "de": "Letzter Gewinner",
+    "ru": "Последний победитель"
+  },
+  "ϟ LIVE TRIVIA": {
+    "es": "ϟ TRIVIA EN VIVO",
+    "zh": "ϟ 直播答题",
+    "de": "ϟ LIVE-QUIZ",
+    "ru": "ϟ ВИКТОРИНА В ЭФИРЕ"
+  },
+  "New here? How It Works →": {
+    "es": "¿Eres nuevo? Cómo funciona →",
+    "zh": "新来的？查看玩法 →",
+    "de": "Neu hier? So funktioniert’s →",
+    "ru": "Впервые здесь? Как это работает →"
+  },
+  "The shelf is getting ready.": {
+    "es": "Estamos preparando las recompensas.",
+    "zh": "奖励正在准备中。",
+    "de": "Die Belohnungen werden vorbereitet.",
+    "ru": "Награды готовятся."
+  },
+  "Zeek will add rewards here. Your Zs stay in your Market until you choose to use them.": {
+    "es": "Zeek añadirá recompensas aquí. Tus Zs se guardan hasta que decidas usarlos.",
+    "zh": "Zeek 会在这里添加奖励。你的 Zs 会保留到你选择使用它们。",
+    "de": "Zeek fügt hier Belohnungen hinzu. Deine Zs bleiben erhalten, bis du sie nutzt.",
+    "ru": "Zeek добавит сюда награды. Твои Zs сохранятся, пока ты не решишь их использовать."
+  },
+  "A little luck. A lot of community.": {
+    "es": "Un poco de suerte. Mucha comunidad.",
+    "zh": "一点运气，满满社区乐趣。",
+    "de": "Ein bisschen Glück. Viel Gemeinschaft.",
+    "ru": "Немного удачи. Много общения."
+  },
+  "COMMUNITY GIVEAWAY": {
+    "es": "SORTEO DE LA COMUNIDAD",
+    "zh": "社区抽奖",
+    "de": "COMMUNITY-VERLOSUNG",
+    "ru": "РОЗЫГРЫШ СООБЩЕСТВА"
+  },
+  "One entry per Kick account.": {
+    "es": "Una participación por cuenta de Kick.",
+    "zh": "每个 Kick 账户限参加一次。",
+    "de": "Eine Teilnahme pro Kick-Konto.",
+    "ru": "Одна заявка на аккаунт Kick."
+  },
+  "Nothing open just yet.": {
+    "es": "Todavía no hay sorteos abiertos.",
+    "zh": "目前暂无开放的活动。",
+    "de": "Noch nichts geöffnet.",
+    "ru": "Пока ничего не открыто."
+  },
+  "Watch the stream for the next community giveaway.": {
+    "es": "Mira el stream para el próximo sorteo.",
+    "zh": "关注直播，等待下一次社区抽奖。",
+    "de": "Schau im Stream nach der nächsten Verlosung.",
+    "ru": "Следи за стримом, чтобы не пропустить розыгрыш."
+  },
+  "Game": {
+    "es": "Juego",
+    "zh": "游戏",
+    "de": "Spiel",
+    "ru": "Игра"
+  },
+  "Wager": {
+    "es": "Apuesta",
+    "zh": "下注",
+    "de": "Einsatz",
+    "ru": "Ставка"
+  },
+  "Result": {
+    "es": "Resultado",
+    "zh": "结果",
+    "de": "Ergebnis",
+    "ru": "Результат"
+  },
+  "Date": {
+    "es": "Fecha",
+    "zh": "日期",
+    "de": "Datum",
+    "ru": "Дата"
+  },
+  "Game rules": {
+    "es": "Reglas del juego",
+    "zh": "游戏规则",
+    "de": "Spielregeln",
+    "ru": "Правила игры"
+  },
+  "Multipliers & odds": {
+    "es": "Multiplicadores y probabilidades",
+    "zh": "倍率与概率",
+    "de": "Multiplikatoren & Chancen",
+    "ru": "Множители и шансы"
+  },
+  "YOUR RECENT GAMES": {
+    "es": "TUS ÚLTIMAS PARTIDAS",
+    "zh": "你的最近游戏",
+    "de": "DEINE LETZTEN SPIELE",
+    "ru": "ТВОИ ПОСЛЕДНИЕ ИГРЫ"
+  },
+  "Your game history starts with your first play.": {
+    "es": "Tu historial empieza con tu primera partida.",
+    "zh": "开始第一局游戏即可记录历史。",
+    "de": "Dein Verlauf beginnt mit deinem ersten Spiel.",
+    "ru": "История начнётся с первой игры."
+  },
+  "OPEN PLAYER CHALLENGES": {
+    "es": "DESAFÍOS ABIERTOS",
+    "zh": "公开玩家挑战",
+    "de": "OFFENE SPIELERDUELLE",
+    "ru": "ОТКРЫТЫЕ ДУЭЛИ"
+  },
+  "Post a challenge. Another player can accept while you’re offline.": {
+    "es": "Publica un desafío. Otro jugador puede aceptarlo aunque estés desconectado.",
+    "zh": "发起挑战，即使你离线，其他玩家也能接受。",
+    "de": "Erstelle ein Duell. Andere können es auch annehmen, wenn du offline bist.",
+    "ru": "Создай дуэль. Другой игрок сможет принять её, даже когда ты не в сети."
+  },
+  "THE FLOOR IS YOURS.": {
+    "es": "EL TURNO ES TUYO.",
+    "zh": "舞台属于你。",
+    "de": "DIE BÜHNE GEHÖRT DIR.",
+    "ru": "ТВОЙ ВЫХОД."
+  },
+  "CHOOSE YOUR MOVE": {
+    "es": "ELIGE TU JUGADA",
+    "zh": "选择你的出招",
+    "de": "WÄHLE DEINEN ZUG",
+    "ru": "ВЫБЕРИ ХОД"
+  },
+  "Both choices stay hidden until the challenge is accepted.": {
+    "es": "Ambas elecciones se ocultan hasta que se acepta el desafío.",
+    "zh": "双方选择在挑战被接受前保持隐藏。",
+    "de": "Beide Entscheidungen bleiben bis zur Annahme verborgen.",
+    "ru": "Оба выбора скрыты до принятия дуэли."
+  },
+  "Choose privately. Both choices reveal after your wager is locked.": {
+    "es": "Elige en secreto. Ambas elecciones se revelan al bloquear la apuesta.",
+    "zh": "秘密选择。下注锁定后双方选择同时揭晓。",
+    "de": "Wähle verdeckt. Nach dem Sperren des Einsatzes werden beide aufgedeckt.",
+    "ru": "Сделай тайный выбор. Оба выбора откроются после фиксации ставки."
+  },
+  "Choose high or low for your die. Ties are rerolled.": {
+    "es": "Elige alto o bajo para tu dado. En empate se vuelve a tirar.",
+    "zh": "选择骰子点数高或低。平局时重新掷骰。",
+    "de": "Wähle hoch oder niedrig. Bei Gleichstand wird erneut gewürfelt.",
+    "ru": "Выбери большее или меньшее число. При ничьей кубики бросаются снова."
+  },
+  "50/50 odds · Winner takes the full pot.": {
+    "es": "Probabilidad 50/50 · El ganador se lleva el bote.",
+    "zh": "胜率各 50% · 获胜者赢得全部奖池。",
+    "de": "50/50-Chance · Gewinner erhält den ganzen Topf.",
+    "ru": "Шансы 50/50 · Победитель забирает весь банк."
+  },
+  "Ace is low. King is high. Equal cards lose.": {
+    "es": "As es la más baja. Rey la más alta. Cartas iguales pierden.",
+    "zh": "A 最小，K 最大。相同点数算输。",
+    "de": "Ass ist niedrig, König hoch. Gleiche Karten verlieren.",
+    "ru": "Туз — младший, король — старший. Равные карты проигрывают."
+  },
+  "Your game is saved if you leave. Return here to continue or collect.": {
+    "es": "La partida se guarda al salir. Vuelve para seguir o retirar.",
+    "zh": "离开后游戏会保存。返回可继续或收取收益。",
+    "de": "Dein Spiel wird gespeichert. Kehre zurück, um weiterzuspielen oder zu kassieren.",
+    "ru": "Игра сохраняется при выходе. Вернись, чтобы продолжить или забрать выигрыш."
+  },
+  "Go back": {
+    "es": "Volver",
+    "zh": "返回",
+    "de": "Zurück",
+    "ru": "Назад"
+  },
+  "Retry same request": {
+    "es": "Reintentar la misma solicitud",
+    "zh": "重试同一请求",
+    "de": "Dieselbe Anfrage wiederholen",
+    "ru": "Повторить тот же запрос"
+  },
+  "Mines · 1–20": {
+    "es": "Minas · 1–20",
+    "zh": "地雷 · 1–20",
+    "de": "Minen · 1–20",
+    "ru": "Мины · 1–20"
+  },
+  "IN PROGRESS": {
+    "es": "EN CURSO",
+    "zh": "进行中",
+    "de": "LÄUFT",
+    "ru": "В ПРОЦЕССЕ"
+  },
+  "Next hit:": {
+    "es": "Siguiente carta:",
+    "zh": "下一张牌：",
+    "de": "Nächste Karte:",
+    "ru": "Следующая карта:"
+  },
+  "Hit +": {
+    "es": "Pedir +",
+    "zh": "要牌 +",
+    "de": "Karte +",
+    "ru": "Ещё +"
+  },
+  "Stand →": {
+    "es": "Plantarse →",
+    "zh": "停牌 →",
+    "de": "Halten →",
+    "ru": "Хватит →"
+  },
+  "THE MOMENTS THAT MADE THE STREAM": {
+    "es": "LOS MOMENTOS DEL STREAM",
+    "zh": "直播精彩瞬间",
+    "de": "DIE HIGHLIGHTS DES STREAMS",
+    "ru": "ЛУЧШИЕ МОМЕНТЫ СТРИМА"
+  },
+  "SMALL CLIPS.": {
+    "es": "CLIPS CORTOS.",
+    "zh": "短视频。",
+    "de": "KURZE CLIPS.",
+    "ru": "КОРОТКИЕ КЛИПЫ."
+  },
+  "BIG CHAOS.": {
+    "es": "GRAN CAOS.",
+    "zh": "大欢乐。",
+    "de": "GROSSES CHAOS.",
+    "ru": "БОЛЬШОЙ ХАОС."
+  },
+  "The laughs. The travels. The moments you had to see.": {
+    "es": "Las risas. Los viajes. Los momentos imperdibles.",
+    "zh": "欢笑、旅行，以及不可错过的瞬间。",
+    "de": "Das Lachen. Die Reisen. Die unvergesslichen Momente.",
+    "ru": "Смех, путешествия и моменты, которые стоит увидеть."
+  },
+  "Loading moments…": {
+    "es": "Cargando momentos…",
+    "zh": "正在加载精彩瞬间…",
+    "de": "Momente werden geladen…",
+    "ru": "Загрузка моментов…"
+  },
+  "More moments ↓": {
+    "es": "Más momentos ↓",
+    "zh": "更多精彩 ↓",
+    "de": "Mehr Momente ↓",
+    "ru": "Ещё моменты ↓"
+  },
+  "WATCH THE MOMENT": {
+    "es": "VER EL MOMENTO",
+    "zh": "观看精彩瞬间",
+    "de": "MOMENT ANSEHEN",
+    "ru": "СМОТРЕТЬ МОМЕНТ"
+  },
+  "Close": {
+    "es": "Cerrar",
+    "zh": "关闭",
+    "de": "Schließen",
+    "ru": "Закрыть"
+  },
+  "Destination details ↗": {
+    "es": "Detalles del destino ↗",
+    "zh": "目的地详情 ↗",
+    "de": "Details zum Reiseziel ↗",
+    "ru": "О месте ↗"
+  },
+  "Next on the map": {
+    "es": "Lo próximo en el mapa",
+    "zh": "下一站",
+    "de": "Als Nächstes auf der Karte",
+    "ru": "Дальше на карте"
+  },
+  "No results found.": {
+    "es": "No se encontraron resultados.",
+    "zh": "未找到结果。",
+    "de": "Keine Ergebnisse gefunden.",
+    "ru": "Ничего не найдено."
+  },
+  "No stops added here yet.": {
+    "es": "Todavía no hay paradas aquí.",
+    "zh": "这里尚未添加停靠点。",
+    "de": "Hier gibt es noch keine Stationen.",
+    "ru": "Здесь пока нет остановок."
+  },
+  "Travels": {
+    "es": "Viajes",
+    "zh": "旅行",
+    "de": "Reisen",
+    "ru": "Путешествия"
+  },
+  "on stream.": {
+    "es": " en vivo.",
+    "zh": "直播中。",
+    "de": "im Stream.",
+    "ru": "на стриме."
+  },
+  "UPCOMING": {
+    "es": "PRÓXIMAMENTE",
+    "zh": "即将前往",
+    "de": "DEMNÄCHST",
+    "ru": "СКОРО"
+  },
+  "Hover / Click": {
+    "es": "Pasa el cursor / Haz clic",
+    "zh": "悬停 / 点击",
+    "de": "Bewegen / Klicken",
+    "ru": "Наведи / Нажми"
+  },
+  "for info": {
+    "es": "para información",
+    "zh": "查看信息",
+    "de": "für Infos",
+    "ru": "для информации"
+  },
+  "Join Server": {
+    "es": "Entrar al servidor",
+    "zh": "加入服务器",
+    "de": "Server beitreten",
+    "ru": "Присоединиться"
+  },
+  "Choose your edition": {
+    "es": "Elige tu edición",
+    "zh": "选择版本",
+    "de": "Wähle deine Edition",
+    "ru": "Выбери издание"
+  },
+  "Which edition are you playing?": {
+    "es": "¿En qué edición juegas?",
+    "zh": "你使用哪个版本？",
+    "de": "Welche Edition spielst du?",
+    "ru": "На каком издании ты играешь?"
+  },
+  "Before you join:": {
+    "es": "Antes de entrar:",
+    "zh": "加入前：",
+    "de": "Bevor du beitrittst:",
+    "ru": "Перед входом:"
+  },
+  "join Discord and send your Minecraft username in": {
+    "es": "únete a Discord y envía tu nombre de Minecraft en",
+    "zh": "加入 Discord 并在以下频道发送 Minecraft 用户名：",
+    "de": "tritt Discord bei und sende deinen Minecraft-Namen in",
+    "ru": "вступи в Discord и отправь имя Minecraft в"
+  },
+  "First, join Discord and send your Minecraft username in": {
+    "es": "Primero, únete a Discord y envía tu nombre de Minecraft en",
+    "zh": "首先加入 Discord，并在以下频道发送 Minecraft 用户名：",
+    "de": "Tritt zuerst Discord bei und sende deinen Minecraft-Namen in",
+    "ru": "Сначала вступи в Discord и отправь имя Minecraft в"
+  },
+  "Send your Minecraft username in": {
+    "es": "Envía tu nombre de Minecraft en",
+    "zh": "在以下频道发送 Minecraft 用户名：",
+    "de": "Sende deinen Minecraft-Namen in",
+    "ru": "Отправь имя Minecraft в"
+  },
+  ". Wait for access to be granted.": {
+    "es": ". Espera a que se te conceda acceso.",
+    "zh": "。等待访问权限获批。",
+    "de": ". Warte auf die Freischaltung.",
+    "ru": ". Дождись предоставления доступа."
+  },
+  "to get access.": {
+    "es": "para obtener acceso.",
+    "zh": "以获取访问权限。",
+    "de": "um Zugang zu erhalten.",
+    "ru": "для получения доступа."
+  },
+  "Join Discord ↗": {
+    "es": "Unirse a Discord ↗",
+    "zh": "加入 Discord ↗",
+    "de": "Discord beitreten ↗",
+    "ru": "Вступить в Discord ↗"
+  },
+  "Copy Port": {
+    "es": "Copiar puerto",
+    "zh": "复制端口",
+    "de": "Port kopieren",
+    "ru": "Копировать порт"
+  },
+  "Version": {
+    "es": "Versión",
+    "zh": "版本",
+    "de": "Version",
+    "ru": "Версия"
+  },
+  "Port": {
+    "es": "Puerto",
+    "zh": "端口",
+    "de": "Port",
+    "ru": "Порт"
+  },
+  "Platforms": {
+    "es": "Plataformas",
+    "zh": "平台",
+    "de": "Plattformen",
+    "ru": "Платформы"
+  },
+  "Access": {
+    "es": "Acceso",
+    "zh": "访问权限",
+    "de": "Zugang",
+    "ru": "Доступ"
+  },
+  "Via Discord": {
+    "es": "A través de Discord",
+    "zh": "通过 Discord",
+    "de": "Über Discord",
+    "ru": "Через Discord"
+  },
+  "A world for the community.": {
+    "es": "Un mundo para la comunidad.",
+    "zh": "属于社区的世界。",
+    "de": "Eine Welt für die Community.",
+    "ru": "Мир для сообщества."
+  },
+  "Build something ridiculous. Explore together. Make this world ours.": {
+    "es": "Construye algo increíble. Explora con todos. Hagamos nuestro este mundo.",
+    "zh": "打造奇妙建筑，一起探索，创造属于我们的世界。",
+    "de": "Baue etwas Verrücktes. Erkunde gemeinsam. Machen wir diese Welt zu unserer.",
+    "ru": "Строй невероятное, исследуй вместе с нами. Сделаем этот мир нашим."
+  },
+  "Your next spawn point.": {
+    "es": "Tu próximo punto de aparición.",
+    "zh": "你的下一个出生点。",
+    "de": "Dein nächster Spawnpunkt.",
+    "ru": "Твоя следующая точка появления."
+  },
+  "These steps apply where Bedrock supports adding external servers. Console menus may differ.": {
+    "es": "Estos pasos se aplican donde Bedrock permite servidores externos. Los menús de consola pueden variar.",
+    "zh": "这些步骤适用于支持添加外部服务器的 Bedrock 版本。主机菜单可能不同。",
+    "de": "Diese Schritte gelten, wenn Bedrock externe Server unterstützt. Konsolenmenüs können abweichen.",
+    "ru": "Эти шаги подходят для Bedrock с поддержкой внешних серверов. Меню консолей могут отличаться."
+  },
+  "Log out": {
+    "es": "Cerrar sesión",
+    "zh": "退出登录",
+    "de": "Abmelden",
+    "ru": "Выйти"
+  },
+  "Copy IP": {
+    "es": "Copiar IP",
+    "zh": "复制 IP",
+    "de": "IP kopieren",
+    "ru": "Копировать IP"
+  },
+  "Copying…": {
+    "es": "Copiando…",
+    "zh": "正在复制…",
+    "de": "Wird kopiert…",
+    "ru": "Копирование…"
+  },
+  "Sound": {
+    "es": "Sonido",
+    "zh": "声音",
+    "de": "Ton",
+    "ru": "Звук"
+  },
+  "ON": {
+    "es": "ACTIVADO",
+    "zh": "开",
+    "de": "AN",
+    "ru": "ВКЛ"
+  },
+  "OFF": {
+    "es": "DESACTIVADO",
+    "zh": "关",
+    "de": "AUS",
+    "ru": "ВЫКЛ"
+  },
+  "Joining on Java": {
+    "es": "Entrar con Java",
+    "zh": "通过 Java 加入",
+    "de": "Mit Java beitreten",
+    "ru": "Вход через Java"
+  },
+  "Joining on Bedrock": {
+    "es": "Entrar con Bedrock",
+    "zh": "通过 Bedrock 加入",
+    "de": "Mit Bedrock beitreten",
+    "ru": "Вход через Bedrock"
+  },
+  "THE MARKET'S HEAVY HITTERS": {
+    "es": "LOS LÍDERES DEL MERCADO",
+    "zh": "市场顶尖玩家",
+    "de": "DIE SPITZENREITER DES MARKTS",
+    "ru": "ЛИДЕРЫ МАРКЕТА"
+  },
+  "Z MARKET LEADERBOARD": {
+    "es": "CLASIFICACIÓN DEL MERCADO Z",
+    "zh": "Z 市场排行榜",
+    "de": "Z-MARKT-RANGLISTE",
+    "ru": "РЕЙТИНГ Z МАРКЕТА"
+  },
+  "Most Zs available right now.": {
+    "es": "Más Zs disponibles ahora.",
+    "zh": "当前可用 Zs 最多。",
+    "de": "Die meisten verfügbaren Zs.",
+    "ru": "Больше всего доступных Zs."
+  },
+  "All Zs earned, ever.": {
+    "es": "Todos los Zs ganados.",
+    "zh": "历史累计获得的 Zs。",
+    "de": "Alle jemals verdienten Zs.",
+    "ru": "Все заработанные Zs."
+  },
+  "Who’s taking the crown?": {
+    "es": "¿Quién se llevará la corona?",
+    "zh": "谁将夺得桂冠？",
+    "de": "Wer holt sich die Krone?",
+    "ru": "Кому достанется корона?"
+  },
+  "Leaderboard temporarily unavailable.": {
+    "es": "Clasificación no disponible temporalmente.",
+    "zh": "排行榜暂时不可用。",
+    "de": "Rangliste vorübergehend nicht verfügbar.",
+    "ru": "Рейтинг временно недоступен."
+  },
+  "Loading players…": {
+    "es": "Cargando jugadores…",
+    "zh": "正在加载玩家…",
+    "de": "Spieler werden geladen…",
+    "ru": "Загрузка игроков…"
+  },
+  "The first spot is waiting for you.": {
+    "es": "El primer puesto te espera.",
+    "zh": "榜首等待着你。",
+    "de": "Der erste Platz wartet auf dich.",
+    "ru": "Первое место ждёт тебя."
+  },
+  "SHOW UP. STACK Zs. JOIN IN.": {
+    "es": "VEN. GANA Zs. PARTICIPA.",
+    "zh": "参与互动，积累 Zs。",
+    "de": "SEI DABEI. SAMMLE Zs. MACH MIT.",
+    "ru": "ПРИХОДИ. КОПИ Zs. УЧАСТВУЙ."
+  },
+  "Win trivia, play games, and unlock your next stream interaction.": {
+    "es": "Gana trivias, juega y desbloquea tu próxima interacción del stream.",
+    "zh": "赢取答题奖励，畅玩游戏，解锁下一次直播互动。",
+    "de": "Gewinne Quizfragen, spiele und schalte deine nächste Stream-Interaktion frei.",
+    "ru": "Побеждай в викторинах, играй и открывай взаимодействия со стримом."
+  },
+  "Answer trivia questions in Zeek’s chat to earn Zs.": {
+    "es": "Responde trivias en el chat de Zeek para ganar Zs.",
+    "zh": "在 Zeek 的聊天中答题赢取 Zs。",
+    "de": "Beantworte Quizfragen in Zeeks Chat, um Zs zu verdienen.",
+    "ru": "Отвечай на вопросы в чате Zeek и зарабатывай Zs."
+  },
+  "Use Zs to unlock stream interactions and forfeits.": {
+    "es": "Usa Zs para desbloquear interacciones y retos del stream.",
+    "zh": "使用 Zs 解锁直播互动和挑战。",
+    "de": "Nutze Zs für Stream-Interaktionen und Aufgaben.",
+    "ru": "Используй Zs для взаимодействий и заданий на стриме."
+  },
+  "Play Arcade games to risk your Zs and win more.": {
+    "es": "Juega en el Arcade para arriesgar tus Zs y ganar más.",
+    "zh": "在游戏厅投入 Zs，赢取更多。",
+    "de": "Riskiere deine Zs in Arcade-Spielen und gewinne mehr.",
+    "ru": "Рискуй Zs в Аркаде и выигрывай больше."
+  },
+  "Playing…": {
+    "es": "Jugando…",
+    "zh": "游戏中…",
+    "de": "Spiel läuft…",
+    "ru": "Играем…"
+  },
+  "Connect to play ↗": {
+    "es": "Conecta para jugar ↗",
+    "zh": "连接账户开始游戏 ↗",
+    "de": "Zum Spielen anmelden ↗",
+    "ru": "Войди для игры ↗"
+  },
+  "Create Challenge →": {
+    "es": "Crear desafío →",
+    "zh": "创建挑战 →",
+    "de": "Duell erstellen →",
+    "ru": "Создать дуэль →"
+  },
+  "Drop the ball ↓": {
+    "es": "Soltar la bola ↓",
+    "zh": "投下小球 ↓",
+    "de": "Ball fallen lassen ↓",
+    "ru": "Бросить шарик ↓"
+  },
+  "Start game →": {
+    "es": "Iniciar partida →",
+    "zh": "开始游戏 →",
+    "de": "Spiel starten →",
+    "ru": "Начать игру →"
+  },
+  "Collect": {
+    "es": "Retirar",
+    "zh": "收取收益",
+    "de": "Gewinn sichern",
+    "ru": "Забрать"
+  },
+  "YOUR RUN. YOUR RULES.": {
+    "es": "TU PARTIDA. TUS REGLAS.",
+    "zh": "你的游戏，你的规则。",
+    "de": "DEIN SPIEL. DEINE REGELN.",
+    "ru": "ТВОЯ ИГРА. ТВОИ ПРАВИЛА."
+  },
+  "PLAYER VS PLAYER": {
+    "es": "JUGADOR CONTRA JUGADOR",
+    "zh": "玩家对战",
+    "de": "SPIELER GEGEN SPIELER",
+    "ru": "ИГРОК ПРОТИВ ИГРОКА"
+  },
+  "CHALLENGE THE COMMUNITY": {
+    "es": "DESAFÍA A LA COMUNIDAD",
+    "zh": "挑战社区玩家",
+    "de": "FORDERE DIE COMMUNITY HERAUS",
+    "ru": "БРОСЬ ВЫЗОВ СООБЩЕСТВУ"
+  },
+  "YOUR RUN. YOUR MOMENT.": {
+    "es": "TU PARTIDA. TU MOMENTO.",
+    "zh": "你的游戏，你的时刻。",
+    "de": "DEIN SPIEL. DEIN MOMENT.",
+    "ru": "ТВОЯ ИГРА. ТВОЙ МОМЕНТ."
+  },
+  "HEAD-TO-HEAD / 1v1": {
+    "es": "CARA A CARA / 1v1",
+    "zh": "玩家对战 / 1v1",
+    "de": "SPIELERDUELL / 1v1",
+    "ru": "ДУЭЛИ / 1v1"
+  },
+  "SINGLE PLAYER": {
+    "es": "UN JUGADOR",
+    "zh": "单人游戏",
+    "de": "EINZELSPIELER",
+    "ru": "ОДИНОЧНАЯ ИГРА"
+  },
+  "HEADS": {
+    "es": "CARA",
+    "zh": "正面",
+    "de": "KOPF",
+    "ru": "ОРЁЛ"
+  },
+  "TAILS": {
+    "es": "CRUZ",
+    "zh": "反面",
+    "de": "ZAHL",
+    "ru": "РЕШКА"
+  },
+  "HIGH": {
+    "es": "ALTO",
+    "zh": "高",
+    "de": "HOCH",
+    "ru": "БОЛЬШЕ"
+  },
+  "LOW": {
+    "es": "BAJO",
+    "zh": "低",
+    "de": "NIEDRIG",
+    "ru": "МЕНЬШЕ"
+  },
+  "HIGHER": {
+    "es": "MÁS ALTA",
+    "zh": "更高",
+    "de": "HÖHER",
+    "ru": "ВЫШЕ"
+  },
+  "LOWER": {
+    "es": "MÁS BAJA",
+    "zh": "更低",
+    "de": "NIEDRIGER",
+    "ru": "НИЖЕ"
+  },
+  "ROCK": {
+    "es": "PIEDRA",
+    "zh": "石头",
+    "de": "STEIN",
+    "ru": "КАМЕНЬ"
+  },
+  "PAPER": {
+    "es": "PAPEL",
+    "zh": "布",
+    "de": "PAPIER",
+    "ru": "БУМАГА"
+  },
+  "SCISSORS": {
+    "es": "TIJERAS",
+    "zh": "剪刀",
+    "de": "SCHERE",
+    "ru": "НОЖНИЦЫ"
+  },
+  "In progress": {
+    "es": "En curso",
+    "zh": "进行中",
+    "de": "Läuft",
+    "ru": "В процессе"
+  },
+  "Waiting for opponent": {
+    "es": "Esperando rival",
+    "zh": "等待对手",
+    "de": "Warte auf Gegner",
+    "ru": "Ожидание соперника"
+  },
+  "Cancelled": {
+    "es": "Cancelado",
+    "zh": "已取消",
+    "de": "Abgebrochen",
+    "ru": "Отменено"
+  },
+  "Tie": {
+    "es": "Empate",
+    "zh": "平局",
+    "de": "Unentschieden",
+    "ru": "Ничья"
+  },
+  "Even": {
+    "es": "Sin cambios",
+    "zh": "持平",
+    "de": "Ausgeglichen",
+    "ru": "Без изменений"
+  },
+  "YOU WIN": {
+    "es": "GANASTE",
+    "zh": "你赢了",
+    "de": "DU GEWINNST",
+    "ru": "ТЫ ПОБЕДИЛ"
+  },
+  "YOU LOSE": {
+    "es": "PERDISTE",
+    "zh": "你输了",
+    "de": "DU VERLIERST",
+    "ru": "ТЫ ПРОИГРАЛ"
+  },
+  "TIE": {
+    "es": "EMPATE",
+    "zh": "平局",
+    "de": "UNENTSCHIEDEN",
+    "ru": "НИЧЬЯ"
+  },
+  "PUSH": {
+    "es": "EMPATE",
+    "zh": "平局退回",
+    "de": "UNENTSCHIEDEN",
+    "ru": "ВОЗВРАТ"
+  },
+  "Cancel challenge": {
+    "es": "Cancelar desafío",
+    "zh": "取消挑战",
+    "de": "Duell abbrechen",
+    "ru": "Отменить дуэль"
+  },
+  "Choose & challenge →": {
+    "es": "Elegir y desafiar →",
+    "zh": "选择并挑战 →",
+    "de": "Wählen & herausfordern →",
+    "ru": "Выбрать и бросить вызов →"
+  },
+  "Take the other side →": {
+    "es": "Aceptar el otro lado →",
+    "zh": "接受对战 →",
+    "de": "Andere Seite wählen →",
+    "ru": "Принять другую сторону →"
+  },
+  "YOUR GAME IN PROGRESS": {
+    "es": "TU PARTIDA EN CURSO",
+    "zh": "你的游戏正在进行",
+    "de": "DEIN LAUFENDES SPIEL",
+    "ru": "ТВОЯ ТЕКУЩАЯ ИГРА"
+  },
+  "SET YOUR PLAY": {
+    "es": "CONFIGURA TU PARTIDA",
+    "zh": "设置你的游戏",
+    "de": "BEREITE DEIN SPIEL VOR",
+    "ru": "НАСТРОЙ ИГРУ"
+  },
+  "CHALLENGE THE ARENA.": {
+    "es": "DESAFÍA A LA ARENA.",
+    "zh": "挑战竞技场。",
+    "de": "FORDERE DIE ARENA HERAUS.",
+    "ru": "БРОСЬ ВЫЗОВ АРЕНЕ."
+  },
+  "HIT OR STAND.": {
+    "es": "PIDE O PLÁNTATE.",
+    "zh": "要牌或停牌。",
+    "de": "KARTE ODER HALTEN.",
+    "ru": "ЕЩЁ КАРТУ ИЛИ ХВАТИТ."
+  },
+  "KEEP GOING OR COLLECT.": {
+    "es": "SIGUE O RETIRA.",
+    "zh": "继续或收取收益。",
+    "de": "WEITERSPIELEN ODER KASSIEREN.",
+    "ru": "ПРОДОЛЖИТЬ ИЛИ ЗАБРАТЬ."
+  },
+  "READY WHEN YOU ARE.": {
+    "es": "LISTO CUANDO QUIERAS.",
+    "zh": "准备好了就开始。",
+    "de": "BEREIT, WENN DU ES BIST.",
+    "ru": "НАЧИНАЙ, КОГДА ГОТОВ."
+  },
+  "The first correct trivia answer wins {triviaReward}. Questions run every {triviaMinutes} minutes while live, with {answerSeconds} seconds to answer. Type !zs in Kick chat to see your balance.": {
+    "es": "La primera respuesta correcta gana {triviaReward}. Hay preguntas cada {triviaMinutes} minutos en vivo, con {answerSeconds} segundos para responder. Escribe !zs en el chat de Kick para ver tu saldo.",
+    "zh": "第一个答对的人赢得 {triviaReward}。直播期间每 {triviaMinutes} 分钟出题，答题时间为 {answerSeconds} 秒。在 Kick 聊天中输入 !zs 查看余额。",
+    "de": "Die erste richtige Antwort gewinnt {triviaReward}. Im Live-Stream gibt es alle {triviaMinutes} Minuten eine Frage mit {answerSeconds} Sekunden Antwortzeit. Tippe !zs im Kick-Chat für deinen Kontostand.",
+    "ru": "Первый правильный ответ приносит {triviaReward}. Вопросы появляются каждые {triviaMinutes} минут эфира, на ответ даётся {answerSeconds} секунд. Введи !zs в чате Kick для проверки баланса."
+  },
+  "Spend Zs on stream interactions. A moderator deducts your BotRix points and approves the conversion. {conversion}": {
+    "es": "Gasta Zs en interacciones del stream. Un moderador descuenta tus puntos BotRix y aprueba la conversión. {conversion}",
+    "zh": "使用 Zs 兑换直播互动。管理员会扣除你的 BotRix 积分并批准兑换。{conversion}",
+    "de": "Nutze Zs für Stream-Interaktionen. Ein Moderator zieht deine BotRix-Punkte ab und genehmigt die Umwandlung. {conversion}",
+    "ru": "Трать Zs на взаимодействия со стримом. Модератор списывает баллы BotRix и подтверждает обмен. {conversion}"
+  },
+  "Coin Flip reserves your wager until another player accepts or you cancel. Both sides have a 50% chance. The winner receives the full pot, including their stake. Plinko uses eight independent turns generated on the server. Check every multiplier and its odds in the Arcade before playing.": {
+    "es": "Coin Flip reserva tu apuesta hasta que otro jugador acepte o canceles. Cada lado tiene un 50% de probabilidad. El ganador recibe todo el bote, incluida su apuesta. Plinko usa ocho giros independientes generados en el servidor. Consulta los multiplicadores y probabilidades antes de jugar.",
+    "zh": "Coin Flip 会锁定你的下注，直到其他玩家接受或你取消。双方胜率均为 50%，赢家获得整个奖池，包括自己的下注。Plinko 使用服务器生成的八次独立转向。游戏前请查看各倍率及概率。",
+    "de": "Coin Flip reserviert deinen Einsatz, bis jemand annimmt oder du abbrichst. Beide Seiten haben 50 % Gewinnchance. Der Gewinner erhält den ganzen Topf einschließlich seines Einsatzes. Plinko nutzt acht unabhängige, serverseitige Richtungswechsel. Prüfe vor dem Spielen Multiplikatoren und Chancen.",
+    "ru": "Coin Flip резервирует ставку до принятия дуэли или отмены. Шанс каждой стороны — 50%. Победитель получает весь банк, включая свою ставку. Plinko использует восемь независимых поворотов, созданных сервером. Перед игрой проверь множители и шансы."
+  },
+  "01 / EARN": {
+    "es": "01 / GANA",
+    "zh": "01 / 赚取",
+    "de": "01 / VERDIENEN",
+    "ru": "01 / ЗАРАБАТЫВАЙ"
+  },
+  "02 / UNLOCK": {
+    "es": "02 / DESBLOQUEA",
+    "zh": "02 / 解锁",
+    "de": "02 / FREISCHALTEN",
+    "ru": "02 / ОТКРЫВАЙ"
+  },
+  "03 / PLAY": {
+    "es": "03 / JUEGA",
+    "zh": "03 / 游戏",
+    "de": "03 / SPIELEN",
+    "ru": "03 / ИГРАЙ"
+  }
+}
