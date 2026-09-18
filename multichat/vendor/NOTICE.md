@@ -14,3 +14,5 @@ The web implementation adapts rendering dimensions/order, Kick badge/emote norma
 Platform logo PNGs are copied from Moblin/Assets.xcassets. Platform trademarks remain owned by their respective owners. Native badges/emotes remain on their upstream CDNs. Kick static role badge URLs use the same id3adeye/kickicons paths as Moblin; no claim of ownership is made.
 
 stream_list.proto is Google’s sample from https://developers.google.com/youtube/v3/live/streaming-live-chat (retrieved 2026-09-17). Code samples licensed Apache 2.0; full text in APACHE-2.0.txt. Modification: added the missing google/protobuf/duration.proto import so the published sample compiles. Google protocol fields and numbers are preserved.
+
+`public/assets/kick-subscriber.svg` reproduces Kick’s native SubscriberBadge icon observed in https://kick.com/zeekfusion on 2026-09-18, used only when no custom subscriber milestone image applies. Kick retains rights to its badge artwork.

@@ -119,6 +119,22 @@ export class Connections {
     this.store.set("kickChannelId", channel);
     this.subscriberBadges = info.subscriber_badges || [];
     void this.emotes.load("kick", channel);
+    let lastBadgeRefresh = Date.now();
+    const refreshBadges = async () => {
+      if (Date.now() - lastBadgeRefresh < 5 * 60000) return;
+      lastBadgeRefresh = Date.now();
+      try {
+        const fresh = await json(
+          `https://kick.com/api/v2/channels/${encodeURIComponent(slug)}`,
+          { signal, headers: { "User-Agent": "Mozilla/5.0" } },
+        );
+        if (signal.aborted || !Array.isArray(fresh.subscriber_badges)) return;
+        this.subscriberBadges = fresh.subscriber_badges;
+        this.store.set("kickInfo:" + slug, fresh);
+      } catch {
+        /* Keep the last successful badge list during provider outages. */
+      }
+    };
     await this.socket(
       "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false",
       signal,
@@ -137,6 +153,7 @@ export class Connections {
         if (m.event === "pusher:ping")
           ws.send(JSON.stringify({ event: "pusher:pong", data: {} }));
         if (m.event?.endsWith("ChatMessageEvent")) {
+          void refreshBadges();
           this.feed.push(
             kickMessage(data, channel, this.emotes, this.subscriberBadges),
             { enrich: true },
@@ -275,12 +292,15 @@ export class Connections {
     await session("wss://eventsub.wss.twitch.tv/ws");
   }
 
-  async youtube(signal, status) {
+  async youtubeBroadcast(preferredChat) {
     const broadcasts = await this.oauth.api(
       "youtube",
-      "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=active&broadcastType=all",
+      "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=active&broadcastType=all&maxResults=50",
     );
-    let broadcast = broadcasts.items?.find((b) => b.snippet?.liveChatId);
+    let broadcast =
+      broadcasts.items?.find(
+        (b) => b.snippet?.liveChatId === preferredChat && preferredChat,
+      ) || broadcasts.items?.find((b) => b.snippet?.liveChatId);
     if (!broadcast) {
       const upcoming = await this.oauth.api(
         "youtube",
@@ -288,12 +308,51 @@ export class Connections {
       );
       broadcast = upcoming.items
         ?.filter((b) => b.snippet?.liveChatId)
-        .sort((a, b) =>
-          Date.parse(a.snippet.scheduledStartTime || "9999-01-01") -
-          Date.parse(b.snippet.scheduledStartTime || "9999-01-01"),
+        .sort(
+          (a, b) =>
+            Date.parse(a.snippet.scheduledStartTime || "9999-01-01") -
+            Date.parse(b.snippet.scheduledStartTime || "9999-01-01"),
         )[0];
     }
+    return broadcast;
+  }
+  async watchYoutubeBroadcast(broadcast, signal, onSwitch) {
+    while (!signal.aborted) {
+      await sleep(this.youtubeDiscoveryIntervalMs || 30000, undefined, {
+        signal,
+      });
+      try {
+        const latest = await this.youtubeBroadcast(
+          broadcast.snippet.liveChatId,
+        );
+        if (signal.aborted) return;
+        this.states.youtube = { ...this.states.youtube, discoveryError: null };
+        if (latest?.snippet.liveChatId !== broadcast.snippet.liveChatId) {
+          onSwitch();
+          return;
+        }
+      } catch {
+        if (!signal.aborted)
+          this.states.youtube = {
+            ...this.states.youtube,
+            discoveryError: "Broadcast check delayed; retrying",
+          };
+      }
+    }
+  }
+  async youtube(signal, status) {
+    const broadcast = await this.youtubeBroadcast();
+    if (signal.aborted) return;
     if (!broadcast) {
+      this.states.youtube = {
+        ...this.states.youtube,
+        video: null,
+        title: null,
+        detail: null,
+        error: null,
+        lastResponseAt: null,
+        lastMessageAt: null,
+      };
       status("Waiting for a scheduled or live stream with chat enabled");
       await sleep(30000, undefined, { signal });
       return;
@@ -301,39 +360,69 @@ export class Connections {
     const chat = broadcast.snippet.liveChatId,
       video = broadcast.id,
       channel = this.store.token("youtube").user.id;
+    this.states.youtube = {
+      ...this.states.youtube,
+      video,
+      title: broadcast.snippet.title || video,
+      detail: null,
+      lastResponseAt: null,
+      lastMessageAt:
+        this.states.youtube?.video === video
+          ? this.states.youtube.lastMessageAt
+          : null,
+    };
+    status("Connecting");
     void this.emotes.load("youtube", channel);
+    const session = new AbortController();
+    const stopSession = () => session.abort();
+    signal.addEventListener("abort", stopSession, { once: true });
+    if (signal.aborted) session.abort();
+    const watching = this.watchYoutubeBroadcast(
+      broadcast,
+      session.signal,
+      () => {
+        status("Switching to current broadcast");
+        session.abort();
+      },
+    ).catch(() => {});
     const rich = new AbortController();
     const cancel = () => rich.abort();
-    signal.addEventListener("abort", cancel, { once: true });
-    void retryLoop(
+    session.signal.addEventListener("abort", cancel, { once: true });
+    if (session.signal.aborted) rich.abort();
+    const enriching = retryLoop(
       rich.signal,
       (s) => this.youtubeRich(video, channel, s),
       () => {
         this.states.youtube = {
           ...this.states.youtube,
-          detail:
-            "Native YouTube graphics reconnecting; official chat remains active",
+          detail: "Native YouTube graphics reconnecting",
         };
       },
-    );
+    ).catch(() => {});
     try {
-      await this.youtubeStream(chat, channel, signal, status);
+      await this.youtubeStream(chat, channel, session.signal, status);
     } finally {
+      session.abort();
       rich.abort();
-      signal.removeEventListener("abort", cancel);
+      signal.removeEventListener("abort", stopSession);
+      session.signal.removeEventListener("abort", cancel);
+      await Promise.all([watching, enriching]);
     }
+    if (!signal.aborted) await sleep(1000, undefined, { signal });
   }
-  async youtubeStream(chat, channel, signal, status) {
-    const client = new proto.youtube.api.v3.V3DataLiveChatMessageService(
+  createYoutubeClient() {
+    return new proto.youtube.api.v3.V3DataLiveChatMessageService(
       "youtube.googleapis.com:443",
       grpc.credentials.createSsl(),
-      { "grpc.keepalive_time_ms": 30000 },
+      { "grpc.keepalive_time_ms": 30000, "grpc.keepalive_timeout_ms": 10000 },
     );
+  }
+  async youtubeStream(chat, channel, signal, status) {
+    const access = await this.oauth.access("youtube");
+    if (signal.aborted) return;
+    const client = this.createYoutubeClient();
     const metadata = new grpc.Metadata();
-    metadata.set(
-      "authorization",
-      "Bearer " + (await this.oauth.access("youtube")),
-    );
+    metadata.set("authorization", "Bearer " + access);
     const cursor = this.store.get("youtubeCursor");
     const stream = client.streamList(
       {
@@ -345,10 +434,38 @@ export class Connections {
       { deadline: Date.now() + 25 * 60000 },
     );
     await new Promise((resolve, reject) => {
-      const abort = () => stream.cancel();
+      let settled = false;
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(firstResponse);
+        signal.removeEventListener("abort", abort);
+        error ? reject(error) : resolve();
+      };
+      const abort = () => {
+        finish();
+        stream.cancel();
+      };
+      const firstResponse = setTimeout(() => {
+        this.states.youtube = {
+          ...this.states.youtube,
+          error: "No chat response; reconnecting",
+        };
+        status("Reconnecting");
+        finish(new Error("YouTube first response timed out"));
+        stream.cancel();
+      }, this.youtubeFirstResponseTimeoutMs || 45000);
       signal.addEventListener("abort", abort, { once: true });
-      stream.on("metadata", () => status("Connected"));
+      // Headers only confirm transport, not that YouTube accepted this chat.
       stream.on("data", (d) => {
+        if (settled || signal.aborted) return;
+        clearTimeout(firstResponse);
+        this.states.youtube = {
+          ...this.states.youtube,
+          lastResponseAt: Date.now(),
+          error: null,
+        };
+        status("Connected");
         if (d.nextPageToken)
           this.store.set("youtubeCursor", { chat, token: d.nextPageToken });
         for (const e of d.items || []) {
@@ -365,12 +482,26 @@ export class Connections {
               channel,
               id: s.messageDeletedDetails.deletedMessageId,
             });
-          else if (s.hasDisplayContent !== false && s.displayMessage)
+          else if (
+            s.hasDisplayContent !== false &&
+            (s.displayMessage || s.textMessageDetails?.messageText)
+          ) {
             this.feed.push(youtubeMessage(e, channel, this.emotes));
+            this.states.youtube.lastMessageAt = Date.now();
+          }
         }
-        if (d.offlineAt) stream.cancel();
+        if (d.offlineAt) {
+          status("Broadcast ended; checking for next stream");
+          abort();
+        }
       });
       stream.on("error", (e) => {
+        if (settled) return;
+        this.states.youtube = {
+          ...this.states.youtube,
+          error: `Chat connection interrupted (code ${e.code}); retrying`,
+        };
+        status("Reconnecting");
         if (e.code === grpc.status.UNAUTHENTICATED) {
           const t = this.store.token("youtube");
           if (t) this.store.token("youtube", { ...t, expiresAt: 0 });
@@ -382,16 +513,17 @@ export class Connections {
         }
         if (e.code === grpc.status.INVALID_ARGUMENT)
           this.store.set("youtubeCursor", null);
-        if (
-          signal.aborted ||
-          e.code === grpc.status.CANCELLED ||
-          e.code === grpc.status.DEADLINE_EXCEEDED
-        )
-          resolve();
-        else reject(e);
+        if (signal.aborted || e.code === grpc.status.DEADLINE_EXCEEDED)
+          finish();
+        else finish(e);
       });
-      stream.on("end", resolve);
-      stream.on("close", () => signal.removeEventListener("abort", abort));
+      stream.on("end", () => {
+        if (!settled) status("Reconnecting");
+        finish();
+      });
+      stream.on("close", () =>
+        finish(signal.aborted ? undefined : new Error("YouTube stream closed")),
+      );
       if (signal.aborted) abort();
     }).finally(() => client.close());
   }
@@ -402,10 +534,6 @@ export class Connections {
         { signal },
       )
     ).text();
-    this.states.youtube = {
-      ...this.states.youtube,
-      detail: "Native emotes and badge graphics available",
-    };
     let continuation = html.match(/"continuation":"([^"]+)"/)?.[1];
     const version =
       html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/)?.[1] ||
@@ -426,6 +554,11 @@ export class Connections {
       );
       const chat = d.continuationContents?.liveChatContinuation;
       if (!chat) throw new Error("Chat ended");
+      if (signal.aborted) return;
+      this.states.youtube = {
+        ...this.states.youtube,
+        detail: "Native emotes and badge graphics available",
+      };
       for (const a of chat.actions || []) {
         if (a.markChatItemAsDeletedAction)
           this.feed.moderate({

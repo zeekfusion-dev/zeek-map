@@ -361,6 +361,21 @@ async function dashboard() {
           (s.state || "Not connected") + (s.detail ? " · " + s.detail : ""),
         ),
       );
+      if (p === "youtube") {
+        const details = [
+          s.title ? `Broadcast: ${s.title}` : null,
+          s.lastResponseAt
+            ? `Chat response: ${new Date(s.lastResponseAt).toLocaleTimeString()}`
+            : null,
+          s.lastMessageAt
+            ? `Last message: ${new Date(s.lastMessageAt).toLocaleTimeString()}`
+            : null,
+          s.error,
+          s.discoveryError,
+        ].filter(Boolean);
+        if (details.length)
+          info.append(el("span", "state", details.join(" · ")));
+      }
       row.append(info);
       const connect = el("button", "", s.account ? "Reconnect" : "Connect");
       connect.addEventListener(

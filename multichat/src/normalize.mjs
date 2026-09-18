@@ -1,4 +1,17 @@
 import { https, timestamp } from "./net.mjs";
+// Kick renders this native badge when the channel has no applicable custom tier.
+export const kickSubscriberDefault = "/assets/kick-subscriber.svg";
+export function kickSubscriberBadge(badge, tiers = []) {
+  const direct = https(badge.image_url) || https(badge.badge_image?.src);
+  if (direct) return direct;
+  const months = Math.max(0, Number(badge.count) || 0);
+  return (
+    tiers
+      .filter((s) => Number(s.months) <= months && https(s.badge_image?.src))
+      .sort((a, b) => Number(b.months) - Number(a.months))[0]?.badge_image
+      .src || kickSubscriberDefault
+  );
+}
 export function kickMessage(e, channel, emotes, subscriberBadges = []) {
   const u = e.sender || {},
     identity = u.identity || {};
@@ -9,11 +22,16 @@ export function kickMessage(e, channel, emotes, subscriberBadges = []) {
       url: b.image_url,
     }));
   for (const b of identity.badges || []) {
+    // Selected native subscriber imagery already represents this role.
+    if (
+      b.type === "subscriber" &&
+      (identity.badges_v2 || []).some(
+        (v) => v.selected && v.type === "subscriber" && https(v.image_url),
+      )
+    )
+      continue;
     let url;
-    if (b.type === "subscriber")
-      url = subscriberBadges
-        .filter((s) => s.months <= (b.count || 0))
-        .sort((a, b) => b.months - a.months)[0]?.badge_image?.src;
+    if (b.type === "subscriber") url = kickSubscriberBadge(b, subscriberBadges);
     else if (
       [
         "verified",
@@ -28,7 +46,11 @@ export function kickMessage(e, channel, emotes, subscriberBadges = []) {
       ].includes(b.type)
     )
       url = `https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main/kick-${b.type}.png`;
-    badges.push({ label: b.text || b.type, count: b.count, url: https(url) });
+    badges.push({
+      label: b.text || b.type,
+      count: b.count,
+      url: url === kickSubscriberDefault ? url : https(url),
+    });
   }
   return {
     platform: "kick",
