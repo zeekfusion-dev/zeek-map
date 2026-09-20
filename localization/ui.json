@@ -1919,11 +1919,11 @@
     "de": "Live-Quiz",
     "ru": "Викторина в прямом эфире"
   },
-  "Where Should Ziko Go Next?": {
-    "es": "¿Adónde debería ir Ziko ahora?",
-    "zh": "Ziko 下一站去哪儿？",
-    "de": "Wohin soll Ziko als Nächstes reisen?",
-    "ru": "Куда Ziko поехать дальше?"
+  "Where Should Zeek Go Next?": {
+    "es": "¿Adónde debería ir Zeek ahora?",
+    "zh": "Zeek 下一站去哪儿？",
+    "de": "Wohin soll Zeek als Nächstes reisen?",
+    "ru": "Куда Zeek поехать дальше?"
   },
   "Choose the next adventure": {
     "es": "Elige la próxima aventura",
@@ -1996,5 +1996,23 @@
     "zh": "登录 Kick 可跨设备保留投票记录。访客投票保存在此设备上。",
     "de": "Melde dich mit Kick an, um deine Stimmen geräteübergreifend zu behalten. Gaststimmen werden auf diesem Gerät gespeichert.",
     "ru": "Войди через Kick, чтобы сохранить голоса на разных устройствах. Гостевые голоса сохраняются на этом устройстве."
+  },
+  "3 votes across countries and states.": {
+    "es": "3 votos entre países y estados.",
+    "zh": "国家与州共用 3 票。",
+    "de": "3 Stimmen für Länder und US-Bundesstaaten.",
+    "ru": "3 голоса на страны и штаты."
+  },
+  "Search results": {
+    "es": "Resultados de búsqueda",
+    "zh": "搜索结果",
+    "de": "Suchergebnisse",
+    "ru": "Результаты поиска"
+  },
+  "Top 5 destinations": {
+    "es": "Los 5 destinos más votados",
+    "zh": "前 5 名目的地",
+    "de": "Top 5 Reiseziele",
+    "ru": "Топ-5 направлений"
   }
 }
