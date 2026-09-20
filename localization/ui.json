@@ -1846,5 +1846,155 @@
     "zh": "暂无游戏记录",
     "de": "Noch keine Spiele",
     "ru": "Пока нет игр"
+  },
+  "View Activity": {
+    "es": "Ver actividad",
+    "zh": "查看动态",
+    "de": "Aktivität ansehen",
+    "ru": "История"
+  },
+  "Earn Zs": {
+    "es": "Gana Zs",
+    "zh": "赚取 Zs",
+    "de": "Zs verdienen",
+    "ru": "Зарабатывай Zs"
+  },
+  "Answer trivia correctly in Kick chat.": {
+    "es": "Responde correctamente en el chat de Kick.",
+    "zh": "在 Kick 聊天中正确回答问题。",
+    "de": "Beantworte Quizfragen im Kick-Chat richtig.",
+    "ru": "Правильно отвечай на вопросы в чате Kick."
+  },
+  "Use Zs": {
+    "es": "Usa Zs",
+    "zh": "使用 Zs",
+    "de": "Zs nutzen",
+    "ru": "Используй Zs"
+  },
+  "Buy stream rewards and interactions.": {
+    "es": "Compra recompensas e interacciones del directo.",
+    "zh": "兑换直播奖励和互动。",
+    "de": "Hol dir Stream-Belohnungen und Interaktionen.",
+    "ru": "Покупай награды и взаимодействия на стриме."
+  },
+  "Earn more / participate": {
+    "es": "Gana más / participa",
+    "zh": "赚取更多 / 参与互动",
+    "de": "Mehr verdienen / mitmachen",
+    "ru": "Зарабатывай больше / участвуй"
+  },
+  "Join the chat or risk Zs in the Arcade.": {
+    "es": "Participa en el chat o arriesga Zs en el Arcade.",
+    "zh": "参与聊天，或在 Arcade 中押上 Zs。",
+    "de": "Mach im Chat mit oder setze Zs in der Arcade ein.",
+    "ru": "Участвуй в чате или рискуй Zs в Arcade."
+  },
+  "Rewards": {
+    "es": "Recompensas",
+    "zh": "奖励",
+    "de": "Belohnungen",
+    "ru": "Награды"
+  },
+  "View shop →": {
+    "es": "Ver tienda →",
+    "zh": "查看商店 →",
+    "de": "Zum Shop →",
+    "ru": "В магазин →"
+  },
+  "Find your next stream interaction.": {
+    "es": "Encuentra tu próxima interacción del directo.",
+    "zh": "寻找下一次直播互动。",
+    "de": "Finde deine nächste Stream-Interaktion.",
+    "ru": "Выбери следующее взаимодействие на стриме."
+  },
+  "Browse all rewards →": {
+    "es": "Ver todas las recompensas →",
+    "zh": "浏览全部奖励 →",
+    "de": "Alle Belohnungen ansehen →",
+    "ru": "Все награды →"
+  },
+  "Live Trivia": {
+    "es": "Trivia en directo",
+    "zh": "直播问答",
+    "de": "Live-Quiz",
+    "ru": "Викторина в прямом эфире"
+  },
+  "Where Should Ziko Go Next?": {
+    "es": "¿Adónde debería ir Ziko ahora?",
+    "zh": "Ziko 下一站去哪儿？",
+    "de": "Wohin soll Ziko als Nächstes reisen?",
+    "ru": "Куда Ziko поехать дальше?"
+  },
+  "Choose the next adventure": {
+    "es": "Elige la próxima aventura",
+    "zh": "选择下一次冒险",
+    "de": "Wähle das nächste Abenteuer",
+    "ru": "Выбери следующее приключение"
+  },
+  "3 total votes across States and Countries. Updates every 10 seconds.": {
+    "es": "3 votos en total entre Estados y Países. Se actualiza cada 10 segundos.",
+    "zh": "州和国家共用 3 票。每 10 秒更新一次。",
+    "de": "Insgesamt 3 Stimmen für Staaten und Länder. Aktualisierung alle 10 Sekunden.",
+    "ru": "Всего 3 голоса на штаты и страны. Обновление каждые 10 секунд."
+  },
+  "votes left": {
+    "es": "votos restantes",
+    "zh": "票剩余",
+    "de": "Stimmen übrig",
+    "ru": "голосов осталось"
+  },
+  "States": {
+    "es": "Estados",
+    "zh": "州",
+    "de": "US-Bundesstaaten",
+    "ru": "Штаты"
+  },
+  "Countries": {
+    "es": "Países",
+    "zh": "国家",
+    "de": "Länder",
+    "ru": "Страны"
+  },
+  "Search destinations": {
+    "es": "Buscar destinos",
+    "zh": "搜索目的地",
+    "de": "Reiseziele suchen",
+    "ru": "Поиск направлений"
+  },
+  "vote": {
+    "es": "voto",
+    "zh": "票",
+    "de": "Stimme",
+    "ru": "голос"
+  },
+  "votes": {
+    "es": "votos",
+    "zh": "票",
+    "de": "Stimmen",
+    "ru": "голоса"
+  },
+  "Vote for": {
+    "es": "Votar por",
+    "zh": "投票给",
+    "de": "Stimmen für",
+    "ru": "Голосовать за"
+  },
+  "Vote": {
+    "es": "Votar",
+    "zh": "投票",
+    "de": "Abstimmen",
+    "ru": "Голосовать"
+  },
+  "Saving…": {
+    "es": "Guardando…",
+    "zh": "正在保存…",
+    "de": "Wird gespeichert…",
+    "ru": "Сохранение…"
+  },
+  "Sign in with Kick to keep your votes across devices. Guest votes are saved on this device.": {
+    "es": "Inicia sesión con Kick para conservar tus votos entre dispositivos. Los votos de invitados se guardan en este dispositivo.",
+    "zh": "登录 Kick 可跨设备保留投票记录。访客投票保存在此设备上。",
+    "de": "Melde dich mit Kick an, um deine Stimmen geräteübergreifend zu behalten. Gaststimmen werden auf diesem Gerät gespeichert.",
+    "ru": "Войди через Kick, чтобы сохранить голоса на разных устройствах. Гостевые голоса сохраняются на этом устройстве."
   }
 }
