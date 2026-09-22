@@ -2014,5 +2014,11 @@
     "zh": "前 5 名目的地",
     "de": "Top 5 Reiseziele",
     "ru": "Топ-5 направлений"
+  },
+  "Convert your BotRix points into Zs.": {
+    "es": "Convierte tus puntos de BotRix en Zs.",
+    "zh": "将你的 BotRix 积分兑换成 Zs。",
+    "de": "Wandle deine BotRix-Punkte in Zs um.",
+    "ru": "Обменивай баллы BotRix на Zs."
   }
 }
