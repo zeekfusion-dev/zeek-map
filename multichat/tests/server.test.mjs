@@ -80,7 +80,11 @@ test("WebSocket requires correct read-only key and streams moderation", async ()
     ws.send(JSON.stringify({ key: f.store.get("overlayKey") }));
     const initial = JSON.parse((await snapshot)[0]);
     assert.equal(initial.type, "snapshot");
-    assert.deepEqual(Object.keys(initial.platforms).sort(), ["kick", "twitch", "youtube"]);
+    assert.deepEqual(Object.keys(initial.platforms).sort(), [
+      "kick",
+      "twitch",
+      "youtube",
+    ]);
     assert.equal(initial.platforms.twitch.state, "Connecting");
     const incoming = once(ws, "message");
     f.feed.push({
@@ -274,6 +278,56 @@ test("authenticated OBS heartbeat receives live service health during quiet chat
     assert.equal(event.type, "pong");
     assert.equal(typeof event.at, "number");
     assert.equal(typeof event.platforms, "object");
+  } finally {
+    ws?.terminate();
+    await f.close();
+    f.store.db.close();
+  }
+});
+test("authorized history pages are chronological while new messages keep streaming", async () => {
+  const f = await fixture();
+  let ws;
+  try {
+    for (let i = 0; i < 350; i++)
+      f.feed.push({
+        id: String(i),
+        platform: "kick",
+        channel: "c",
+        timestamp: Date.now() - 600000 + i,
+        user: { id: "v" },
+        segments: [],
+      });
+    f.feed.flush();
+    ws = new WebSocket(f.url.replace("http:", "ws:") + "/live", {
+      origin: f.origin,
+    });
+    await once(ws, "open");
+    let response = once(ws, "message");
+    ws.send(JSON.stringify({ key: f.store.get("overlayKey") }));
+    const initial = JSON.parse((await response)[0]);
+    assert.equal(initial.messages.length, 100);
+    assert.equal(initial.messages[0].id, "250");
+    assert.equal(initial.hasMore, true);
+    response = once(ws, "message");
+    ws.send(JSON.stringify({ type: "history", before: initial.before }));
+    const older = JSON.parse((await response)[0]);
+    assert.equal(older.type, "history");
+    assert.equal(older.messages[0].id, "150");
+    assert.equal(older.messages.at(-1).id, "249");
+    response = once(ws, "message");
+    f.feed.push({
+      id: "live",
+      platform: "kick",
+      channel: "c",
+      timestamp: Date.now(),
+      user: { id: "v" },
+      segments: [],
+    });
+    f.feed.flush();
+    assert.equal(JSON.parse((await response)[0]).messages[0].id, "live");
+    response = once(ws, "message");
+    ws.send(JSON.stringify({ type: "history", before: older.before }));
+    assert.equal(JSON.parse((await response)[0]).messages.at(-1).id, "149");
   } finally {
     ws?.terminate();
     await f.close();

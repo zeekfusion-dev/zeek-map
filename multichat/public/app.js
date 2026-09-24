@@ -88,16 +88,46 @@ function overlay(preview = false) {
   document.body.className = "overlay";
   const viewport = el("div", "chat-viewport"),
     feed = el("div", "chat-feed");
+  viewport.tabIndex = 0;
+  viewport.setAttribute("aria-label", "Chat history");
   viewport.append(feed);
   app.append(viewport);
   let data = [],
     settings = { ...defaults },
     scheduled = false,
-    animate = true;
+    animate = true,
+    followLive = true,
+    hasMore = false,
+    before = null,
+    loadingHistory = false,
+    historyTimer,
+    connection;
+  const dirtyNodes = new Set();
+  let rebuild = false;
+  let savedAnchor = null;
   const nodes = new Map();
   const key = (m) => `${m.platform}:${m.channel}:${m.id}`;
   function draw() {
     scheduled = false;
+    const anchors = Array.from(feed.children)
+      .filter(
+        (n) =>
+          n.getBoundingClientRect().bottom >
+          viewport.getBoundingClientRect().top,
+      )
+      .slice(0, 5)
+      .map((n) => ({ id: n.dataset.id, top: n.getBoundingClientRect().top }));
+    const oldTop = viewport.scrollTop;
+    if (rebuild) {
+      nodes.clear();
+      feed.replaceChildren();
+      rebuild = false;
+    }
+    for (const id of dirtyNodes) {
+      nodes.get(id)?.remove();
+      nodes.delete(id);
+    }
+    dirtyNodes.clear();
     document.body.style.setProperty("--font", settings.fontSize + "px");
     document.body.style.setProperty("--bubble", settings.background);
     document.body.style.setProperty("--weight", settings.bold ? 700 : 400);
@@ -105,7 +135,9 @@ function overlay(preview = false) {
       (a, b) =>
         a.timestamp - b.timestamp || (a.sequence || 0) - (b.sequence || 0),
     );
-    data = data.slice(-settings.maxMessages);
+    if (preview) data = data.slice(-settings.maxMessages);
+    else if (followLive)
+      data = data.filter((m) => m.timestamp >= Date.now() - 20 * 60000);
     const keep = new Set(data.map(key));
     for (const [id, n] of nodes)
       if (!keep.has(id)) {
@@ -119,7 +151,7 @@ function overlay(preview = false) {
       if (!n) {
         n = message(m, settings);
         nodes.set(id, n);
-        if (!animate) n.style.animation = "none";
+        if (!animate || !followLive) n.style.animation = "none";
       }
       if (n.parentNode !== feed || n.previousSibling !== previous) {
         if (previous) previous.after(n);
@@ -127,11 +159,24 @@ function overlay(preview = false) {
       }
       previous = n;
     }
-    viewport.scrollTo({
-      top: viewport.scrollHeight,
-      behavior: data.length > 20 ? "instant" : "smooth",
-    });
+    if (followLive) viewport.scrollTop = viewport.scrollHeight;
+    else {
+      const anchor = anchors.find((a) => nodes.has(a.id));
+      viewport.scrollTop = anchor
+        ? oldTop + nodes.get(anchor.id).getBoundingClientRect().top - anchor.top
+        : oldTop;
+    }
+    rememberAnchor();
     animate = true;
+  }
+  function rememberAnchor() {
+    const first = Array.from(feed.children).find(
+      (n) =>
+        n.getBoundingClientRect().bottom > viewport.getBoundingClientRect().top,
+    );
+    savedAnchor = first
+      ? { id: first.dataset.id, top: first.getBoundingClientRect().top }
+      : null;
   }
   const render = () => {
     if (!scheduled) {
@@ -140,8 +185,7 @@ function overlay(preview = false) {
     }
   };
   const clearNodes = () => {
-    nodes.clear();
-    feed.replaceChildren();
+    rebuild = true;
     animate = false;
   };
   function handle(e) {
@@ -150,9 +194,31 @@ function overlay(preview = false) {
       clearNodes();
     }
     if (e.type === "snapshot") {
-      data = e.messages;
+      const retained = new Set(e.retainedKeys || []);
+      data = preview ? [] : data.filter((m) => retained.has(key(m)));
+      for (const m of e.messages) {
+        const i = data.findIndex((x) => key(x) === key(m));
+        if (i < 0) data.push(m);
+        else {
+          data[i] = m;
+          dirtyNodes.add(key(m));
+        }
+      }
+      hasMore = !!e.hasMore;
+      before = e.before;
+      loadingHistory = false;
+      clearTimeout(historyTimer);
       settings = { ...defaults, ...e.settings };
-      clearNodes();
+      animate = false;
+    }
+    if (e.type === "history") {
+      loadingHistory = false;
+      clearTimeout(historyTimer);
+      hasMore = !!e.hasMore;
+      before = e.before;
+      animate = false;
+      for (const m of e.messages)
+        if (!data.some((x) => key(x) === key(m))) data.push(m);
     }
     if (e.type === "messages") {
       for (const m of e.messages) {
@@ -163,8 +229,7 @@ function overlay(preview = false) {
       const index = data.findIndex((m) => key(m) === key(e.message));
       if (index >= 0) {
         data[index] = e.message;
-        nodes.get(key(e.message))?.remove();
-        nodes.delete(key(e.message));
+        dirtyNodes.add(key(e.message));
       }
     }
     if (e.type === "remove")
@@ -180,6 +245,31 @@ function overlay(preview = false) {
       );
     render();
   }
+  const loadOlder = () => {
+    if (!hasMore || loadingHistory || !before || !connection) return;
+    loadingHistory = connection.history(before);
+    if (loadingHistory)
+      historyTimer = setTimeout(() => {
+        loadingHistory = false;
+      }, 5000);
+  };
+  viewport.addEventListener(
+    "scroll",
+    () => {
+      followLive =
+        viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < 40;
+      rememberAnchor();
+      if (viewport.scrollTop < 150) loadOlder();
+    },
+    { passive: true },
+  );
+  new ResizeObserver(() => {
+    if (followLive) viewport.scrollTop = viewport.scrollHeight;
+    else if (savedAnchor && nodes.has(savedAnchor.id)) {
+      viewport.scrollTop +=
+        nodes.get(savedAnchor.id).getBoundingClientRect().top - savedAnchor.top;
+    }
+  }).observe(feed);
   if (preview) {
     handle({ type: "snapshot", settings, messages: samples() });
     window.addEventListener("message", (e) => {
@@ -200,7 +290,7 @@ function overlay(preview = false) {
   const warning = el("div", "connection-warning");
   warning.title = "Reconnecting";
   app.append(warning);
-  const connection = new LiveConnection({
+  connection = new LiveConnection({
     url: location.origin.replace(/^http/, "ws") + "/live",
     key: token,
     onEvent: handle,
@@ -218,7 +308,14 @@ function overlay(preview = false) {
             : "Waking or reconnecting to chat";
     },
   }).start();
-  window.addEventListener("pagehide", () => connection.stop(), { once: true });
+  window.addEventListener(
+    "pagehide",
+    () => {
+      clearTimeout(historyTimer);
+      connection.stop();
+    },
+    { once: true },
+  );
 }
 
 function samples() {

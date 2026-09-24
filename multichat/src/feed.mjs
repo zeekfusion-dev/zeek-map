@@ -1,15 +1,28 @@
 import { EventEmitter } from "node:events";
 export class Feed extends EventEmitter {
-  constructor({ limit = 200, jitter = 40, now = Date.now, store } = {}) {
+  constructor({
+    limit = Infinity,
+    historyMs = 20 * 60000,
+    jitter = 40,
+    now = Date.now,
+    store,
+  } = {}) {
     super();
-    Object.assign(this, { limit, jitter, now, store });
-    this.messages = [];
+    Object.assign(this, { limit, historyMs, jitter, now, store });
+    this.messages = store?.get("chat-history", []) || [];
     this.pending = [];
     this.seen = new Map(store?.get("seen", []) || []);
     this.tombstones = new Map(store?.get("tombstones", []) || []);
     this.sequence = 0;
     this.replayFloor = store?.get("feed-watermark", 0) || 0;
     this.watermark = this.replayFloor;
+    this.messages = this.messages.filter((m) => !this.blocked(m));
+    this.trimHistory();
+    this.sequence = this.messages.reduce(
+      (n, m) => Math.max(n, m.sequence || 0),
+      0,
+    );
+    for (const m of this.messages) this.seen.set(this.key(m), m.receivedAt);
   }
   key(m) {
     return `${m.platform}:${m.channel}:${m.id}`;
@@ -65,8 +78,33 @@ export class Feed extends EventEmitter {
     this.messages.sort(
       (a, b) => a.timestamp - b.timestamp || a.sequence - b.sequence,
     );
-    this.messages = this.messages.slice(-this.limit);
+    this.trimHistory();
     if (batch.length) this.emit("event", { type: "messages", messages: batch });
+  }
+  trimHistory() {
+    const cutoff = this.now() - this.historyMs;
+    this.messages = this.messages.filter((m) => m.timestamp >= cutoff);
+    if (Number.isFinite(this.limit))
+      this.messages = this.messages.slice(-this.limit);
+  }
+  page(before, size = 100) {
+    this.trimHistory();
+    const eligible = this.messages.filter(
+      (m) =>
+        !before ||
+        m.timestamp < before.timestamp ||
+        (m.timestamp === before.timestamp && m.sequence < before.sequence),
+    );
+    const messages = eligible.slice(-size);
+    const first = messages[0];
+    return {
+      messages,
+      hasMore: eligible.length > messages.length,
+      before: first
+        ? { timestamp: first.timestamp, sequence: first.sequence }
+        : null,
+      historySince: this.now() - this.historyMs,
+    };
   }
   moderate({ platform, channel, id, userId, timestamp = this.now() }) {
     const prefix = `${platform}:${channel}:`;
@@ -94,6 +132,8 @@ export class Feed extends EventEmitter {
     }
   }
   checkpoint() {
+    this.trimHistory();
+    this.store?.set("chat-history", this.messages);
     this.store?.set("seen", [...this.seen].slice(-1000));
     this.store?.set("feed-watermark", this.watermark);
     this.store?.set("tombstones", [...this.tombstones].slice(-5000));

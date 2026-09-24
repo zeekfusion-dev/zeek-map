@@ -35,7 +35,7 @@ Tokens and the external state snapshot are AES-256-GCM encrypted with automatic 
 
 The current build still requires live authorized platform testing, screenshots for exact visual matching, and deployment verification. Automated fixture tests do not establish production platform compatibility. Initial sample messages are confined to `/preview`; the actual `/overlay` never generates fake chat.
 
-The recent feed is intentionally not replayed after a server restart; deduplication and deletion tombstones persist to prevent old/deleted messages resurfacing. Checkpoints occur every 60 seconds and on graceful shutdown; security-critical token writes are immediate. Platform events during an outage cannot always be recovered. Cold starts and deployments interrupt connections; OBS reconnects automatically.
+The most recent 20 minutes of chat are retained and checkpointed in encrypted storage. The overlay loads 100 messages initially and requests older pages when scrolled upward. It follows live chat only while at the bottom; returning to the bottom resumes following. Deduplication and deletion tombstones persist to prevent deleted messages resurfacing. Checkpoints occur every 60 seconds and on graceful shutdown; security-critical token writes are immediate. Platform events during an outage cannot always be recovered. Cold starts and deployments interrupt connections; OBS reconnects automatically.
 
 ## Tests and development
 

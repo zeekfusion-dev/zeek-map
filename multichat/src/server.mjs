@@ -314,6 +314,15 @@ export function createApp({ store, origin, password, connect = true } = {}) {
       try {
         const data = JSON.parse(raw);
         if (ws.authorized) {
+          if (data.type === "history") {
+            const before = data.before;
+            if (
+              before &&
+              Number.isFinite(before.timestamp) &&
+              Number.isFinite(before.sequence)
+            )
+              send(ws, { type: "history", ...feed.page(before) });
+          }
           if (data.type === "ping") {
             ws.alive = true;
             send(ws, {
@@ -332,7 +341,8 @@ export function createApp({ store, origin, password, connect = true } = {}) {
         clearTimeout(deadline);
         send(ws, {
           type: "snapshot",
-          messages: feed.messages,
+          ...feed.page(),
+          retainedKeys: feed.messages.map((m) => feed.key(m)),
           settings: settings(),
           platforms: connections.states,
         });

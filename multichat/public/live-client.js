@@ -73,6 +73,11 @@ export class LiveConnection {
       if (this.socket === ws) ws.close();
     };
   }
+  history(before) {
+    if (this.socket?.readyState !== 1) return false;
+    this.socket.send(JSON.stringify({ type: "history", before }));
+    return true;
+  }
   tick() {
     const ws = this.socket;
     if (!ws) return;
