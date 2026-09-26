@@ -1,3 +1,4 @@
+import { ScrollFollow } from "/scroll-follow.js";
 import { LiveConnection } from "/live-client.js";
 const app = document.querySelector("#app");
 const el = (tag, cls, text) => {
@@ -96,7 +97,6 @@ function overlay(preview = false) {
     settings = { ...defaults },
     scheduled = false,
     animate = true,
-    followLive = true,
     hasMore = false,
     before = null,
     loadingHistory = false,
@@ -106,6 +106,7 @@ function overlay(preview = false) {
   let rebuild = false;
   let savedAnchor = null;
   const nodes = new Map();
+  const scroll = new ScrollFollow(viewport);
   const key = (m) => `${m.platform}:${m.channel}:${m.id}`;
   function draw() {
     scheduled = false;
@@ -136,7 +137,7 @@ function overlay(preview = false) {
         a.timestamp - b.timestamp || (a.sequence || 0) - (b.sequence || 0),
     );
     if (preview) data = data.slice(-settings.maxMessages);
-    else if (followLive)
+    else if (scroll.following)
       data = data.filter((m) => m.timestamp >= Date.now() - 20 * 60000);
     const keep = new Set(data.map(key));
     for (const [id, n] of nodes)
@@ -151,7 +152,7 @@ function overlay(preview = false) {
       if (!n) {
         n = message(m, settings);
         nodes.set(id, n);
-        if (!animate || !followLive) n.style.animation = "none";
+        if (!animate || !scroll.following) n.style.animation = "none";
       }
       if (n.parentNode !== feed || n.previousSibling !== previous) {
         if (previous) previous.after(n);
@@ -159,7 +160,7 @@ function overlay(preview = false) {
       }
       previous = n;
     }
-    if (followLive) viewport.scrollTop = viewport.scrollHeight;
+    if (scroll.following) scroll.bottom();
     else {
       const anchor = anchors.find((a) => nodes.has(a.id));
       viewport.scrollTop = anchor
@@ -256,20 +257,20 @@ function overlay(preview = false) {
   viewport.addEventListener(
     "scroll",
     () => {
-      followLive =
-        viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < 40;
       rememberAnchor();
-      if (viewport.scrollTop < 150) loadOlder();
+      if (!scroll.following && viewport.scrollTop < 150) loadOlder();
     },
     { passive: true },
   );
-  new ResizeObserver(() => {
-    if (followLive) viewport.scrollTop = viewport.scrollHeight;
+  const resizeObserver = new ResizeObserver(() => {
+    if (scroll.following) scroll.bottom();
     else if (savedAnchor && nodes.has(savedAnchor.id)) {
       viewport.scrollTop +=
         nodes.get(savedAnchor.id).getBoundingClientRect().top - savedAnchor.top;
     }
-  }).observe(feed);
+  });
+  resizeObserver.observe(feed);
+  resizeObserver.observe(viewport);
   if (preview) {
     handle({ type: "snapshot", settings, messages: samples() });
     window.addEventListener("message", (e) => {
