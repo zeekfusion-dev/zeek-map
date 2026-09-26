@@ -5,7 +5,7 @@ export const providers = {
   twitch: {
     authorize: "https://id.twitch.tv/oauth2/authorize",
     token: "https://id.twitch.tv/oauth2/token",
-    scope: "user:read:chat",
+    scope: "user:read:chat channel:read:redemptions",
   },
   youtube: {
     authorize: "https://accounts.google.com/o/oauth2/v2/auth",

@@ -334,3 +334,118 @@ test("authorized history pages are chronological while new messages keep streami
     f.store.db.close();
   }
 });
+
+test("independent clients recover all retained messages beyond 100 after disconnect including deletions", async () => {
+  const f = await fixture();
+  let a, b;
+  const open = async (resume) => {
+    const ws = new WebSocket(f.url.replace("http:", "ws:") + "/live", {
+      origin: f.origin,
+    });
+    await once(ws, "open");
+    const incoming = once(ws, "message");
+    ws.send(
+      JSON.stringify({
+        key: f.store.get("overlayKey"),
+        ...(resume ? { resume } : {}),
+      }),
+    );
+    return [ws, JSON.parse((await incoming)[0])];
+  };
+  try {
+    let initial;
+    [a, initial] = await open();
+    [b] = await open();
+    a.terminate();
+    await once(a, "close");
+    for (let i = 0; i < 350; i++)
+      f.feed.push({
+        id: String(i),
+        platform: "kick",
+        channel: "c",
+        timestamp: Date.now(),
+        user: { id: "u" },
+        segments: [],
+      });
+    const live = once(b, "message");
+    f.feed.flush();
+    assert.equal(JSON.parse((await live)[0]).messages.length, 350);
+    f.feed.moderate({ platform: "kick", channel: "c", id: "30" });
+    let replay;
+    [a, replay] = await open({ streamId: initial.streamId });
+    assert.equal(replay.messages.length, 349);
+    assert.equal(replay.hasMore, false);
+    assert.ok(!replay.messages.some((m) => m.id === "30"));
+    assert.equal(new Set(replay.messages.map((m) => m.id)).size, 349);
+    assert.equal((await fetch(f.url + "/reader")).status, 200);
+  } finally {
+    a?.terminate();
+    b?.terminate();
+    await f.close();
+    f.store.db.close();
+  }
+});
+
+test("signed Kick redemption webhooks verify, stream viewer input, and deduplicate status updates", async (t) => {
+  const crypto = await import("node:crypto");
+  const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+  });
+  const actualFetch = globalThis.fetch;
+  t.mock.method(globalThis, "fetch", (url, opts) =>
+    String(url) === "https://api.kick.com/public/v1/public-key"
+      ? Promise.resolve(
+          new Response(
+            JSON.stringify({
+              data: {
+                public_key: publicKey.export({ type: "spki", format: "pem" }),
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        )
+      : actualFetch(url, opts),
+  );
+  const f = await fixture();
+  f.store.set("kickChannelId", "123");
+  try {
+    const e = {
+      id: "redemption-1",
+      broadcaster: { user_id: 123 },
+      redeemer: { user_id: 99, username: "Viewer" },
+      reward: { title: "Hydrate" },
+      user_input: "Have some water!",
+      redeemed_at: new Date().toISOString(),
+    };
+    for (const status of ["pending", "accepted", "accepted"]) {
+      const body = JSON.stringify({ ...e, status }),
+        id = crypto.randomUUID(),
+        stamp = new Date().toISOString();
+      const signature = crypto
+        .sign("RSA-SHA256", Buffer.from(`${id}.${stamp}.${body}`), privateKey)
+        .toString("base64");
+      const response = await fetch(f.url + "/webhooks/kick", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Kick-Event-Message-Id": id,
+          "Kick-Event-Message-Timestamp": stamp,
+          "Kick-Event-Signature": signature,
+          "Kick-Event-Type": "channel.reward.redemption.updated",
+        },
+        body,
+      });
+      assert.equal(response.status, 204);
+      f.feed.flush();
+    }
+    assert.equal(f.feed.messages.length, 1);
+    assert.equal(f.feed.messages[0].activity.status, "accepted");
+    assert.equal(
+      f.feed.messages[0].segments.map((s) => s.text).join(""),
+      "Have some water!",
+    );
+  } finally {
+    await f.close();
+    f.store.db.close();
+  }
+});

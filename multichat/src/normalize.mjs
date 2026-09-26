@@ -1,3 +1,4 @@
+import { youtubeActivity } from "./rewards.mjs";
 import { https, timestamp } from "./net.mjs";
 // Kick renders this native badge when the channel has no applicable custom tier.
 export const kickSubscriberDefault = "/assets/kick-subscriber.svg";
@@ -111,6 +112,7 @@ export function youtubeMessage(e, channel, emotes) {
     platform: "youtube",
     channel: String(channel),
     id: e.id,
+    activity: youtubeActivity(s) || undefined,
     timestamp: timestamp(s.publishedAt),
     user: {
       id: u.channelId || s.authorChannelId,
@@ -133,7 +135,12 @@ export function youtubeMessage(e, channel, emotes) {
         .map(([, label]) => ({ label })),
     },
     segments: emotes.text(
-      s.displayMessage || s.textMessageDetails?.messageText || "",
+      s.superChatDetails?.userComment ??
+        s.memberMilestoneChatDetails?.userComment ??
+        s.superStickerDetails?.superStickerMetadata?.altText ??
+        s.displayMessage ??
+        s.textMessageDetails?.messageText ??
+        "",
       "youtube",
       channel,
     ),
@@ -141,6 +148,7 @@ export function youtubeMessage(e, channel, emotes) {
 }
 export function youtubeRenderer(r, channel, emotes) {
   return {
+    rich: true,
     platform: "youtube",
     channel: String(channel),
     id: r.id,

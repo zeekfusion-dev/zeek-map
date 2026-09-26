@@ -48,7 +48,7 @@ export class Feed extends EventEmitter {
           : now,
       receivedAt: now,
     };
-    if (this.blocked(m) || m.timestamp <= this.replayFloor) return;
+    if (this.blocked(m) || m.timestamp < now - this.historyMs) return;
     this.watermark = Math.max(this.watermark, m.timestamp);
     const key = this.key(m);
     if (this.seen.has(key)) {
@@ -57,6 +57,9 @@ export class Feed extends EventEmitter {
           this.messages.find((x) => this.key(x) === key) ||
           this.pending.find((x) => this.key(x) === key);
         if (old) {
+          // Official activity details may arrive after native emotes/badges.
+          if (old.rich && !m.rich)
+            m = { ...m, user: old.user, segments: old.segments };
           Object.assign(old, m, { sequence: old.sequence });
           this.emit("event", { type: "update", message: old });
         }
@@ -132,6 +135,8 @@ export class Feed extends EventEmitter {
     }
   }
   checkpoint() {
+    // Persist pending deliveries too; seen IDs must never outlive missing rows.
+    if (this.pending.length) this.flush();
     this.trimHistory();
     this.store?.set("chat-history", this.messages);
     this.store?.set("seen", [...this.seen].slice(-1000));

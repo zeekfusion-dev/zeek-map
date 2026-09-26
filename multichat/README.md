@@ -46,3 +46,21 @@ No application secrets or chat content are written to request logs. Upstream bad
 ## Source and licensing
 
 Moblin current source was inspected at commit acd6fa4df534c770a2abbe89476dccfcf5e0e836. See `vendor/NOTICE.md`, MIT attribution, and Google sample Apache license.
+
+## OBS and reader independence
+
+Use the existing `/overlay#<private-key>` URL in OBS. It is live-only: gestures cannot pause it, it keeps at most 200 rendered rows, and layout changes always return it to the newest message. The separate `/reader#<same-private-key>` URL (dashboard → Open chat reader) supports 20-minute paged history and a Jump to newest button. Each document owns its own connection, data, and scroll state; neither uses shared browser storage.
+
+Live events render without waiting for animation frames, which can be suspended in hidden browser sources. A stale connection is replaced without waiting for its close handshake. Online, visibility, and restored-page events check connection health. Reconnect snapshots reconcile all retained 20-minute history, including deletions and edits, rather than only 100 recent rows. Beyond that retention window, or if an upstream platform never delivered an event, complete replay cannot be guaranteed. Twitch EventSub and the public Kick socket do not offer chat history replay for their own upstream outages.
+
+### Reward/activity support
+
+- Twitch: custom redemptions (EventSub v1) and automatic redemptions (v2). Reconnect Twitch once to consent to `channel:read:redemptions`; existing chat keeps working without that permission. Dashboard reward status confirms subscription success. No redemption-management permission is requested.
+- Kick: signed `channel.reward.redemption.updated` webhook; stable redemption IDs prevent repeat rows as status changes. Requires a Kick developer app, its webhook URL set to `https://<your-host>/webhooks/kick`, client credentials, and authorization with `events:subscribe`. Public Pusher chat alone is not a documented reward subscription. Existing public chat does not depend on this setup.
+- YouTube: Super Chats, Super Stickers, memberships/milestones, membership gifts and gift events from the existing live-chat API. The API does not expose a Twitch-style custom channel-points redemption event. No extra scope is needed for the supported events.
+
+Sources: [Twitch EventSub](https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/), [Kick webhook payloads](https://github.com/KickEngineering/KickDevDocs/blob/main/events/event-types.md), [YouTube live chat types](https://developers.google.com/youtube/v3/live/docs/liveChatMessages).
+
+### Reproducible browser test
+
+Run `node tests/browser-server.mjs`, open `http://localhost:8787/test` in Chrome, and click Run three-minute independence test. This isolated server uses production views and real WebSockets, with fixtures through all three platform normalizers. It deliberately delivers duplicate upstream messages, holds the reader in old history for three minutes, checks every batch in both views and the reader anchor, resizes OBS to 160/260/450/800px, hides/restores its viewport, terminates both sockets, inserts 250 messages while disconnected, and verifies automatic replay, deletion, chronological order and jump-to-live. It sends no public platform chat and exposes no test endpoints in production. Run `npm test` for automated transport, history, OAuth, moderation, badge, emote and reward checks.

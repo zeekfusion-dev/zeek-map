@@ -9,23 +9,55 @@ test("YouTube attaches to scheduled chat before going live and prefers active ch
     const calls = [];
     let attached;
     const c = Object.create(Connections.prototype);
-    c.oauth = { api: async (_, url) => {
-      calls.push(url);
-      if (url.includes("broadcastStatus=active")) return { items: active ? [{id:"live",snippet:{liveChatId:"live-chat"}}] : [] };
-      return {items:[
-        {id:"later",snippet:{liveChatId:"later-chat",scheduledStartTime:"2030-01-02T00:00:00Z"}},
-        {id:"next",snippet:{liveChatId:"next-chat",scheduledStartTime:"2030-01-01T00:00:00Z"}},
-        {id:"disabled",snippet:{scheduledStartTime:"2029-01-01T00:00:00Z"}},
-      ]};
-    }};
-    c.store = {token:()=>({user:{id:"owner"}})};
-    c.emotes = {load:()=>{}};
+    c.oauth = {
+      api: async (_, url) => {
+        calls.push(url);
+        if (url.includes("broadcastStatus=active"))
+          return {
+            items: active
+              ? [{ id: "live", snippet: { liveChatId: "live-chat" } }]
+              : [],
+          };
+        return {
+          items: [
+            {
+              id: "later",
+              snippet: {
+                liveChatId: "later-chat",
+                scheduledStartTime: "2030-01-02T00:00:00Z",
+              },
+            },
+            {
+              id: "next",
+              snippet: {
+                liveChatId: "next-chat",
+                scheduledStartTime: "2030-01-01T00:00:00Z",
+              },
+            },
+            {
+              id: "disabled",
+              snippet: { scheduledStartTime: "2029-01-01T00:00:00Z" },
+            },
+          ],
+        };
+      },
+    };
+    c.store = { token: () => ({ user: { id: "owner" } }) };
+    c.emotes = { load: () => {} };
     c.states = {};
-    c.youtubeRich = (_,__,signal)=>new Promise(resolve=>signal.addEventListener("abort",resolve,{once:true}));
-    c.youtubeStream = async (chat,channel)=>{attached={chat,channel};};
-    await c.youtube(new AbortController().signal,()=>{});
-    assert.deepEqual(attached,{chat:active?"live-chat":"next-chat",channel:"owner"});
-    assert.equal(calls.length,active?1:2);
+    c.youtubeRich = (_, __, signal) =>
+      new Promise((resolve) =>
+        signal.addEventListener("abort", resolve, { once: true }),
+      );
+    c.youtubeStream = async (chat, channel) => {
+      attached = { chat, channel };
+    };
+    await c.youtube(new AbortController().signal, () => {});
+    assert.deepEqual(attached, {
+      chat: active ? "live-chat" : "next-chat",
+      channel: "owner",
+    });
+    assert.equal(calls.length, active ? 1 : 2);
   }
 });
 const makeBackend = () => {
@@ -199,4 +231,41 @@ test("reconnect backoff and invalid links do not busy-loop", () => {
   f.sockets[2].close(1008);
   assert.equal(f.client.stopped, true);
   assert.equal(f.states.at(-1), "unauthorized");
+});
+
+test("stalled CLOSING transport cannot prevent retry; stale callbacks cannot poison new socket", () => {
+  const f = clientFixture(),
+    old = f.sockets[0];
+  old.open();
+  old.close = () => {
+    old.readyState = 2;
+  };
+  f.advance(61000);
+  f.client.tick();
+  assert.equal(f.timeouts.length, 1);
+  f.timeouts[0].f();
+  const fresh = f.sockets[1];
+  fresh.open();
+  old.onclose({ code: 1008 });
+  old.receive({ type: "snapshot", streamId: "stale", messages: [] });
+  assert.equal(f.client.stopped, false);
+  assert.equal(f.client.socket, fresh);
+  fresh.receive({ type: "snapshot", streamId: "current", messages: [] });
+  f.client.reconnect();
+  f.timeouts.at(-1).f();
+  f.sockets[2].open();
+  assert.deepEqual(f.sockets[2].sent[0].resume, { streamId: "current" });
+  f.client.stop();
+});
+test("wake after suspension reconnects once and start is idempotent", () => {
+  const f = clientFixture();
+  f.client.start();
+  assert.equal(f.sockets.length, 1);
+  f.sockets[0].open();
+  f.advance(61000);
+  f.client.wake();
+  assert.equal(f.sockets.length, 2);
+  f.client.wake();
+  assert.equal(f.sockets.length, 2);
+  f.client.stop();
 });

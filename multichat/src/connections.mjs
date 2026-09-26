@@ -1,4 +1,5 @@
 import WebSocket from "ws";
+import { redemption, youtubeActivity } from "./rewards.mjs";
 import defaultKick from "./kick-default.json" with { type: "json" };
 import { json, request, retryLoop, sleep } from "./net.mjs";
 import {
@@ -99,6 +100,12 @@ export class Connections {
   }
   async kick(signal, status) {
     const slug = this.store.get("kickChannel");
+    this.states.kick = {
+      ...this.states.kick,
+      rewards: this.store.get("kickRewardsWebhook")
+        ? "Official reward webhook enabled"
+        : "Requires Kick app credentials and official webhook authorization",
+    };
     let info;
     try {
       info = await json(
@@ -230,6 +237,57 @@ export class Connections {
                     },
                   );
               }
+              if (!migrating) {
+                const rawScopes = this.store.token("twitch")?.scope || [];
+                const scopes = Array.isArray(rawScopes)
+                  ? rawScopes
+                  : rawScopes.split(" ");
+                this.states.twitch = {
+                  ...this.states.twitch,
+                  rewards:
+                    "Reconnect Twitch to allow reading reward redemptions",
+                };
+                if (
+                  scopes.includes("channel:read:redemptions") ||
+                  scopes.includes("channel:manage:redemptions")
+                ) {
+                  const results = await Promise.allSettled(
+                    [
+                      [
+                        "channel.channel_points_custom_reward_redemption.add",
+                        "1",
+                      ],
+                      [
+                        "channel.channel_points_automatic_reward_redemption.add",
+                        "2",
+                      ],
+                    ].map(([type, version]) =>
+                      this.oauth.api(
+                        "twitch",
+                        "https://api.twitch.tv/helix/eventsub/subscriptions",
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            type,
+                            version,
+                            condition: { broadcaster_user_id: channel },
+                            transport: {
+                              method: "websocket",
+                              session_id: m.payload.session.id,
+                            },
+                          }),
+                        },
+                      ),
+                    ),
+                  );
+                  this.states.twitch.rewards = results.every(
+                    (r) => r.status === "fulfilled",
+                  )
+                    ? "Connected"
+                    : "Some reward subscriptions failed; reconnect Twitch to retry";
+                }
+              }
               onWelcome?.();
               status("Connected");
             }
@@ -246,6 +304,16 @@ export class Connections {
                 next.catch(finish);
               }
             }
+            if (
+              type === "revocation" &&
+              m.payload.subscription?.type?.includes("reward_redemption")
+            ) {
+              this.states.twitch = {
+                ...this.states.twitch,
+                rewards: "Authorization revoked; reconnect Twitch",
+              };
+              return;
+            }
             if (type === "revocation")
               throw Object.assign(new Error("Authorization revoked"), {
                 status: 401,
@@ -257,7 +325,12 @@ export class Connections {
             if (seen.size > 10000) seen.delete(seen.values().next().value);
             const e = m.payload.event,
               t = m.payload.subscription.type;
-            if (t === "channel.chat.message") {
+            if (
+              t === "channel.channel_points_custom_reward_redemption.add" ||
+              t === "channel.channel_points_automatic_reward_redemption.add"
+            ) {
+              this.feed.push(redemption("twitch", e, channel, this.emotes));
+            } else if (t === "channel.chat.message") {
               this.feed.push(
                 twitchMessage(
                   { ...e, timestamp: m.metadata.message_timestamp },
@@ -484,9 +557,13 @@ export class Connections {
             });
           else if (
             s.hasDisplayContent !== false &&
-            (s.displayMessage || s.textMessageDetails?.messageText)
+            (s.displayMessage ||
+              s.textMessageDetails?.messageText ||
+              youtubeActivity(s))
           ) {
-            this.feed.push(youtubeMessage(e, channel, this.emotes));
+            this.feed.push(youtubeMessage(e, channel, this.emotes), {
+              enrich: true,
+            });
             this.states.youtube.lastMessageAt = Date.now();
           }
         }

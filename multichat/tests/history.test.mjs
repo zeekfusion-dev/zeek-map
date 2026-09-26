@@ -72,3 +72,23 @@ test("retained scrollback survives restart with ordering, dedup and moderation i
   next.close();
   store.db.close();
 });
+
+test("restart preserves pending rows and accepts late unseen platform messages behind the saved timestamp", () => {
+  const store = new Store(":memory:", "test");
+  const first = new Feed({ store, now: () => 2000000 });
+  first.push(message("last-before-restart", 1999900));
+  first.close();
+  const next = new Feed({ store, now: () => 2001000 });
+  next.push(message("last-before-restart", 1999900));
+  next.push({
+    ...message("late-from-other-platform", 1999800),
+    platform: "twitch",
+  });
+  next.flush();
+  assert.deepEqual(
+    next.messages.map((m) => m.id),
+    ["late-from-other-platform", "last-before-restart"],
+  );
+  next.close();
+  store.db.close();
+});

@@ -25,12 +25,15 @@ export class LiveConnection {
     this.last = now();
   }
   start() {
+    if (this.heartbeat || this.stopped) return this;
     this.connect();
     this.heartbeat = this.timers.setInterval(() => this.tick(), 20000);
     return this;
   }
   connect() {
     if (this.stopped) return;
+    this.timers.clearTimeout(this.retry);
+    this.retry = null;
     this.onState("connecting");
     this.last = this.now();
     const ws = new this.WebSocketImpl(this.url);
@@ -38,7 +41,12 @@ export class LiveConnection {
     ws.onopen = () => {
       if (this.socket !== ws) return;
       this.last = this.now();
-      ws.send(JSON.stringify({ key: this.key }));
+      ws.send(
+        JSON.stringify({
+          key: this.key,
+          ...(this.resume ? { resume: this.resume } : {}),
+        }),
+      );
     };
     ws.onmessage = (e) => {
       if (this.socket !== ws) return;
@@ -50,6 +58,8 @@ export class LiveConnection {
           this.onState("connected", data.platforms);
         }
         if (data.type !== "pong") this.onEvent(data);
+        if (data.type === "snapshot" && data.streamId)
+          this.resume = { streamId: data.streamId };
       } catch {
         this.onState("reconnecting");
       }
@@ -62,16 +72,43 @@ export class LiveConnection {
         this.onState("unauthorized");
         return;
       }
-      this.onState("reconnecting");
-      this.retry = this.timers.setTimeout(
-        () => this.connect(),
-        this.delay + this.random() * 300,
-      );
-      this.delay = Math.min(this.delay * 2, 15000);
+      this.scheduleRetry();
     };
     ws.onerror = () => {
-      if (this.socket === ws) ws.close();
+      if (this.socket === ws) this.reconnect();
     };
+  }
+  scheduleRetry() {
+    if (this.stopped || this.retry) return;
+    this.onState("reconnecting");
+    this.retry = this.timers.setTimeout(
+      () => this.connect(),
+      this.delay + this.random() * 300,
+    );
+    this.delay = Math.min(this.delay * 2, 15000);
+  }
+  reconnect() {
+    const old = this.socket;
+    this.socket = null; // Ignore late callbacks from a dead transport.
+    try {
+      old?.close();
+    } catch {}
+    this.scheduleRetry(); // Never wait for an unreliable close handshake.
+  }
+  wake() {
+    if (this.stopped) return;
+    if (
+      !this.socket ||
+      this.now() - this.last > 60000 ||
+      this.socket.readyState > 1
+    ) {
+      const old = this.socket;
+      this.socket = null;
+      try {
+        old?.close();
+      } catch {}
+      this.connect();
+    } else this.tick();
   }
   history(before) {
     if (this.socket?.readyState !== 1) return false;
@@ -82,8 +119,7 @@ export class LiveConnection {
     const ws = this.socket;
     if (!ws) return;
     if (this.now() - this.last > 60000) {
-      this.onState("reconnecting");
-      ws.close();
+      this.reconnect();
       return;
     }
     if (ws.readyState === 1)
@@ -92,6 +128,7 @@ export class LiveConnection {
   stop() {
     this.stopped = true;
     this.timers.clearInterval(this.heartbeat);
+    this.heartbeat = null;
     this.timers.clearTimeout(this.retry);
     this.socket?.close();
     this.socket = null;

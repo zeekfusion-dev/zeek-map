@@ -44,7 +44,7 @@ function segments(parts) {
   return f;
 }
 function message(m, settings) {
-  const row = el("div", "chat-line");
+  const row = el("div", "chat-line" + (m.activity ? " activity" : ""));
   row.dataset.id = m.platform + ":" + m.channel + ":" + m.id;
   if (m.reply) {
     const reply = el("div", "reply");
@@ -73,7 +73,21 @@ function message(m, settings) {
   const name = el("span", "username", m.user.name);
   if (/^#[\da-f]{3,8}$/i.test(m.user.color || ""))
     name.style.color = m.user.color;
-  content.append(name, el("span", "", ": "), segments(m.segments));
+  if (m.activity) {
+    content.append(
+      el("span", "", "🎁 "),
+      name,
+      el(
+        "span",
+        "activity-title",
+        " " +
+          m.activity.title +
+          (m.activity.status === "rejected" ? " (rejected)" : ""),
+      ),
+    );
+    if (m.segments?.length)
+      content.append(el("span", "", " — "), segments(m.segments));
+  } else content.append(name, el("span", "", ": "), segments(m.segments));
   row.append(content);
   return row;
 }
@@ -84,13 +98,16 @@ const defaults = {
   avatars: false,
   maxMessages: 120,
 };
-function overlay(preview = false) {
+function overlay(preview = false, reader = false) {
   document.documentElement.style.background = "transparent";
-  document.body.className = "overlay";
+  document.body.className = "overlay " + (reader ? "reader" : "obs-view");
   const viewport = el("div", "chat-viewport"),
     feed = el("div", "chat-feed");
-  viewport.tabIndex = 0;
-  viewport.setAttribute("aria-label", "Chat history");
+  viewport.tabIndex = reader ? 0 : -1;
+  viewport.setAttribute(
+    "aria-label",
+    reader ? "Chat history" : "Live chat overlay",
+  );
   viewport.append(feed);
   app.append(viewport);
   let data = [],
@@ -106,18 +123,41 @@ function overlay(preview = false) {
   let rebuild = false;
   let savedAnchor = null;
   const nodes = new Map();
-  const scroll = new ScrollFollow(viewport);
+  const scroll = reader
+    ? new ScrollFollow(viewport)
+    : {
+        following: true,
+        bottom: () => {
+          viewport.scrollTop = viewport.scrollHeight;
+        },
+      };
+  const jump = el("button", "jump-live", "Jump to newest ↓");
+  jump.hidden = true;
+  if (reader) {
+    app.append(jump);
+    jump.onclick = () => {
+      scroll.following = true;
+      scroll.pausePending = false;
+      scroll.bottom();
+      render();
+    };
+  }
   const key = (m) => `${m.platform}:${m.channel}:${m.id}`;
   function draw() {
     scheduled = false;
-    const anchors = Array.from(feed.children)
-      .filter(
-        (n) =>
-          n.getBoundingClientRect().bottom >
-          viewport.getBoundingClientRect().top,
-      )
-      .slice(0, 5)
-      .map((n) => ({ id: n.dataset.id, top: n.getBoundingClientRect().top }));
+    const anchors = scroll.following
+      ? []
+      : Array.from(feed.children)
+          .filter(
+            (n) =>
+              n.getBoundingClientRect().bottom >
+              viewport.getBoundingClientRect().top,
+          )
+          .slice(0, 5)
+          .map((n) => ({
+            id: n.dataset.id,
+            top: n.getBoundingClientRect().top,
+          }));
     const oldTop = viewport.scrollTop;
     if (rebuild) {
       nodes.clear();
@@ -136,7 +176,7 @@ function overlay(preview = false) {
       (a, b) =>
         a.timestamp - b.timestamp || (a.sequence || 0) - (b.sequence || 0),
     );
-    if (preview) data = data.slice(-settings.maxMessages);
+    if (!reader) data = data.slice(-200);
     else if (scroll.following)
       data = data.filter((m) => m.timestamp >= Date.now() - 20 * 60000);
     const keep = new Set(data.map(key));
@@ -168,9 +208,14 @@ function overlay(preview = false) {
         : oldTop;
     }
     rememberAnchor();
+    jump.hidden = scroll.following;
     animate = true;
   }
   function rememberAnchor() {
+    if (scroll.following) {
+      savedAnchor = null;
+      return;
+    }
     const first = Array.from(feed.children).find(
       (n) =>
         n.getBoundingClientRect().bottom > viewport.getBoundingClientRect().top,
@@ -182,7 +227,7 @@ function overlay(preview = false) {
   const render = () => {
     if (!scheduled) {
       scheduled = true;
-      requestAnimationFrame(draw);
+      queueMicrotask(draw);
     }
   };
   const clearNodes = () => {
@@ -197,16 +242,23 @@ function overlay(preview = false) {
     if (e.type === "snapshot") {
       const retained = new Set(e.retainedKeys || []);
       data = preview ? [] : data.filter((m) => retained.has(key(m)));
-      for (const m of e.messages) {
-        const i = data.findIndex((x) => key(x) === key(m));
-        if (i < 0) data.push(m);
-        else {
-          data[i] = m;
-          dirtyNodes.add(key(m));
-        }
-      }
+      clearNodes();
+      const merged = new Map(data.map((m) => [key(m), m]));
+      for (const m of e.messages) merged.set(key(m), m);
+      data = [...merged.values()];
       hasMore = !!e.hasMore;
-      before = e.before;
+      const oldest = data.reduce(
+        (a, m) =>
+          !a ||
+          m.timestamp < a.timestamp ||
+          (m.timestamp === a.timestamp && m.sequence < a.sequence)
+            ? m
+            : a,
+        null,
+      );
+      before = oldest
+        ? { timestamp: oldest.timestamp, sequence: oldest.sequence }
+        : e.before;
       loadingHistory = false;
       clearTimeout(historyTimer);
       settings = { ...defaults, ...e.settings };
@@ -247,7 +299,7 @@ function overlay(preview = false) {
     render();
   }
   const loadOlder = () => {
-    if (!hasMore || loadingHistory || !before || !connection) return;
+    if (!reader || !hasMore || loadingHistory || !before || !connection) return;
     loadingHistory = connection.history(before);
     if (loadingHistory)
       historyTimer = setTimeout(() => {
@@ -257,7 +309,12 @@ function overlay(preview = false) {
   viewport.addEventListener(
     "scroll",
     () => {
+      if (!reader) {
+        scroll.bottom();
+        return;
+      }
       rememberAnchor();
+      jump.hidden = scroll.following;
       if (!scroll.following && viewport.scrollTop < 150) loadOlder();
     },
     { passive: true },
@@ -271,6 +328,18 @@ function overlay(preview = false) {
   });
   resizeObserver.observe(feed);
   resizeObserver.observe(viewport);
+  const followTimer = setInterval(() => {
+    if (scroll.following) scroll.bottom();
+  }, 1000);
+  const wake = () => {
+    render();
+    connection?.wake();
+  };
+  window.addEventListener("pageshow", wake);
+  window.addEventListener("online", wake);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) wake();
+  });
   if (preview) {
     handle({ type: "snapshot", settings, messages: samples() });
     window.addEventListener("message", (e) => {
@@ -311,8 +380,10 @@ function overlay(preview = false) {
   }).start();
   window.addEventListener(
     "pagehide",
-    () => {
+    (event) => {
+      if (event.persisted) return;
       clearTimeout(historyTimer);
+      clearInterval(followTimer);
       connection.stop();
     },
     { once: true },
@@ -424,7 +495,7 @@ async function dashboard() {
     return;
   }
   app.innerHTML =
-    '<header><div class="brand">ZEEK<span>FUSION</span></div><div class="row"><small>MULTICHAT</small><button id="logout">Sign out</button></div></header><div class="layout"><section><div class="eyebrow">Your stream, together</div><h1>Multichat</h1><p>Connect your channels. Add one URL to OBS.</p><div class="notice" id="readiness" role="status"></div><div class="connections" id="platforms"></div><div class="panel"><h2>OBS browser source</h2><input class="url" id="overlayUrl" aria-label="Private OBS browser source URL" readonly><div class="row"><button class="primary" id="copy">Copy URL</button><a class="button" id="open" target="_blank" rel="noreferrer">Open overlay</a></div><p class="help">Paste into an OBS Browser Source. Start at 450 × 800. This dashboard can stay closed while you stream.</p></div><div class="notice">Open this page or your overlay before streaming to wake chat. After streaming, close both or shut down the OBS source to allow sleep. Your private OBS link stays the same.</div><p class="error" id="error" role="status"></p></section><aside class="preview"><div class="row spread"><h2>Overlay preview</h2><span class="sample-label">Sample messages</span></div><div class="preview-frame"><iframe src="/preview" title="Sample multichat overlay"></iframe></div><div class="panel"><h2>Appearance</h2><div class="controls"><label>Text size<input id="font" type="range" min="12" max="48"></label><label>Background opacity<input id="background" type="range" min="0" max="0.9" step="0.05"></label><label class="check"><input id="bold" type="checkbox">Bold messages</label><label class="check"><input id="avatars" type="checkbox">Profile images</label></div><button id="save" class="primary" style="margin-top:20px">Save appearance</button></div></aside></div>';
+    '<header><div class="brand">ZEEK<span>FUSION</span></div><div class="row"><small>MULTICHAT</small><button id="logout">Sign out</button></div></header><div class="layout"><section><div class="eyebrow">Your stream, together</div><h1>Multichat</h1><p>Connect your channels. Add one URL to OBS.</p><div class="notice" id="readiness" role="status"></div><div class="connections" id="platforms"></div><div class="panel"><h2>OBS browser source</h2><input class="url" id="overlayUrl" aria-label="Private OBS browser source URL" readonly><div class="row"><button class="primary" id="copy">Copy URL</button><a class="button" id="open" target="_blank" rel="noreferrer">Open overlay</a><a class="button" id="reader" target="_blank" rel="noreferrer">Open chat reader</a></div><p class="help">Paste into an OBS Browser Source. Start at 450 × 800. This dashboard can stay closed while you stream.</p></div><div class="notice">Open this page or your overlay before streaming to wake chat. After streaming, close both or shut down the OBS source to allow sleep. Your private OBS link stays the same.</div><p class="error" id="error" role="status"></p></section><aside class="preview"><div class="row spread"><h2>Overlay preview</h2><span class="sample-label">Sample messages</span></div><div class="preview-frame"><iframe src="/preview" title="Sample multichat overlay"></iframe></div><div class="panel"><h2>Appearance</h2><div class="controls"><label>Text size<input id="font" type="range" min="12" max="48"></label><label>Background opacity<input id="background" type="range" min="0" max="0.9" step="0.05"></label><label class="check"><input id="bold" type="checkbox">Bold messages</label><label class="check"><input id="avatars" type="checkbox">Profile images</label></div><button id="save" class="primary" style="margin-top:20px">Save appearance</button></div></aside></div>';
   const error = document.querySelector("#error");
   const action = (fn) => async () => {
     try {
@@ -474,6 +545,7 @@ async function dashboard() {
         if (details.length)
           info.append(el("span", "state", details.join(" · ")));
       }
+      if (s.rewards) info.append(el("span", "state", "Rewards: " + s.rewards));
       row.append(info);
       const connect = el("button", "", s.account ? "Reconnect" : "Connect");
       connect.addEventListener(
@@ -524,6 +596,7 @@ async function dashboard() {
   const url = document.querySelector("#overlayUrl");
   url.value = state.overlayUrl;
   document.querySelector("#open").href = state.overlayUrl;
+  document.querySelector("#reader").href = state.readerUrl;
   document.querySelector("#copy").onclick = action(async () => {
     await navigator.clipboard.writeText(state.overlayUrl);
     document.querySelector("#copy").textContent = "Copied";
@@ -594,5 +667,6 @@ function login() {
   };
 }
 if (location.pathname === "/overlay") overlay();
+else if (location.pathname === "/reader") overlay(false, true);
 else if (location.pathname === "/preview") overlay(true);
 else dashboard();

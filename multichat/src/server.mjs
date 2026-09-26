@@ -1,4 +1,5 @@
 import express from "express";
+import { redemption } from "./rewards.mjs";
 import crypto from "node:crypto";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
@@ -23,6 +24,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     store.set("kickChannel", process.env.KICK_CHANNEL || "zeekfusion");
   const overlayKey =
     store.get("overlayKey") || store.set("overlayKey", secret());
+  const streamId = crypto.randomUUID();
   const sessions = new Map(),
     attempts = new Map();
   const settings = () =>
@@ -110,6 +112,8 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           feed.push(
             kickMessage(e, channel, emotes, connections.subscriberBadges),
           );
+        if (type === "channel.reward.redemption.updated")
+          feed.push(redemption("kick", e, channel, emotes), { enrich: true });
         if (type === "moderation.banned")
           feed.moderate({
             platform: "kick",
@@ -175,6 +179,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
         Object.values(connections.states).every((s) => s.state === "Connected"),
       settings: settings(),
       overlayUrl: `${origin}/overlay#${overlayKey}`,
+      readerUrl: `${origin}/reader#${overlayKey}`,
       kickChannel: store.get("kickChannel", ""),
       callbacks: Object.fromEntries(
         Object.keys(providers).map((p) => [p, `${origin}/auth/${p}/callback`]),
@@ -253,6 +258,28 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           store.set("kickWebhook", false);
         }
       }
+      if (p === "kick") {
+        try {
+          await oauth.api(
+            "kick",
+            "https://api.kick.com/public/v1/events/subscriptions",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                broadcaster_user_id: Number(store.token("kick").user.id),
+                events: [
+                  { name: "channel.reward.redemption.updated", version: 1 },
+                ],
+                method: "webhook",
+              }),
+            },
+          );
+          store.set("kickRewardsWebhook", true);
+        } catch {
+          store.set("kickRewardsWebhook", false);
+        }
+      }
       await store.flush();
       connections.start(p);
       res.redirect("/dashboard");
@@ -263,8 +290,8 @@ export function createApp({ store, origin, password, connect = true } = {}) {
   const publicDir = fileURLToPath(new URL("../public", import.meta.url));
   app.get("/healthz", (req, res) => res.json({ ok: true }));
   app.get("/", (req, res) => res.redirect("/dashboard"));
-  app.get(["/dashboard", "/overlay", "/preview"], (req, res) =>
-    res.sendFile(publicDir + "/index.html"),
+  app.get(["/dashboard", "/overlay", "/reader", "/preview"], (req, res) =>
+    res.sendFile(publicDir + "/index.html", { dotfiles: "allow" }),
   );
   app.use(
     express.static(publicDir, { etag: true, maxAge: "1h", index: false }),
@@ -339,9 +366,18 @@ export function createApp({ store, origin, password, connect = true } = {}) {
         }
         ws.authorized = true;
         clearTimeout(deadline);
+        const page = feed.page();
+        // Reconnects replay every retained message, including edits/deletions,
+        // not just the most recent page. First visits still load history lazily.
+        const reconnect =
+          data.resume && typeof data.resume.streamId === "string";
         send(ws, {
           type: "snapshot",
-          ...feed.page(),
+          ...page,
+          ...(reconnect
+            ? { messages: feed.messages, hasMore: false, before: null }
+            : {}),
+          streamId,
           retainedKeys: feed.messages.map((m) => feed.key(m)),
           settings: settings(),
           platforms: connections.states,
@@ -371,6 +407,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
   return {
     app,
     server,
+    sockets,
     feed,
     connections,
     oauth,

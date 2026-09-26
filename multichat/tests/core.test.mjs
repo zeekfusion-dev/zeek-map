@@ -124,7 +124,10 @@ test("dedup and moderation survive restart", () => {
   next.push(msg("1"));
   next.push(msg("2"));
   next.flush();
-  assert.equal(next.messages.length, 0);
+  assert.deepEqual(
+    next.messages.map((m) => m.id),
+    ["1"],
+  );
   next.close();
   s.db.close();
 });
