@@ -38,3 +38,13 @@
 .market-start-guide .market-steps .market-conversion .market-conversion-instruction{margin:8px 0 0}
 .market-preview-items{margin-bottom:24px}
 @media(max-width:900px){.market-overview-top .market-leaderboard-link,.market-rewards-preview>.v-primary,.market-start-guide>.market-arcade-link{margin-top:0}}
+
+/* Shared type scale across Start Here, independent of column width. */
+.market-overview-top{--market-heading-size:24px;--market-title-size:18px;--market-body-size:16px;--market-small-size:14px}
+.market-overview-top .market-column-heading h2,.market-overview-top .ranking-preview h2,.market-start-guide .market-steps h2{font-size:var(--market-heading-size);line-height:1.3}
+.market-start-guide .market-steps h3,.market-overview-top .market-reward-title strong,.market-overview-top .market-conversion h4{font-size:var(--market-title-size);line-height:1.4;font-weight:750}
+.market-start-guide .market-steps p,.market-start-guide .market-steps .market-conversion p,.market-start-guide .market-steps .market-conversion .market-conversion-instruction,.market-overview-top .market-reward-info>p,.market-overview-top .market-rewards-preview>p{font-size:var(--market-body-size);line-height:1.55}
+.market-overview-top .market-reward-info>b,.market-overview-top .ranking-name,.market-overview-top .ranking-place-1 .ranking-name,.market-overview-top .ranking-runners strong,.market-overview-top .ranking-points{font-size:var(--market-body-size);line-height:1.4}
+.market-overview-top .market-conversion-rate{font-size:var(--market-title-size);line-height:1.4}
+.market-overview-top .market-reward-info>code,.vault .market-overview-top .market-redeem,.market-overview-top .market-conversion button,.vault .market-overview-top .market-column-heading button{font-size:var(--market-small-size);line-height:1.4}
+.market-overview-top>.ranking-preview>.market-leaderboard-link,.market-overview-top .market-rewards-preview>.v-primary,.market-overview-top .market-start-guide>.market-arcade-link{font-size:var(--market-body-size);line-height:1.4}
