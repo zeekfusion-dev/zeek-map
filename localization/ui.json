@@ -2020,5 +2020,41 @@
     "zh": "将你的 BotRix 积分兑换成 Zs。",
     "de": "Wandle deine BotRix-Punkte in Zs um.",
     "ru": "Обменивай баллы BotRix на Zs."
+  },
+  "Convert BotRix Points to Zs": {
+    "es": "Convierte puntos BotRix en Zs",
+    "zh": "将 BotRix 积分兑换成 Zs",
+    "de": "BotRix-Punkte in Zs umwandeln",
+    "ru": "Обмен баллов BotRix на Zs"
+  },
+  "1 BotRix Point = 1 Z": {
+    "es": "1 punto BotRix = 1 Z",
+    "zh": "1 BotRix 积分 = 1 Z",
+    "de": "1 BotRix-Punkt = 1 Z",
+    "ru": "1 балл BotRix = 1 Z"
+  },
+  "Your BotRix points transfer 1:1 into Zs.": {
+    "es": "Tus puntos BotRix se convierten en Zs a una tasa de 1:1.",
+    "zh": "你的 BotRix 积分按 1:1 兑换成 Zs。",
+    "de": "Deine BotRix-Punkte werden 1:1 in Zs umgewandelt.",
+    "ru": "Твои баллы BotRix обмениваются на Zs в соотношении 1:1."
+  },
+  "Example: 5,000 BotRix Points = 5,000 Zs": {
+    "es": "Ejemplo: 5.000 puntos BotRix = 5.000 Zs",
+    "zh": "例如：5,000 BotRix 积分 = 5,000 Zs",
+    "de": "Beispiel: 5.000 BotRix-Punkte = 5.000 Zs",
+    "ru": "Пример: 5 000 баллов BotRix = 5 000 Zs"
+  },
+  "Click “Request a Conversion” and submit your BotRix points for transfer.": {
+    "es": "Haz clic en «Solicitar conversión» y envía tus puntos BotRix para transferirlos.",
+    "zh": "点击“申请兑换”，提交你想兑换的 BotRix 积分。",
+    "de": "Klicke auf „Umwandlung beantragen“ und reiche deine BotRix-Punkte zur Übertragung ein.",
+    "ru": "Нажми «Запросить обмен» и укажи баллы BotRix для перевода."
+  },
+  "Request a Conversion →": {
+    "es": "Solicitar conversión →",
+    "zh": "申请兑换 →",
+    "de": "Umwandlung beantragen →",
+    "ru": "Запросить обмен →"
   }
 }
