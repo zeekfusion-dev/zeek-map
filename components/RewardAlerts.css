@@ -4,3 +4,5 @@
 .is-reward-overlay{scrollbar-gutter:auto}.reward-enable-audio{background:#007bd6;color:white;border:1px solid #8ddfff;border-radius:8px;padding:12px 20px;font:700 16px Arial;cursor:pointer}.v-controls>.v-grid{align-items:start}
 
 .reward-chat-command{line-height:1.65;overflow-wrap:anywhere}.reward-chat-command code{color:#71d4ff;font-weight:700}
+
+.reward-library-filters,.reward-library-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.reward-library-filters button[aria-pressed=true]{background:#164f75;border-color:#64cfff;color:#fff}.reward-library-list{max-height:560px;overflow:auto}.reward-library-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:18px 0;border-bottom:1px solid #244560}.reward-library-row>div{min-width:0}.reward-library-row strong,.reward-library-row code{overflow-wrap:anywhere}.reward-library-row p{margin:8px 0}.reward-library-actions{flex-shrink:0}@media(max-width:650px){.reward-library-row{align-items:flex-start;flex-direction:column}.reward-library-actions{margin:0}}
