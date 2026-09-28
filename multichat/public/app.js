@@ -655,11 +655,14 @@ async function dashboard() {
 }
 function login() {
   app.innerHTML =
-    '<section class="login"><div class="eyebrow">ZeekFusion</div><h1>Multichat</h1><p>Your private streaming dashboard.</p><form><label>Dashboard password<input type="password" name="password" autocomplete="current-password" required></label><button class="primary">Sign in</button><div class="error" role="status"></div></form></section>';
+    '<section class="login"><div class="eyebrow">ZeekFusion</div><h1>Multichat</h1><p>Your private streaming dashboard.</p><form><label>Dashboard password<input type="password" name="password" autocomplete="current-password" required></label><label class="check"><input type="checkbox" name="remember" checked>Remember me for 30 days</label><button class="primary">Sign in</button><div class="error" role="status"></div></form></section>';
   app.querySelector("form").onsubmit = async (e) => {
     e.preventDefault();
     try {
-      await api("/api/login", { password: app.querySelector("input").value });
+      await api("/api/login", {
+        password: app.querySelector('[name="password"]').value,
+        remember: app.querySelector('[name="remember"]').checked,
+      });
       await dashboard();
     } catch (err) {
       app.querySelector(".error").textContent = err.message;

@@ -1,4 +1,5 @@
 import express from "express";
+import { Sessions } from "./sessions.mjs";
 import { redemption } from "./rewards.mjs";
 import crypto from "node:crypto";
 import { createServer } from "node:http";
@@ -25,7 +26,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
   const overlayKey =
     store.get("overlayKey") || store.set("overlayKey", secret());
   const streamId = crypto.randomUUID();
-  const sessions = new Map(),
+  const sessions = new Sessions(store, password),
     attempts = new Map();
   const settings = () =>
     store.get("settings", {
@@ -53,15 +54,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
       .map((x) => x.trim())
       .find((x) => x.startsWith("chat_session="))
       ?.slice(13);
-  const authenticated = (req) => {
-    const id = cookie(req),
-      expires = sessions.get(id);
-    if (!expires || expires < Date.now()) {
-      sessions.delete(id);
-      return false;
-    }
-    return true;
-  };
+  const authenticated = (req) => sessions.valid(cookie(req));
   const owner = (req, res, next) =>
     authenticated(req)
       ? next()
@@ -127,7 +120,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
     },
   );
   app.use(express.json({ limit: "16kb" }));
-  app.post("/api/login", sameOrigin, (req, res) => {
+  app.post("/api/login", sameOrigin, async (req, res) => {
     const ip = req.ip,
       now = Date.now();
     const record = attempts.get(ip) || { count: 0, until: now + 60000 };
@@ -143,19 +136,21 @@ export function createApp({ store, origin, password, connect = true } = {}) {
         .json({ error: "Please wait a minute before trying again." });
     if (!equal(req.body.password, password))
       return res.status(401).json({ error: "Incorrect dashboard password." });
-    const id = secret();
-    sessions.set(id, now + 7 * 86400000);
+    const { id, maxAge } = await sessions.create(
+      req.body.remember === true,
+      cookie(req),
+    );
     res.cookie("chat_session", id, {
       httpOnly: true,
       secure: origin.startsWith("https:"),
       sameSite: "lax",
-      maxAge: 7 * 86400000,
+      maxAge,
       path: "/",
     });
     res.json({ ok: true });
   });
-  app.post("/api/logout", sameOrigin, owner, (req, res) => {
-    sessions.delete(cookie(req));
+  app.post("/api/logout", sameOrigin, owner, async (req, res) => {
+    await sessions.revoke(cookie(req));
     res.clearCookie("chat_session");
     res.json({ ok: true });
   });
@@ -395,7 +390,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
         ws.ping();
       }
     }
-    for (const [id, t] of sessions) if (t < Date.now()) sessions.delete(id);
+    sessions.prune();
     for (const [ip, a] of attempts)
       if (a.until < Date.now()) attempts.delete(ip);
   }, 15000);
