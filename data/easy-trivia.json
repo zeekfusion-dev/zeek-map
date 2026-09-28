@@ -1,0 +1,798 @@
+[
+  {
+    "question": "What is 17 + 8?",
+    "answers": [
+      "25",
+      "twenty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 24 + 19?",
+    "answers": [
+      "43",
+      "forty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 36 + 15?",
+    "answers": [
+      "51",
+      "fifty one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 48 + 12?",
+    "answers": [
+      "60",
+      "sixty"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 27 + 16?",
+    "answers": [
+      "43",
+      "forty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 65 + 18?",
+    "answers": [
+      "83",
+      "eighty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 39 + 24?",
+    "answers": [
+      "63",
+      "sixty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 54 + 17?",
+    "answers": [
+      "71",
+      "seventy one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 28 + 35?",
+    "answers": [
+      "63",
+      "sixty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 46 + 29?",
+    "answers": [
+      "75",
+      "seventy five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 72 + 19?",
+    "answers": [
+      "91",
+      "ninety one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 58 + 26?",
+    "answers": [
+      "84",
+      "eighty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 34 + 28?",
+    "answers": [
+      "62",
+      "sixty two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 63 + 17?",
+    "answers": [
+      "80",
+      "eighty"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 49 + 14?",
+    "answers": [
+      "63",
+      "sixty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 23 + 38?",
+    "answers": [
+      "61",
+      "sixty one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 57 + 16?",
+    "answers": [
+      "73",
+      "seventy three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 68 + 12?",
+    "answers": [
+      "80",
+      "eighty"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 29 + 27?",
+    "answers": [
+      "56",
+      "fifty six"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 45 + 36?",
+    "answers": [
+      "81",
+      "eighty one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 42 - 17?",
+    "answers": [
+      "25",
+      "twenty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 63 - 28?",
+    "answers": [
+      "35",
+      "thirty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 80 - 35?",
+    "answers": [
+      "45",
+      "forty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 91 - 46?",
+    "answers": [
+      "45",
+      "forty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 54 - 19?",
+    "answers": [
+      "35",
+      "thirty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 72 - 24?",
+    "answers": [
+      "48",
+      "forty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 100 - 37?",
+    "answers": [
+      "63",
+      "sixty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 68 - 29?",
+    "answers": [
+      "39",
+      "thirty nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 85 - 48?",
+    "answers": [
+      "37",
+      "thirty seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 76 - 18?",
+    "answers": [
+      "58",
+      "fifty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 53 - 26?",
+    "answers": [
+      "27",
+      "twenty seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 90 - 56?",
+    "answers": [
+      "34",
+      "thirty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 64 - 17?",
+    "answers": [
+      "47",
+      "forty seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 81 - 33?",
+    "answers": [
+      "48",
+      "forty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 95 - 27?",
+    "answers": [
+      "68",
+      "sixty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 70 - 38?",
+    "answers": [
+      "32",
+      "thirty two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 57 - 29?",
+    "answers": [
+      "28",
+      "twenty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 88 - 49?",
+    "answers": [
+      "39",
+      "thirty nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 61 - 24?",
+    "answers": [
+      "37",
+      "thirty seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 99 - 45?",
+    "answers": [
+      "54",
+      "fifty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 6 times 7?",
+    "answers": [
+      "42",
+      "forty two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 8 times 9?",
+    "answers": [
+      "72",
+      "seventy two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 7 times 8?",
+    "answers": [
+      "56",
+      "fifty six"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 12 times 4?",
+    "answers": [
+      "48",
+      "forty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 9 times 6?",
+    "answers": [
+      "54",
+      "fifty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 11 times 7?",
+    "answers": [
+      "77",
+      "seventy seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 8 times 4?",
+    "answers": [
+      "32",
+      "thirty two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 12 times 6?",
+    "answers": [
+      "72",
+      "seventy two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 7 times 9?",
+    "answers": [
+      "63",
+      "sixty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 5 times 13?",
+    "answers": [
+      "65",
+      "sixty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 6 times 8?",
+    "answers": [
+      "48",
+      "forty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 11 times 8?",
+    "answers": [
+      "88",
+      "eighty eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 4 times 14?",
+    "answers": [
+      "56",
+      "fifty six"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 3 times 17?",
+    "answers": [
+      "51",
+      "fifty one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 12 times 7?",
+    "answers": [
+      "84",
+      "eighty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 9 times 9?",
+    "answers": [
+      "81",
+      "eighty one"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 8 times 8?",
+    "answers": [
+      "64",
+      "sixty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 6 times 12?",
+    "answers": [
+      "72",
+      "seventy two"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 7 times 7?",
+    "answers": [
+      "49",
+      "forty nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 4 times 16?",
+    "answers": [
+      "64",
+      "sixty four"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 56 divided by 7?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 72 divided by 8?",
+    "answers": [
+      "9",
+      "nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 81 divided by 9?",
+    "answers": [
+      "9",
+      "nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 96 divided by 12?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 84 divided by 7?",
+    "answers": [
+      "12",
+      "twelve"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 63 divided by 9?",
+    "answers": [
+      "7",
+      "seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 48 divided by 6?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 90 divided by 10?",
+    "answers": [
+      "9",
+      "nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 100 divided by 4?",
+    "answers": [
+      "25",
+      "twenty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 60 divided by 5?",
+    "answers": [
+      "12",
+      "twelve"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 88 divided by 8?",
+    "answers": [
+      "11",
+      "eleven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 99 divided by 9?",
+    "answers": [
+      "11",
+      "eleven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 54 divided by 6?",
+    "answers": [
+      "9",
+      "nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 36 divided by 4?",
+    "answers": [
+      "9",
+      "nine"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 64 divided by 8?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 75 divided by 5?",
+    "answers": [
+      "15",
+      "fifteen"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 42 divided by 7?",
+    "answers": [
+      "6",
+      "six"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 80 divided by 5?",
+    "answers": [
+      "16",
+      "sixteen"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 120 divided by 10?",
+    "answers": [
+      "12",
+      "twelve"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 108 divided by 9?",
+    "answers": [
+      "12",
+      "twelve"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 10% of 80?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 10% of 150?",
+    "answers": [
+      "15",
+      "fifteen"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 50% of 46?",
+    "answers": [
+      "23",
+      "twenty three"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 50% of 90?",
+    "answers": [
+      "45",
+      "forty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 25% of 80?",
+    "answers": [
+      "20",
+      "twenty"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 25% of 100?",
+    "answers": [
+      "25",
+      "twenty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 20% of 50?",
+    "answers": [
+      "10",
+      "ten"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 20% of 100?",
+    "answers": [
+      "20",
+      "twenty"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 10% of 250?",
+    "answers": [
+      "25",
+      "twenty five"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "What is 50% of 74?",
+    "answers": [
+      "37",
+      "thirty seven"
+    ],
+    "category": "Mental Math"
+  },
+  {
+    "question": "How many days are in a week?",
+    "answers": [
+      "7",
+      "seven"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "How many sides does a triangle have?",
+    "answers": [
+      "3",
+      "three"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "How many wheels does a standard bicycle have?",
+    "answers": [
+      "2",
+      "two"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "How many months are in a year?",
+    "answers": [
+      "12",
+      "twelve"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "How many minutes are in one hour?",
+    "answers": [
+      "60",
+      "sixty"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "How many legs does a spider have?",
+    "answers": [
+      "8",
+      "eight"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "What planet do we live on?",
+    "answers": [
+      "earth"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "What animal says meow?",
+    "answers": [
+      "cat"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "What is frozen water called?",
+    "answers": [
+      "ice"
+    ],
+    "category": "Easy General"
+  },
+  {
+    "question": "What color is a ripe banana?",
+    "answers": [
+      "yellow"
+    ],
+    "category": "Easy General"
+  }
+]
