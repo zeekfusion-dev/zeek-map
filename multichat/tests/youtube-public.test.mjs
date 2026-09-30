@@ -46,3 +46,40 @@ test("quota error uses public chat and does not keep consuming exhausted API quo
   assert.equal(official, 1);
   assert.equal(fallback, 2);
 });
+
+test("public channel listing selects live badges only and verifies ownership", async () => {
+  const { publicChannelBroadcast } = await import("../src/youtube-public.mjs");
+  const channel = "UCguLKMBMaqzIbrjw_fG1tdw";
+  const item = {
+    lockupViewModel: {
+      contentId: "SAVO_NHlWlc",
+      metadata: { lockupMetadataViewModel: { title: { content: "Live" } } },
+      contentImage: {
+        thumbnailViewModel: {
+          overlays: [
+            {
+              thumbnailBottomOverlayViewModel: {
+                badges: [
+                  {
+                    thumbnailBadgeViewModel: {
+                      badgeStyle: "THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE",
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  };
+  const page = (data) => `var ytInitialData = ${JSON.stringify(data)};`;
+  const data = {
+    metadata: { channelMetadataRenderer: { externalId: channel } },
+    contents: [item],
+  };
+  assert.equal(publicChannelBroadcast(page(data), channel).id, "SAVO_NHlWlc");
+  assert.throws(() => publicChannelBroadcast(page(data), "wrong"));
+  item.lockupViewModel.contentImage.thumbnailViewModel.overlays = [];
+  assert.throws(() => publicChannelBroadcast(page(data), channel), /Waiting/);
+});
