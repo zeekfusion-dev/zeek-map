@@ -10,6 +10,11 @@ export async function request(url, options = {}) {
   if (!r.ok) {
     const e = new Error(`Provider returned ${r.status}`);
     e.status = r.status;
+    try {
+      const detail = await r.clone().json();
+      const reason = detail.error?.errors?.[0]?.reason;
+      if (typeof reason === "string" && /^[a-zA-Z0-9_]{1,80}$/.test(reason)) e.reason = reason;
+    } catch {}
     e.retryAfter = Math.max(
       1000,
       Number(r.headers.get("retry-after") || 0) * 1000,
@@ -41,12 +46,13 @@ export async function retryLoop(signal, work, status) {
       failures = 0;
     } catch (e) {
       if (signal.aborted) break;
+      const detail = e.reason ? ` (${e.reason})` : e.status ? ` (HTTP ${e.status})` : "";
       status(
         e.status === 401
           ? "Reconnect account"
           : e.status === 429
             ? "Rate limited; retrying"
-            : "Reconnecting",
+            : "Reconnecting" + detail,
       );
       failures++;
       await sleep(
