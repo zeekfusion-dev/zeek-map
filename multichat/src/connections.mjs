@@ -728,7 +728,10 @@ export class Connections {
     const version =
       html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/)?.[1] ||
       "2.20210128.02.00";
-    if (!continuation) throw new Error("No continuation");
+    if (!continuation)
+      throw Object.assign(new Error("No continuation"), {
+        reason: "PublicChatUnavailable",
+      });
     while (!signal.aborted) {
       const d = await json(
         "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false",
@@ -743,7 +746,10 @@ export class Connections {
         },
       );
       const chat = d.continuationContents?.liveChatContinuation;
-      if (!chat) throw new Error("Chat ended");
+      if (!chat)
+        throw Object.assign(new Error("Chat ended"), {
+          reason: "PublicChatEnded",
+        });
       if (signal.aborted) return;
       this.states.youtube = {
         ...this.states.youtube,
@@ -786,7 +792,10 @@ export class Connections {
       const c = chat.continuations
         ?.map((x) => x.invalidationContinuationData || x.timedContinuationData)
         .find(Boolean);
-      if (!c?.continuation) throw new Error("No continuation");
+      if (!c?.continuation)
+        throw Object.assign(new Error("No continuation"), {
+          reason: "PublicChatUnavailable",
+        });
       continuation = c.continuation;
       await sleep(
         Math.max(200, Math.min(3000, c.timeoutMs || 1000)),
