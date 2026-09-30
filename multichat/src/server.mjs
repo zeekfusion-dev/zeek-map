@@ -368,6 +368,7 @@ export function createApp({ store, origin, password, connect = true } = {}) {
           data.resume && typeof data.resume.streamId === "string";
         send(ws, {
           type: "snapshot",
+          pin: feed.currentPin(),
           ...page,
           ...(reconnect
             ? { messages: feed.messages, hasMore: false, before: null }

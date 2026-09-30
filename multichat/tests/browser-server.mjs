@@ -1,3 +1,4 @@
+import { kickReward, kickPin } from "../src/kick-activity.mjs";
 // Isolated manual browser test server. Never mounted by the production entrypoint.
 import { createApp } from "../src/server.mjs";
 import { Store } from "../src/store.mjs";
@@ -96,3 +97,35 @@ service.app.post("/test/moderate", (_, res) => {
 service.server.listen(8787, "0.0.0.0", () =>
   console.log("Isolated browser test: http://localhost:8787/test"),
 );
+
+service.app.post("/test/kick-activity", (req, res) => {
+  const message = {
+    id: "pin-fixture",
+    content: "Pinned test message " + "longword".repeat(20),
+    created_at: new Date().toISOString(),
+    sender: {
+      id: 42,
+      username: "KickViewer",
+      identity: { badges: [{ type: "subscriber", count: 1 }] },
+    },
+  };
+  service.feed.push(
+    kickReward(
+      {
+        reward_title: "Hydrate",
+        user_id: 42,
+        username: "KickViewer",
+        user_input: "Please drink water",
+      },
+      "test",
+      emotes,
+    ),
+  );
+  service.feed.setPin(
+    req.body.clear
+      ? null
+      : kickPin({ message, duration: 600 }, "test", emotes, []),
+  );
+  service.feed.flush();
+  res.json({ ok: true });
+});

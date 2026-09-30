@@ -108,6 +108,28 @@ function overlay(preview = false, reader = false) {
     "aria-label",
     reader ? "Chat history" : "Live chat overlay",
   );
+  const pinPanel = el("aside", "kick-pin");
+  pinPanel.setAttribute("aria-label", "Kick pinned message");
+  pinPanel.hidden = true;
+  if (reader) app.append(pinPanel);
+  let pinTimer;
+  function showPin(pin) {
+    clearTimeout(pinTimer);
+    pinPanel.replaceChildren();
+    pinPanel.hidden = true;
+    if (!reader || !pin || (pin.expiresAt && pin.expiresAt <= Date.now()))
+      return;
+    pinPanel.append(
+      el("div", "pin-label", "📌 Kick pinned message"),
+      message(pin.message, settings),
+    );
+    pinPanel.hidden = false;
+    if (pin.expiresAt)
+      pinTimer = setTimeout(
+        () => showPin(null),
+        Math.min(2147483647, pin.expiresAt - Date.now()),
+      );
+  }
   viewport.append(feed);
   app.append(viewport);
   let data = [],
@@ -239,6 +261,7 @@ function overlay(preview = false, reader = false) {
       settings = { ...defaults, ...e.settings };
       clearNodes();
     }
+    if (e.type === "pin") showPin(e.pin);
     if (e.type === "snapshot") {
       const retained = new Set(e.retainedKeys || []);
       data = preview ? [] : data.filter((m) => retained.has(key(m)));
@@ -262,6 +285,7 @@ function overlay(preview = false, reader = false) {
       loadingHistory = false;
       clearTimeout(historyTimer);
       settings = { ...defaults, ...e.settings };
+      showPin(e.pin);
       animate = false;
     }
     if (e.type === "history") {
@@ -546,6 +570,7 @@ async function dashboard() {
           info.append(el("span", "state", details.join(" · ")));
       }
       if (s.rewards) info.append(el("span", "state", "Rewards: " + s.rewards));
+      if (s.pins) info.append(el("span", "state", "Pins: " + s.pins));
       row.append(info);
       const connect = el("button", "", s.account ? "Reconnect" : "Connect");
       connect.addEventListener(

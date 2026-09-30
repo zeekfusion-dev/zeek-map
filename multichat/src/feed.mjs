@@ -11,6 +11,7 @@ export class Feed extends EventEmitter {
     Object.assign(this, { limit, historyMs, jitter, now, store });
     this.messages = store?.get("chat-history", []) || [];
     this.pending = [];
+    this.pin = store?.get("kick-pin", null) || null;
     this.seen = new Map(store?.get("seen", []) || []);
     this.tombstones = new Map(store?.get("tombstones", []) || []);
     this.sequence = 0;
@@ -23,6 +24,20 @@ export class Feed extends EventEmitter {
       0,
     );
     for (const m of this.messages) this.seen.set(this.key(m), m.receivedAt);
+  }
+  currentPin() {
+    if (
+      this.pin &&
+      ((this.pin.expiresAt && this.pin.expiresAt <= this.now()) ||
+        this.blocked(this.pin.message))
+    )
+      this.pin = null;
+    return this.pin;
+  }
+  setPin(pin) {
+    this.pin = pin;
+    this.store?.set("kick-pin", pin);
+    this.emit("event", { type: "pin", pin: this.currentPin() });
   }
   key(m) {
     return `${m.platform}:${m.channel}:${m.id}`;
@@ -118,6 +133,7 @@ export class Feed extends EventEmitter {
     this.messages = this.messages.filter((m) => !this.blocked(m));
     this.pending = this.pending.filter((m) => !this.blocked(m));
     this.prune();
+    if (this.pin && this.blocked(this.pin.message)) this.setPin(null);
     this.emit("event", {
       type: "remove",
       platform,
@@ -138,6 +154,7 @@ export class Feed extends EventEmitter {
     // Persist pending deliveries too; seen IDs must never outlive missing rows.
     if (this.pending.length) this.flush();
     this.trimHistory();
+    this.store?.set("kick-pin", this.currentPin());
     this.store?.set("chat-history", this.messages);
     this.store?.set("seen", [...this.seen].slice(-1000));
     this.store?.set("feed-watermark", this.watermark);

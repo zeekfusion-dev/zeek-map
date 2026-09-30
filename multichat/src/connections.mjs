@@ -1,4 +1,5 @@
 import WebSocket from "ws";
+import { kickReward, kickPin, KickActivityCopies } from "./kick-activity.mjs";
 import { redemption, youtubeActivity } from "./rewards.mjs";
 import defaultKick from "./kick-default.json" with { type: "json" };
 import { json, request, retryLoop, sleep } from "./net.mjs";
@@ -104,7 +105,8 @@ export class Connections {
       ...this.states.kick,
       rewards: this.store.get("kickRewardsWebhook")
         ? "Official reward webhook enabled"
-        : "Requires Kick app credentials and official webhook authorization",
+        : "Waiting for public reward connection",
+      pins: "Waiting for chat connection",
     };
     let info;
     try {
@@ -142,21 +144,64 @@ export class Connections {
         /* Keep the last successful badge list during provider outages. */
       }
     };
+    const copies = new KickActivityCopies();
+    const chatTopic = `chatrooms.${room}.v2`;
+    const topics = new Set([
+      chatTopic,
+      `chatroom_${room}`,
+      `channel_${info.id}`,
+      `channel.${info.id}`,
+    ]);
     await this.socket(
       "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false",
       signal,
       async (m, ws) => {
         const data = typeof m.data === "string" ? JSON.parse(m.data) : m.data;
         if (m.event === "pusher:connection_established") {
-          ws.send(
-            JSON.stringify({
-              event: "pusher:subscribe",
-              data: { auth: "", channel: `chatrooms.${room}.v2` },
-            }),
-          );
+          for (const topic of topics)
+            ws.send(
+              JSON.stringify({
+                event: "pusher:subscribe",
+                data: { auth: "", channel: topic },
+              }),
+            );
         }
-        if (m.event === "pusher_internal:subscription_succeeded")
+        if (
+          m.event === "pusher_internal:subscription_succeeded" &&
+          m.channel === chatTopic
+        ) {
+          this.states.kick.pins = "Listening for pinned messages";
           status("Connected");
+        }
+        if (
+          m.event === "pusher_internal:subscription_succeeded" &&
+          m.channel === `channel_${info.id}` &&
+          !this.store.get("kickRewardsWebhook")
+        )
+          this.states.kick.rewards = "Listening for public reward events";
+        if (m.channel && !topics.has(m.channel)) return;
+        const event = m.event?.split("\\").pop();
+        if (
+          event === "RewardRedeemedEvent" &&
+          !this.store.get("kickRewardsWebhook") &&
+          !copies.duplicate(event, data, m.channel)
+        ) {
+          this.feed.push(kickReward(data, channel, this.emotes));
+          this.states.kick.rewards = "Receiving public reward events";
+        }
+        if (
+          event === "PinnedMessageCreatedEvent" &&
+          !copies.duplicate(event, data, m.channel)
+        ) {
+          const pin = kickPin(
+            data,
+            channel,
+            this.emotes,
+            this.subscriberBadges,
+          );
+          if (pin) this.feed.setPin(pin);
+        }
+        if (event === "PinnedMessageDeletedEvent") this.feed.setPin(null);
         if (m.event === "pusher:ping")
           ws.send(JSON.stringify({ event: "pusher:pong", data: {} }));
         if (m.event?.endsWith("ChatMessageEvent")) {
@@ -167,7 +212,7 @@ export class Connections {
           );
           void this.emotes.load("kick", channel);
         }
-        if (m.event?.endsWith("MessageDeletedEvent"))
+        if (event === "MessageDeletedEvent")
           this.feed.moderate({
             platform: "kick",
             channel,

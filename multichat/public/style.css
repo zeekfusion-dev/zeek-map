@@ -470,3 +470,37 @@ code {
 .activity-title {
   color: #ffe0a1;
 }
+
+/* Pins belong to the reader, outside its independently scrolling history. */
+.reader #app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.reader .chat-viewport {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 54px;
+}
+.kick-pin {
+  flex: 0 0 auto;
+  max-height: 35vh;
+  overflow: auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  background: #17221c;
+  border-bottom: 1px solid #53fc18;
+  overflow-wrap: anywhere;
+}
+.kick-pin[hidden] {
+  display: none;
+}
+.pin-label {
+  font-size: 12px;
+  color: #a6e79d;
+  margin-bottom: 4px;
+}
