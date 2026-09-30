@@ -2,7 +2,7 @@ import {rpc} from './db.mjs';
 import {normalizeAnswer} from './domain.mjs';
 export const MARKET_URL='https://www.zeekfusion.com/#/market';
 export const MARKET_REPLY='Answer questions to earn Zs, gamble them to earn more, and spend them on rewards: zeekfusion.com/market';
-export function triviaMessage(content){const body=String(content).replaceAll(MARKET_URL,'').trim();const room=490-MARKET_URL.length-1;return (body.length>room?body.slice(0,room-1).trimEnd()+'…':body)+' '+MARKET_URL;}
+export function triviaMessage(content){const body=String(content).replaceAll(MARKET_URL,'').replace(/^(?:⚡\s*)?Z QUESTION:\s*/i,'').replace(/\s*\|\s*(?=First correct answer wins)/,' ').replace(/\s*You have \d+ seconds!\s*$/i,'').trim();const room=490-MARKET_URL.length-1;return (body.length>room?body.slice(0,room-1).trimEnd()+'…':body)+' '+MARKET_URL;}
 // Help and dispatch share one registry. Aliases are listed alongside the canonical command.
 export const COMMANDS=Object.freeze([
  Object.freeze({name:'z',aliases:['zs'],command:'balance',usage:'!z',description:'Check your Z balance'}),
