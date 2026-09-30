@@ -79,6 +79,10 @@ test("actual Kick socket handler subscribes reward channels and routes reward, p
   e.load = async () => {};
   const c = new Connections(store, {}, f, e);
   const subscribed = [];
+  c.kickTransportDescriptor = async () => ({
+    provider: "pusher",
+    credentials: { app_key: "test", cluster: "us2" },
+  });
   c.socket = async (url, signal, handler) => {
     const ws = { send: (s) => subscribed.push(JSON.parse(s).data.channel) };
     await handler({ event: "pusher:connection_established", data: {} }, ws);

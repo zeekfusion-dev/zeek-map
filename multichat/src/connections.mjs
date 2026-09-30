@@ -1,3 +1,4 @@
+import { kickDescriptor, kickCentrifuge } from "./kick-transport.mjs";
 import WebSocket from "ws";
 import { kickReward, kickPin, KickActivityCopies } from "./kick-activity.mjs";
 import { redemption, youtubeActivity } from "./rewards.mjs";
@@ -152,82 +153,93 @@ export class Connections {
       `channel_${info.id}`,
       `channel.${info.id}`,
     ]);
-    await this.socket(
-      "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false",
-      signal,
-      async (m, ws) => {
-        const data = typeof m.data === "string" ? JSON.parse(m.data) : m.data;
-        if (m.event === "pusher:connection_established") {
-          for (const topic of topics)
-            ws.send(
-              JSON.stringify({
-                event: "pusher:subscribe",
-                data: { auth: "", channel: topic },
-              }),
-            );
-        }
-        if (
-          m.event === "pusher_internal:subscription_succeeded" &&
-          m.channel === chatTopic
-        ) {
-          this.states.kick.pins = "Listening for pinned messages";
-          status("Connected");
-        }
-        if (
-          m.event === "pusher_internal:subscription_succeeded" &&
-          m.channel === `channel_${info.id}` &&
-          !this.store.get("kickRewardsWebhook")
-        )
-          this.states.kick.rewards = "Listening for public reward events";
-        if (m.channel && !topics.has(m.channel)) return;
-        const event = m.event?.split("\\").pop();
-        if (
-          event === "RewardRedeemedEvent" &&
-          !this.store.get("kickRewardsWebhook") &&
-          !copies.duplicate(event, data, m.channel)
-        ) {
-          this.feed.push(kickReward(data, channel, this.emotes));
-          this.states.kick.rewards = "Receiving public reward events";
-        }
-        if (
-          event === "PinnedMessageCreatedEvent" &&
-          !copies.duplicate(event, data, m.channel)
-        ) {
-          const pin = kickPin(
-            data,
-            channel,
-            this.emotes,
-            this.subscriberBadges,
+    const transport = await this.kickTransportDescriptor(info.id, signal);
+    this.states.kick.transport = transport.provider;
+    const handle = async (m, ws) => {
+      const data = typeof m.data === "string" ? JSON.parse(m.data) : m.data;
+      if (m.event === "pusher:connection_established") {
+        for (const topic of topics)
+          ws.send(
+            JSON.stringify({
+              event: "pusher:subscribe",
+              data: { auth: "", channel: topic },
+            }),
           );
-          if (pin) this.feed.setPin(pin);
-        }
-        if (event === "PinnedMessageDeletedEvent") this.feed.setPin(null);
-        if (m.event === "pusher:ping")
-          ws.send(JSON.stringify({ event: "pusher:pong", data: {} }));
-        if (m.event?.endsWith("ChatMessageEvent")) {
-          void refreshBadges();
-          this.feed.push(
-            kickMessage(data, channel, this.emotes, this.subscriberBadges),
-            { enrich: true },
-          );
-          void this.emotes.load("kick", channel);
-        }
-        if (event === "MessageDeletedEvent")
-          this.feed.moderate({
-            platform: "kick",
-            channel,
-            id: String(data.message.id),
-          });
-        if (m.event?.endsWith("UserBannedEvent"))
-          this.feed.moderate({
-            platform: "kick",
-            channel,
-            userId: String(data.user.id),
-          });
-        if (m.event?.endsWith("ChatroomClearEvent"))
-          this.feed.moderate({ platform: "kick", channel });
-      },
-    );
+      }
+      if (
+        m.event === "pusher_internal:subscription_succeeded" &&
+        m.channel === chatTopic
+      ) {
+        this.states.kick.pins = "Listening for pinned messages";
+        status("Connected");
+      }
+      if (
+        m.event === "pusher_internal:subscription_succeeded" &&
+        m.channel === `channel_${info.id}` &&
+        !this.store.get("kickRewardsWebhook")
+      )
+        this.states.kick.rewards = "Listening for public reward events";
+      if (m.channel && !topics.has(m.channel)) return;
+      const event = m.event?.split("\\").pop();
+      if (
+        event === "RewardRedeemedEvent" &&
+        !this.store.get("kickRewardsWebhook") &&
+        !copies.duplicate(event, data, m.channel)
+      ) {
+        this.feed.push(kickReward(data, channel, this.emotes));
+        this.states.kick.rewards = "Receiving public reward events";
+      }
+      if (
+        event === "PinnedMessageCreatedEvent" &&
+        !copies.duplicate(event, data, m.channel)
+      ) {
+        const pin = kickPin(data, channel, this.emotes, this.subscriberBadges);
+        if (pin) this.feed.setPin(pin);
+      }
+      if (event === "PinnedMessageDeletedEvent") this.feed.setPin(null);
+      if (m.event === "pusher:ping")
+        ws.send(JSON.stringify({ event: "pusher:pong", data: {} }));
+      if (m.event?.endsWith("ChatMessageEvent")) {
+        void refreshBadges();
+        this.feed.push(
+          kickMessage(data, channel, this.emotes, this.subscriberBadges),
+          { enrich: true },
+        );
+        void this.emotes.load("kick", channel);
+      }
+      if (event === "MessageDeletedEvent")
+        this.feed.moderate({
+          platform: "kick",
+          channel,
+          id: String(data.message.id),
+        });
+      if (m.event?.endsWith("UserBannedEvent"))
+        this.feed.moderate({
+          platform: "kick",
+          channel,
+          userId: String(data.user.id),
+        });
+      if (m.event?.endsWith("ChatroomClearEvent"))
+        this.feed.moderate({ platform: "kick", channel });
+    };
+    if (transport.provider === "centrifugo") {
+      await kickCentrifuge(transport, [...topics], signal, handle, status);
+    } else {
+      const { app_key, cluster } = transport.credentials;
+      if (
+        !/^[a-zA-Z0-9]+$/.test(app_key || "") ||
+        !/^[a-z0-9-]+$/.test(cluster || "")
+      )
+        throw new Error("Invalid Kick transport descriptor");
+      await this.socket(
+        `wss://ws-${cluster}.pusher.com/app/${app_key}?protocol=7&client=js&version=8.5.0&flash=false`,
+        signal,
+        handle,
+      );
+    }
+  }
+  kickTransportDescriptor(channel, signal) {
+    return kickDescriptor(channel, signal);
   }
   async twitch(signal, status) {
     const user = this.store.token("twitch").user,
