@@ -42,7 +42,7 @@ test("YouTube attaches to scheduled chat before going live and prefers active ch
         };
       },
     };
-    c.store = { token: () => ({ user: { id: "owner" } }) };
+    c.store = { get: (_, fallback) => fallback, token: () => ({ user: { id: "owner" } }) };
     c.emotes = { load: () => {} };
     c.states = {};
     c.youtubeRich = (_, __, signal) =>

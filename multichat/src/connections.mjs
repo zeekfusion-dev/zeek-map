@@ -1,3 +1,4 @@
+import { discoverPublicBroadcast } from "./youtube-public.mjs";
 import { kickDescriptor, kickCentrifuge } from "./kick-transport.mjs";
 import WebSocket from "ws";
 import { kickReward, kickPin, KickActivityCopies } from "./kick-activity.mjs";
@@ -471,6 +472,55 @@ export class Connections {
     }
   }
   async youtube(signal, status) {
+    if (this.store.get("youtubeQuotaRetryAt", 0) > Date.now())
+      return this.youtubePublic(signal, status);
+    try {
+      return await this.youtubeOfficial(signal, status);
+    } catch (error) {
+      if (signal.aborted) return;
+      if (
+        error.reason !== "quotaExceeded" &&
+        error.reason !== "dailyLimitExceeded" &&
+        error.status !== 429
+      )
+        throw error;
+      this.store.set("youtubeQuotaRetryAt", Date.now() + 3600000);
+      return this.youtubePublic(signal, status);
+    }
+  }
+  async youtubePublic(signal, status) {
+    const channel = this.store.token("youtube").user.id;
+    status("Connecting to public live chat (API quota exhausted)");
+    const broadcast = await this.discoverYoutubePublic(channel, signal);
+    this.states.youtube = {
+      ...this.states.youtube,
+      video: broadcast.id,
+      title: broadcast.title,
+      detail: "Public live chat fallback; API quota exhausted",
+      error: null,
+    };
+    const session = new AbortController();
+    const abort = () => session.abort();
+    signal.addEventListener("abort", abort, { once: true });
+    if (signal.aborted) session.abort();
+    // Periodically rediscover the live video, including after a broadcast switch.
+    const timer = setTimeout(abort, 120000);
+    try {
+      await this.youtubeRich(broadcast.id, channel, session.signal, () => {
+        this.states.youtube.lastResponseAt = Date.now();
+        status("Connected");
+      });
+    } catch (error) {
+      if (!session.signal.aborted) throw error;
+    } finally {
+      clearTimeout(timer);
+      signal.removeEventListener("abort", abort);
+    }
+  }
+  discoverYoutubePublic(channel, signal) {
+    return discoverPublicBroadcast(channel, signal);
+  }
+  async youtubeOfficial(signal, status) {
     const broadcast = await this.youtubeBroadcast();
     if (signal.aborted) return;
     if (!broadcast) {
@@ -661,7 +711,7 @@ export class Connections {
       if (signal.aborted) abort();
     }).finally(() => client.close());
   }
-  async youtubeRich(video, channel, signal) {
+  async youtubeRich(video, channel, signal, onReady) {
     const html = await (
       await request(
         `https://www.youtube.com/live_chat?is_popout=1&v=${encodeURIComponent(video)}`,
@@ -691,8 +741,11 @@ export class Connections {
       if (signal.aborted) return;
       this.states.youtube = {
         ...this.states.youtube,
-        detail: "Native emotes and badge graphics available",
+        detail: onReady
+          ? "Public live chat fallback; API quota exhausted"
+          : "Native emotes and badge graphics available",
       };
+      onReady?.();
       for (const a of chat.actions || []) {
         if (a.markChatItemAsDeletedAction)
           this.feed.moderate({
