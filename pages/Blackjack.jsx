@@ -1,14 +1,17 @@
 import React,{useEffect,useState} from 'react';
-export const blackjackDuration=(game,previous)=>Math.max(1600,((game?.result?.player?.length||2)+(game?.result?.dealer?.length||2)-(previous?.status==='playing'?(previous.result.player.length+1):0))*420+550);
+import {blackjackFrames,visibleHands} from './blackjack-animation.mjs';
+import {handTotal} from '../server/blackjack-odds.mjs';
+export {blackjackDuration} from './blackjack-animation.mjs';
 const rank=c=>({1:'A',11:'J',12:'Q',13:'K'}[c%13+1]||c%13+1);
+const zs=n=>`${Number(n).toLocaleString()} ${Number(n)===1?'Z':'Zs'}`;
+function Cards({cards}){return <div className="bj-cards">{(cards.length?cards:[null,null]).map((c,i)=><div key={i+'-'+(c===null?'hidden':c)} className={`bj-card ${c===null?'bj-back':[1,2].includes(Math.floor(c/13))?'bj-red':''}`}><span>{c===null?'Z':rank(c)}</span><b>{c===null?'✦':['♠','♥','♦','♣'][Math.floor(c/13)]}</b><small>{c===null?'MARKET':rank(c)}</small></div>)}</div>}
 export default function Blackjack({game,visual,animating}){
- const [hands,setHands]=useState({player:[],dealer:[]});
- useEffect(()=>{if(!animating){setHands(game?.result||{player:[],dealer:[]});return}const timers=[];const next=visual.result;let player=game?.status==='playing'?[...game.result.player]:[];let dealer=game?.status==='playing'?[...game.result.dealer]:[];setHands({player:[...player],dealer:[...dealer]});let step=0;const schedule=fn=>timers.push(setTimeout(()=>{fn();setHands({player:[...player],dealer:[...dealer]})},++step*420));
- if(!player.length){schedule(()=>player.push(next.player[0]));schedule(()=>dealer.push(next.dealer[0]));schedule(()=>player.push(next.player[1]));schedule(()=>dealer.push(null));}
- else for(let i=player.length;i<next.player.length;i++)schedule(()=>player.push(next.player[i]));
- if(visual.status==='resolved'){schedule(()=>dealer[1]=next.dealer[1]);for(let i=2;i<next.dealer.length;i++)schedule(()=>dealer.push(next.dealer[i]));}
- return()=>timers.forEach(clearTimeout);
+ const [frame,setFrame]=useState({hands:[{cards:[]}],dealer:[],activeHand:0});
+ useEffect(()=>{
+  if(!animating){setFrame({hands:visibleHands(game?.result),dealer:game?.result?.dealer||[],activeHand:game?.result?.activeHand||0});return}
+  const frames=blackjackFrames(visual,game);setFrame(frames[0]);
+  const timers=frames.slice(1).map((f,i)=>setTimeout(()=>setFrame(f),(i+1)*420));
+  return()=>timers.forEach(clearTimeout);
  },[animating,visual,game]);
- const total=cards=>{let n=cards.filter(c=>c!==null).reduce((sum,c)=>sum+Math.min(c%13+1,10),0);return cards.some(c=>c!==null&&c%13===0)&&n+10<=21?n+10:n};
- return <div className="bj-table"><span className="bj-felt-mark" aria-hidden="true">Z</span>{['dealer','player'].map(who=><div className="bj-hand" key={who}><div className="bj-hand-label">{who==='dealer'?'DEALER':'YOUR HAND'} <span>{hands[who]?.length?total(hands[who]):'—'}</span></div><div className="bj-cards">{(hands[who]?.length?hands[who]:[null,null]).map((c,i)=><div key={i+'-'+(c===null?'hidden':c)} className={`bj-card ${c===null?'bj-back':[1,2].includes(Math.floor(c/13))?'bj-red':''}`}><span>{c===null?'Z':rank(c)}</span><b>{c===null?'✦':['♠','♥','♦','♣'][Math.floor(c/13)]}</b><small>{c===null?'MARKET':rank(c)}</small></div>)}</div></div>)}<p className="bj-rules">BLACKJACK PAYS 3:2 · DEALER STANDS ON 17</p></div>
+ return <div className="bj-table"><span className="bj-felt-mark" aria-hidden="true">Z</span><div className="bj-hand"><div className="bj-hand-label">DEALER <span>{frame.dealer.length?handTotal(frame.dealer.filter(c=>c!==null)):'—'}</span></div><Cards cards={frame.dealer}/></div><div className={'bj-player-hands '+(frame.hands.length>1?'bj-split':'')}>{frame.hands.map((h,i)=><div className={'bj-hand '+(game?.status==='playing'&&frame.activeHand===i?'bj-active':'')} key={i}><div className="bj-hand-label">{frame.hands.length>1?`HAND ${i+1}`:'YOUR HAND'} <span>{h.cards.length?handTotal(h.cards):'—'}</span></div><Cards cards={h.cards}/>{h.stake>0&&<p className="bj-hand-stake">{zs(h.stake)}{!animating&&h.doubled?' · Doubled':''}</p>}{!animating&&h.outcome&&<div className={'bj-hand-result '+h.outcome}>{h.outcome.toUpperCase()} · {zs(h.payout)} returned</div>}{!animating&&game?.status==='playing'&&frame.hands.length>1&&<small>{i===frame.activeHand?'Playing this hand':h.status==='playing'?'Up next':'Standing'}</small>}</div>)}</div><p className="bj-rules">ORIGINAL BLACKJACK PAYS 3:2 · DEALER STANDS ON 17</p></div>
 }
