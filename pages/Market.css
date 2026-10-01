@@ -48,3 +48,5 @@
 .market-overview-top .market-conversion-rate{font-size:var(--market-title-size);line-height:1.4}
 .market-overview-top .market-reward-info>code,.vault .market-overview-top .market-redeem,.market-overview-top .market-conversion button,.vault .market-overview-top .market-column-heading button{font-size:var(--market-small-size);line-height:1.4}
 .market-overview-top>.ranking-preview>.market-leaderboard-link,.market-overview-top .market-rewards-preview>.v-primary,.market-overview-top .market-start-guide>.market-arcade-link{font-size:var(--market-body-size);line-height:1.4}
+
+.owner-request-column{display:flex;flex-direction:column;max-height:580px}.owner-request-scroll{overflow-y:auto;min-height:0;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:8px}.owner-request-scroll:focus-visible{outline:2px solid #6ad1ff;outline-offset:3px}
