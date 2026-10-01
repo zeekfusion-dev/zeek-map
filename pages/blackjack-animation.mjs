@@ -1,3 +1,5 @@
+export const BLACKJACK_CARD_MS=110;
+export const BLACKJACK_SETTLE_MS=140;
 export const visibleHands = result => result?.hands || [{cards:result?.player||[],stake:0}];
 export function blackjackFrames(next,previous){
  const target=next.result, frames=[];
@@ -29,4 +31,10 @@ export function blackjackFrames(next,previous){
  activeHand=target.activeHand||0;push();
  return frames;
 }
-export const blackjackDuration=(next,previous)=>blackjackFrames(next,previous).length*420+450;
+export const blackjackDuration=(next,previous)=>Math.max(0,blackjackFrames(next,previous).length-2)*BLACKJACK_CARD_MS+BLACKJACK_SETTLE_MS;
+
+export function canDoubleHand(game,available){
+ if(game?.status!=='playing')return false;
+ const hand=visibleHands(game.result)[game.result.activeHand||0];
+ return hand?.cards.length===2&&!hand.doubled&&Number(available)>=Number(hand.stake||game.stake)&&(hand.status===undefined||hand.status==='playing');
+}

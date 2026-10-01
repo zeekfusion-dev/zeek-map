@@ -65,6 +65,18 @@ begin
   exception when others then if sqlerrm<>'Blackjack total wager cannot exceed 4,000 Zs.' then raise;end if;end;
   assert (select zs_balance from z_users where kick_user_id=u)=initial;
   r:=z_blackjack(test_game_id,gen_random_uuid(),u,'blackjack_actions_test','stand',null,null,0);
+  -- Every unresolved initial two-card hand can double, even a 4,000-Z starting bet.
+  update z_games set created_at=now()-interval '1 minute' where creator=u;
+  test_game_id:=gen_random_uuid();r:=z_blackjack(test_game_id,gen_random_uuid(),u,'blackjack_actions_test','start',4000,deck);
+  assert (r#>>'{result,canDouble}')::boolean;
+  req:=gen_random_uuid();
+  r:=z_blackjack(test_game_id,req,u,'blackjack_actions_test','double',null,null,0);
+  assert r->>'status'='resolved';
+  assert (r->>'stake')::numeric=8000;
+  assert jsonb_array_length(r#>'{result,hands,0,cards}')=3;
+  assert (r->>'availableZs')::numeric=(select zs_balance-arcade_excluded from z_users where kick_user_id=u);
+  again:=z_blackjack(test_game_id,req,u,'blackjack_actions_test','double',null,null,0);
+  assert again=r;
   -- Legacy in-progress hand, no new hands field.
   update z_games set created_at=now()-interval '1 minute' where creator=u;
   test_game_id:=gen_random_uuid();r:=z_blackjack(test_game_id,gen_random_uuid(),u,'blackjack_actions_test','start',100,deck);
