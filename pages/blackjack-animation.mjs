@@ -1,5 +1,5 @@
-export const BLACKJACK_CARD_MS=110;
-export const BLACKJACK_SETTLE_MS=140;
+export const BLACKJACK_CARD_MS=500;
+export const BLACKJACK_SETTLE_MS=350;
 export const visibleHands = result => result?.hands || [{cards:result?.player||[],stake:0}];
 export function blackjackFrames(next,previous){
  const target=next.result, frames=[];
@@ -25,10 +25,12 @@ export function blackjackFrames(next,previous){
   hands[i].stake=wanted[i].stake;
  }
  if(next.status==='resolved'){
+  // A stand starts the dealer turn with a brief pause before the hole-card reveal.
+  if(frames.length===1)push();
   dealer[1]=target.dealer[1];push();
   for(let j=2;j<target.dealer.length;j++){dealer.push(target.dealer[j]);push();}
  }
- activeHand=target.activeHand||0;push();
+ frames[frames.length-1].activeHand=target.activeHand||0;
  return frames;
 }
 export const blackjackDuration=(next,previous)=>Math.max(0,blackjackFrames(next,previous).length-2)*BLACKJACK_CARD_MS+BLACKJACK_SETTLE_MS;

@@ -33,11 +33,11 @@ test('hit odds count exposed cards in both split hands',()=>{
  assert.notEqual(odds.safe,hitOdds([7,8],[9,null]).safe);
 });
 
-test('ordinary hit and opening deal do not impose multi-second waits',()=>{
+test('cards use natural visual timing without adding a pause before a hit',()=>{
  const previous={status:'playing',result:{player:[4,5],dealer:[9,null]}};
  const next={status:'playing',result:{player:[4,5,1],dealer:[9,null]}};
- assert.ok(blackjackDuration(next,previous)<=300);
- assert.ok(blackjackDuration(previous,null)<=700);
+ assert.ok(blackjackDuration(next,previous)===350);
+ assert.ok(blackjackDuration(previous,null)===1850);
 });
 
 test('Double shows for an affordable initial hand including a saved hand with an old cap flag',()=>{
@@ -46,4 +46,19 @@ test('Double shows for an affordable initial hand including a saved hand with an
  assert.equal(canDoubleHand(game,3999),false);
  assert.equal(canDoubleHand({...game,status:'resolved'},9000),false);
  assert.equal(canDoubleHand({...game,result:{player:[7,8,1]}},9000),false);
+});
+
+test('opening deal alternates player and dealer at half-second intervals',()=>{
+ const game={status:'playing',result:{player:[4,5],dealer:[9,null]}};
+ const frames=blackjackFrames(game,null);
+ assert.equal(BLACKJACK_CARD_MS,500);
+ assert.deepEqual(frames.slice(1).map(f=>[f.hands[0].cards.length,f.dealer.length]),[[1,0],[1,1],[2,1],[2,2]]);
+});
+test('dealer turn pauses before revealing and adds each draw separately',()=>{
+ const previous={status:'playing',result:{player:[9,7],dealer:[4,null]}};
+ const next={status:'resolved',result:{player:[9,7],dealer:[4,5,2,3]}};
+ const frames=blackjackFrames(next,previous);
+ assert.equal(frames[1].dealer[1],null);
+ assert.deepEqual(frames.slice(2).map(f=>f.dealer.length),[2,3,4]);
+ assert.equal(blackjackDuration(next,previous),1850);
 });

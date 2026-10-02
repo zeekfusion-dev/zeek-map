@@ -4,7 +4,7 @@ import {handTotal} from '../server/blackjack-odds.mjs';
 export {blackjackDuration} from './blackjack-animation.mjs';
 const rank=c=>({1:'A',11:'J',12:'Q',13:'K'}[c%13+1]||c%13+1);
 const zs=n=>`${Number(n).toLocaleString()} ${Number(n)===1?'Z':'Zs'}`;
-function Cards({cards}){return <div className="bj-cards">{(cards.length?cards:[null,null]).map((c,i)=><div key={i+'-'+(c===null?'hidden':c)} className={`bj-card ${c===null?'bj-back':[1,2].includes(Math.floor(c/13))?'bj-red':''}`}><span>{c===null?'Z':rank(c)}</span><b>{c===null?'✦':['♠','♥','♦','♣'][Math.floor(c/13)]}</b><small>{c===null?'MARKET':rank(c)}</small></div>)}</div>}
+function Cards({cards}){return <div className="bj-cards">{cards.map((c,i)=><div key={i+'-'+(c===null?'hidden':c)} className={`bj-card ${c===null?'bj-back':[1,2].includes(Math.floor(c/13))?'bj-red':''}`}><span>{c===null?'Z':rank(c)}</span><b>{c===null?'✦':['♠','♥','♦','♣'][Math.floor(c/13)]}</b><small>{c===null?'MARKET':rank(c)}</small></div>)}</div>}
 export default function Blackjack({game,visual,animating}){
  const [frame,setFrame]=useState({hands:[{cards:[]}],dealer:[],activeHand:0});
  useEffect(()=>{
