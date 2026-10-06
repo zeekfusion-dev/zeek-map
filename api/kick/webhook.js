@@ -1,25 +1,15 @@
 import {processChat} from '../../server/chat-commands.mjs';
 import {db} from '../../server/db.mjs';
-import {BROADCASTER,verifySignature} from '../../server/domain.mjs';
+import {BROADCASTER} from '../../server/domain.mjs';
+import {verifyKickWebhook} from '../../server/webhook-verifier.mjs';
 import {flushOutbox} from '../../server/kick.mjs';
 export const config={api:{bodyParser:false},maxDuration:60};
-const KICK_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq/+l1WnlRrGSolDMA+A8
-6rAhMbQGmQ2SapVcGM3zq8ANXjnhDWocMqfWcTd95btDydITa10kDvHzw9WQOqp2
-MZI7ZyrfzJuz5nhTPCiJwTwnEtWft7nV14BYRDHvlfqPUaZ+1KR4OCaO/wWIk/rQ
-L/TjY0M70gse8rlBkbo2a8rKhu69RQTRsoaf4DVhDPEeSeI5jVrRDGAMGL3cGuyY
-6CLKGdjVEM78g3JfYOvDU/RvfqD7L89TZ3iN94jrmWdGz34JNlEI5hqK8dd7C5EF
-BEbZ5jgB8s8ReQV8H+MkuffjdAj3ajDDX3DOJMIut1lBrUVD1AaSrGCKHooWoL2e
-twIDAQAB
------END PUBLIC KEY-----`;
-
-
 export default async function handler(req,res){
  if(req.method==='GET')return res.json({ok:true,message:'ZeekFusion Kick webhook is online',version:'z-market-1'});
  if(req.method!=='POST')return res.status(405).end();
  try{const chunks=[];let size=0;for await(const chunk of req){const b=Buffer.from(chunk);size+=b.length;if(size>1048576)return res.status(413).end();chunks.push(b);}const raw=Buffer.concat(chunks);
  const id=req.headers['kick-event-message-id'],ts=req.headers['kick-event-message-timestamp'],sig=req.headers['kick-event-signature'],type=req.headers['kick-event-type'];
- if(!verifySignature(KICK_PUBLIC_KEY,id,ts,sig,raw))return res.status(401).json({error:'Invalid signature'});
+ if(!await verifyKickWebhook(id,ts,sig,raw))return res.status(401).json({error:'Invalid signature'});
  let body;try{body=JSON.parse(raw.toString());}catch{return res.status(400).end();}
  if(Number(body.broadcaster?.user_id)!==BROADCASTER)return res.json({received:true,ignored:true});
  if(type!=='chat.message.sent')await db('z_runtime?id=eq.1',{method:'PATCH',body:{last_webhook_at:new Date().toISOString()}});
