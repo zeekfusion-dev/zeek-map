@@ -1,6 +1,6 @@
 begin;
 do $$
-declare test_round uuid:=gen_random_uuid();u bigint:=936169801;
+declare test_round uuid:=gen_random_uuid();second_round uuid:=gen_random_uuid();u bigint:=936169801;
 begin
  if exists(select 1 from z_users where kick_user_id in(u,u+1)) then raise exception 'Test user collision';end if;
  if exists(select 1 from z_rounds where status in('open','pending')) then raise exception 'Wait until no live question is active';end if;
@@ -16,5 +16,11 @@ begin
  assert not z_process_chat('health-second',u+1,'trivia_health_second','health-second','15',now(),false);
  assert (select zs_balance from z_users where kick_user_id=u)=100;
  assert not exists(select 1 from z_users where kick_user_id=u+1);
+ -- Winning an earlier question never prevents another award on a new round.
+ insert into z_rounds(id,question,answers,reward,status,opened_at,expires_at)
+ values(second_round,'What is 9 + 9?',array['18'],100,'open',now()-interval '2 seconds',now()+interval '58 seconds');
+ assert z_process_chat('health-next-round',u,'trivia_health_test','health-next-round','18',now(),false);
+ assert (select zs_balance from z_users where kick_user_id=u)=200;
+ assert (select winner_id from z_rounds where id=second_round)=u;
 end$$;
 rollback;
