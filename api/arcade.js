@@ -1,3 +1,4 @@
+import {publicGame} from '../server/game-response.mjs';
 export const config={api:{bodyParser:{sizeLimit:'16kb'}},maxDuration:30};
 import {bodyObject,validateQuery,validateGame,limit} from '../server/security.mjs';
 import {db,rpc} from '../server/db.mjs';
@@ -16,7 +17,7 @@ export default async function handler(req,res){res.setHeader('Cache-Control','no
    db('z_users?kick_user_id=neq.20306616&username=not.ilike.ZeekFusion&select=username,zs_balance,lifetime_zs&order=zs_balance.desc,username.asc&limit=100'),
    u?rpc('z_arcade_profile',{p_user:u.kick_user_id}):null,u?db(`z_games?status=eq.open&creator=eq.${u.kick_user_id}&order=created_at.desc`):[],u?db(`z_games?creator=eq.${u.kick_user_id}&status=eq.playing&select=id,kind,stake,status,result,payout`):[]]);
   const visibleGames=[...ownGames,...games.filter(g=>!ownGames.some(o=>o.id===g.id))];
-  return res.json({games:visibleGames.map(({creator,opponent,winner,...g})=>({...g,mine:!!u&&Number(creator)===Number(u.kick_user_id)})),feed,leaders,personal,active,multipliers});
+  return res.json({games:visibleGames.map(({creator,opponent,winner,...g})=>({...publicGame(g),mine:!!u&&Number(creator)===Number(u.kick_user_id)})),feed,leaders,personal:personal?{...personal,recent:(personal.recent||[]).map(publicGame)}:null,active:active.map(publicGame),multipliers});
  }
  if(req.method!=='POST')return res.status(405).end();sameOrigin(req);const u=await requireUser(req);const b=bodyObject(req);validateGame(b);await limit(req,'games',60,60,u.kick_user_id);let result;
  if(b.action==='create'&&b.kind==='rps')result=await rpc('z_rps_create',{p_id:id(b.requestId),p_user:u.kick_user_id,p_name:u.username,p_stake:wager(b.stake,'rps'),p_choice:b.choice});
@@ -27,5 +28,5 @@ export default async function handler(req,res){res.setHeader('Cache-Control','no
  else if(b.action==='accept'||b.action==='cancel'){const game=(await db(`z_games?id=eq.${id(b.id)}&select=kind`))[0];result=game?.kind==='rps'?await rpc('z_rps_action',{p_id:id(b.id),p_user:u.kick_user_id,p_name:u.username,p_cancel:b.action==='cancel',p_choice:b.choice||null}):await rpc('z_coin_action',{p_id:id(b.id),p_user:u.kick_user_id,p_name:u.username,p_cancel:b.action==='cancel',p_result:b.action==='accept'?(game?.kind==='dice'?JSON.stringify(diceResult()):coinResult()):null});}
  else throw Object.assign(new Error('Unknown action.'),{status:400});
  const {creator,opponent,winner,...safe}=result;
- return res.json({result:{...safe,isWinner:Number(winner)===Number(u.kick_user_id)}});
+ return res.json({result:{...publicGame(safe),isWinner:Number(winner)===Number(u.kick_user_id)}});
  }catch(e){return apiError(res,e);}}
