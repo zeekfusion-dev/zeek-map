@@ -3,6 +3,7 @@ import {db} from '../../server/db.mjs';
 import {BROADCASTER} from '../../server/domain.mjs';
 import {verifyKickWebhook} from '../../server/webhook-verifier.mjs';
 import {flushOutbox} from '../../server/kick.mjs';
+import {nativeRewardReceipt} from '../../server/native-reward.mjs';
 export const config={api:{bodyParser:false},maxDuration:60};
 export default async function handler(req,res){
  if(req.method==='GET')return res.json({ok:true,message:'ZeekFusion Kick webhook is online',version:'z-market-1'});
@@ -13,6 +14,8 @@ export default async function handler(req,res){
  let body;try{body=JSON.parse(raw.toString());}catch{return res.status(400).end();}
  if(Number(body.broadcaster?.user_id)!==BROADCASTER)return res.json({received:true,ignored:true});
  if(type!=='chat.message.sent')await db('z_runtime?id=eq.1',{method:'PATCH',body:{last_webhook_at:new Date().toISOString()}});
+ const rewardReceipt=nativeRewardReceipt({type,version:String(req.headers['kick-event-version']||''),body});
+ if(rewardReceipt)await db('z_webhook_receipts?on_conflict=id',{method:'POST',prefer:'resolution=ignore-duplicates',body:{id:rewardReceipt}});
  if(type==='chat.message.sent'&&body.sender?.user_id&&!body.sender.is_anonymous){
  const who=body.sender,content=String(body.content||'');let send=false;
  if(typeof id!=='string'||id.length>200||typeof body.message_id!=='string'||body.message_id.length>200||typeof who.username!=='string'||who.username.length>100||!Number.isSafeInteger(who.user_id)||who.user_id<=0||content.length>5000||!Number.isFinite(Date.parse(body.created_at)))return res.status(400).end();
