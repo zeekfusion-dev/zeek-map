@@ -1,3 +1,4 @@
+import {securityLog} from '../../server/security-log.mjs';
 import {processChat} from '../../server/chat-commands.mjs';
 import {db} from '../../server/db.mjs';
 import {BROADCASTER} from '../../server/domain.mjs';
@@ -10,7 +11,7 @@ export default async function handler(req,res){
  if(req.method!=='POST')return res.status(405).end();
  try{const chunks=[];let size=0;for await(const chunk of req){const b=Buffer.from(chunk);size+=b.length;if(size>1048576)return res.status(413).end();chunks.push(b);}const raw=Buffer.concat(chunks);
  const id=req.headers['kick-event-message-id'],ts=req.headers['kick-event-message-timestamp'],sig=req.headers['kick-event-signature'],type=req.headers['kick-event-type'];
- if(!await verifyKickWebhook(id,ts,sig,raw))return res.status(401).json({error:'Invalid signature'});
+ if(!await verifyKickWebhook(id,ts,sig,raw)){securityLog('webhook_rejected',401);return res.status(401).json({error:'Invalid signature'});}
  let body;try{body=JSON.parse(raw.toString());}catch{return res.status(400).end();}
  if(Number(body.broadcaster?.user_id)!==BROADCASTER)return res.json({received:true,ignored:true});
  if(type!=='chat.message.sent')await db('z_runtime?id=eq.1',{method:'PATCH',body:{last_webhook_at:new Date().toISOString()}});
@@ -20,8 +21,8 @@ export default async function handler(req,res){
  const who=body.sender,content=String(body.content||'');let send=false;
  if(typeof id!=='string'||id.length>200||typeof body.message_id!=='string'||body.message_id.length>200||typeof who.username!=='string'||who.username.length>100||!Number.isSafeInteger(who.user_id)||who.user_id<=0||content.length>5000||!Number.isFinite(Date.parse(body.created_at)))return res.status(400).end();
  send=await processChat({event:id,user:who.user_id,username:who.username,message:body.message_id,content,created:body.created_at});
- try{if(send)await flushOutbox();}catch(e){console.error('Chat delivery deferred:',e.message);}
+ try{if(send)await flushOutbox();}catch(e){securityLog('delivery_failure',503);}
  }
  return res.json({received:true});
- }catch(e){console.error('Kick webhook:',e.message);return res.status(500).json({error:'Webhook processing failed'});}
+ }catch(e){securityLog('webhook_failure',500);return res.status(500).json({error:'Webhook processing failed'});}
 }

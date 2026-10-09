@@ -1,7 +1,7 @@
 -- Run appended to migration 021 inside a ROLLBACK transaction. No stream alerts escape.
 do $$declare r uuid:=gen_random_uuid();a uuid:=gen_random_uuid();b uuid:=gen_random_uuid();c uuid:=gen_random_uuid();cl uuid:=gen_random_uuid();other uuid:=gen_random_uuid();x jsonb;n integer;begin
  insert into z_users(kick_user_id,username,zs_balance,lifetime_zs) values(9999999001,'z_test_alerts',10,10);
- insert into z_rewards(id,title,description,cost,stock,enabled,image_url,audio_url,alert_duration,alert_volume) values(r,'Test alert','Test',2,2,true,'https://example.com/a.gif','https://example.com/a.mp3',5,25);
+ insert into z_rewards(id,title,command_name,description,cost,stock,enabled,image_url,audio_url,alert_duration,alert_volume) values(r,'Test alert','audit-'||r,'Test',2,2,true,'https://example.com/a.gif','https://example.com/a.mp3',5,25);
  perform z_redeem(9999999001,'z_test_alerts',r,a);
  perform z_redeem(9999999001,'z_test_alerts',r,a);
  if (select count(*) from z_reward_alerts where redemption_id=a)<>1 or (select zs_balance from z_users where kick_user_id=9999999001)<>8 or (select stock from z_rewards where id=r)<>1 then raise exception 'Duplicate redemption failed';end if;

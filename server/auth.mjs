@@ -1,3 +1,4 @@
+import {securityLog} from './security-log.mjs';
 import crypto from 'node:crypto';
 import {limit} from './security.mjs';
 import {db} from './db.mjs';
@@ -14,4 +15,4 @@ export function sameOrigin(req){if(req.headers.origin!==site()||req.headers['sec
 export async function requireUser(req){const u=await session(req);if(!u)throw Object.assign(new Error('Log in with Kick first.'),{status:401});if(!req.zRateChecked){await limit(req,'user',120,60,u.kick_user_id);req.zRateChecked=true;}return u;}
 export async function requireAdmin(req){const u=await requireUser(req);if(Number(u.kick_user_id)!==BROADCASTER)throw Object.assign(new Error('Owner access required.'),{status:403});return u;}
 export async function createSession(res,user){const token=crypto.randomBytes(32).toString('base64url');await db('z_sessions',{method:'POST',body:{token_hash:hash(token),kick_user_id:user.user_id,username:user.name,expires_at:new Date(Date.now()+7*86400000).toISOString()}});setCookie(res,'z_session',token,7*86400);}
-export function apiError(res,e){const status=[400,401,403,404,409,413,429].includes(e.status)?e.status:500;console.error('Request failed',status);if(status===429)res.setHeader('Retry-After','60');return res.status(status).json({error:status!==500?e.message:'Unable to complete this request. Please try again.'});}
+export function apiError(res,e){const status=[400,401,403,404,409,413,429].includes(e.status)?e.status:500;securityLog('request_rejected',status);if(status===429)res.setHeader('Retry-After','60');return res.status(status).json({error:status!==500?e.message:'Unable to complete this request. Please try again.'});}
