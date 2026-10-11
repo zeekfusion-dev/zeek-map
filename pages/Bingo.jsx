@@ -11,7 +11,7 @@ export default function Bingo(){
  useEffect(()=>{refresh();const t=setInterval(()=>{if(!editing&&!busy)refresh();},3000);return()=>clearInterval(t);},[editing,busy]);
  const wins=useMemo(()=>lines.filter(line=>line.every(i=>board.squares[i]?.done)),[board]);
  const count=board.squares.filter(s=>s.done).length;
- async function save(next){if(!isOwner||busy)return false;setBusy(true);setError('');setMessage('');try{const r=await fetch('/api/site',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bingo',bingo:next,revision})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not save. Refresh and try again.');setBoard(j.content.bingo);setRevision(j.revision);setMessage('Changes are live.');return true;}catch(e){setError(e.message);return false;}finally{setBusy(false);}}
+ async function save(next){if(!isOwner||busy)return false;setBusy(true);setError('');setMessage('');try{const r=await fetch('/api/site',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'bingo',bingo:next,revision})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not save. Refresh and try again.');setBoard(j.content.bingo);setRevision(j.revision);return true;}catch(e){setError(e.message);return false;}finally{setBusy(false);}}
  function mark(i){if(!isOwner||editing||busy)return;save({...board,squares:board.squares.map((s,n)=>n===i?{...s,done:!s.done}:s)});}
  function shuffle(){if(!isOwner||!window.confirm('Shuffle the entire board? Current progress will be reset.'))return;const center=board.squares.find(s=>s.id===12)||board.squares[12];const other=board.squares.filter(s=>s!==center).map(s=>({...s,done:false}));for(let i=other.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[other[i],other[j]]=[other[j],other[i]];}other.splice(12,0,{...center,done:false});save({...board,squares:other});}
  return <main className="bingo-page"><div className="bingo-head"><p>ZEEKFUSION · LIVE STREAM CHALLENGE</p><h1>{board.title}</h1><div className="bingo-progress">{count} / 25 COMPLETED <span>{wins.length?' · BINGO COMPLETED':' · COMPLETE 5 IN A ROW'}</span></div></div>
@@ -21,6 +21,6 @@ export default function Bingo(){
  {editing&&isOwner&&draft&&<section className="bingo-editor"><h2>Edit Bingo</h2><label>Board title<input maxLength={90} value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/></label><div className="bingo-edit-grid">{draft.squares.map((s,i)=><label key={s.id}>Square {i+1}<input maxLength={100} value={s.title} onChange={e=>setDraft({...draft,squares:draft.squares.map((v,k)=>k===i?{...v,title:e.target.value}:v)})}/></label>)}</div><button type="button" className="bingo-confirm" disabled={busy||!draft.title.trim()||draft.squares.some(s=>!s.title.trim())} onClick={async()=>{if(await save(draft)){setEditing(false);setDraft(null);}}}>✓ Confirm & Save Changes</button></section>}
  {!isOwner&&!loading&&<div className="bingo-owner-login"><a href="/api/kick/login?returnTo=admin">ZeekFusion creator sign-in</a><span>Already signed in? Refresh the page. Only the verified owner account can edit.</span></div>}
 
- {message&&isOwner&&<p role="status" className="bingo-message">{message}</p>}{error&&<p role="alert" className="bingo-error">{error}</p>}
+{error&&<p role="alert" className="bingo-error">{error}</p>}
  </main>;
 }
