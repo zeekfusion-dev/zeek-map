@@ -8,7 +8,13 @@ export function cents(value) {
   if(!Number.isSafeInteger(n)||Math.abs(n)>100000000) throw new Error('Amount is too large.');
   return n;
 }
-export function normalizeAnswer(s) {return String(s).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+export function normalizeAnswer(s) {
+  const text=String(s).normalize('NFKD').trim();
+  // Only join digits separated by actual whitespace. Do this BEFORE removing
+  // punctuation, so decimals, arithmetic and lists cannot become another number.
+  if(/^[0-9]+(?:\s+[0-9]+)+$/.test(text))return text.replace(/\s+/g,'');
+  return text.replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
 export function validConfig(input) {
   const output={...defaults};
   for(const key of Object.keys(defaults)) if(key in input) output[key]=input[key];
