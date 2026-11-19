@@ -2,6 +2,7 @@ import React,{useCallback,useEffect,useState} from 'react';
 import './GtaGiveaway.css';
 
 const labels={
+ 'random-preview':'One surprise check-in per 30-minute block. Chat normally; one message since the previous check-in is enough.',
  'block-30':'Chat normally at least once in each live 30-minute block. Extra messages don’t earn extra XP.',
  'chat-15':'Send any message during a live 15-minute block.',
  'chat-30':'Be on the active chatter list at the check-in.',
@@ -13,7 +14,7 @@ export function GiveawayBoard({mode, status, entries=[], nextCheckIn=null, skipp
   <header className="gg-hero">
    <div className="gg-tag">ZEEKFUSION · KICK COMMUNITY</div>
    <h1>GTA Giveaway<span>Leaderboard</span></h1>
-   <p>One XP per 30-minute check-in. Your total carries over to the next stream.</p>
+   <div className="gg-prize"><strong>GTA 6 copy or gift card</strong><p>(If you don’t want it, it’ll be passed on to the next person.)</p></div>
    <span className="gg-state">{({preview:'Preview · scoring off',live:'Live · scoring on',paused:'Between streams',closed:'Giveaway closed',stale:'Scoring paused · feed check pending'})[status] ?? 'Scoring unavailable'}</span>
   </header>
   <div className="gg-grid">
@@ -27,7 +28,7 @@ export function GiveawayBoard({mode, status, entries=[], nextCheckIn=null, skipp
     <p>{labels[mode] ?? 'The check-in rule has not been set.'}</p>
     <p>{status==='live'&&minutes!==null?'Next check-in: '+minutes+' min.':'Check-ins run only when ZeekFusion is live.'}</p>
     <p>No subscription, payment, or gifts required.</p>
-    <p>Only completed blocks count. If a check-in cannot be verified, it won’t award XP.</p>
+    <p>XP carries across streams. If a check-in cannot be verified, it won’t award XP.</p>
     {skippedWindows>0&&<p>{skippedWindows} unverified {skippedWindows===1?'block skipped':'blocks skipped'}.</p>}
    </section>
   </div>
@@ -54,10 +55,10 @@ export default function GtaGiveaway(){
  };
  return <>
   {error&&<p className="gg-alert" role="status">{error}</p>}
-  <GiveawayBoard mode="block-30" {...(data??{status:'loading'})} now={now}/>
+  <GiveawayBoard mode={data?.status==='preview'?'random-preview':'block-30'} {...(data??{status:'loading'})} now={now}/>
   {data?.isOwner&&<section className="gg-panel gg-owner" aria-label="Giveaway controls">
    <h2>Owner controls</h2>
-   {data.status==='preview'&&<button disabled={busy} onClick={()=>manage('start')}>Start collecting XP</button>}
+   {data.status==='preview'&&<p>Tracking is off while the updated rules are being tested.</p>}
    {['live','paused','stale'].includes(data.status)&&<button disabled={busy} onClick={()=>{if(window.confirm('Stop the giveaway and freeze XP?'))manage('stop');}}>Stop and freeze XP</button>}
    {data.status==='closed'&&<form onSubmit={e=>{e.preventDefault();const h=new FormData(e.currentTarget).get('handle');if(window.confirm('Mark this confirmed participant as passed?'))manage('pass',h);}}>
     <label>Kick handle of participant who passed <input name="handle" required /></label><button disabled={busy}>Mark as passed</button>

@@ -30,3 +30,22 @@ export function calculateStandings({mode, openedAt, closedAt=Infinity, asOf, str
  }
  return [...totals.values()].map(({username,xp})=>({username,xp})).sort((a,b)=>b.xp-a.xp||a.username.localeCompare(b.username)).map((row,i,rows)=>({...row,rank:i===0||row.xp!==rows[i-1].xp?i+1:rows.findIndex(r=>r.xp===row.xp)+1}));
 }
+
+// The final ten minutes of each 30-minute block are eligible checkpoint times.
+// Random draws must be stored once per stream/block by the production layer.
+export function surpriseCheckpoint(streamStart, blockIndex, draw) {
+ if(!Number.isFinite(streamStart)||!Number.isInteger(blockIndex)||blockIndex<0||!Number.isInteger(draw)||draw<0||draw>=600) throw Error('Invalid checkpoint inputs');
+ return streamStart+(blockIndex*30+20)*60000+draw*1000;
+}
+
+export function surpriseAwards({start,end=Infinity,asOf,checks,events}) {
+ const verified=checks.filter(c=>Number.isFinite(c)&&c>=start&&c<=end&&c<=asOf).sort((a,b)=>a-b);
+ const totals=new Map();
+ let since=start;
+ for(const at of new Set(verified)){
+  const participants=new Set(events.filter(e=>e.at>=since&&e.at<at&&e.userId>0&&!e.host&&!e.bot&&!e.anonymous).map(e=>e.userId));
+  for(const user of participants)totals.set(user,(totals.get(user)??0)+1);
+  since=at;
+ }
+ return totals;
+}

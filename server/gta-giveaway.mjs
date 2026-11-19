@@ -55,8 +55,7 @@ export async function giveawayApi(req,res){
  await limit(req,'gta-owner',15,60,u.kick_user_id);
  const b=bodyObject(req,1000), now=new Date().toISOString();
  if(b.action==='start'){
-  // Single campaign; never replace an existing scoreboard or its start.
-  await db('gta_campaign?on_conflict=id',{method:'POST',prefer:'resolution=ignore-duplicates',body:{id:1,opened_at:now}});
+  throw invalid('The updated giveaway rules are not ready for live scoring.',409);
  }else if(b.action==='stop'){
   await db('gta_campaign?id=eq.1&closed_at=is.null',{method:'PATCH',body:{closed_at:now}});
  }else if(b.action==='pass'){

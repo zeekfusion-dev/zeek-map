@@ -10,3 +10,11 @@ test('uncompleted windows award nothing and excluded people do not rank',()=>ass
 test('passing preserves remaining standings and ties share rank',()=>{ const p={mode:'chat-15',openedAt:0,asOf:m,streams:[{start:0}],events:[e(1,.1),e(2,.2),e(3,.7)],excluded:new Set([1])}; assert.deepEqual(score(p),[{rank:1,username:'user2',xp:1},{rank:1,username:'user3',xp:1}]); });
 test('30-minute blocks cap spam at one point and do not carry a message into the next block',()=>assert.deepEqual(points({mode:'block-30',asOf:6*m,streams:[{start:0,end:6*m}],events:[e(1,.1),e(1,.3),e(1,1.9),e(1,4.01),e(2,1.1)]}),[2,1]));
 test('the timer is anchored to each stream, but the campaign XP does not reset',()=>assert.deepEqual(points({mode:'block-30',asOf:16*m,streams:[{start:m,end:5*m},{start:11*m,end:15*m}],events:[e(1,1.1),e(1,10),e(1,11.1),e(1,15)]}),[2]));
+test('surprise check-ins count new timestamps only and never award offline',async()=>{
+ const {surpriseCheckpoint, surpriseAwards}=await import('../prototypes/gta-leaderboard/scoring.mjs');
+ const mins=60000;
+ const checks=[surpriseCheckpoint(0,0,240),surpriseCheckpoint(0,1,300),surpriseCheckpoint(0,2,100)];
+ assert.deepEqual(checks.slice(0,2),[24*mins,55*mins]);
+ const events=[{userId:1,at:3*mins},{userId:1,at:4*mins},{userId:2,at:24*mins},{userId:2,at:32*mins},{userId:3,at:58*mins}];
+ assert.deepEqual([...surpriseAwards({start:0,end:57*mins,asOf:90*mins,checks,events})],[[1,1],[2,1]]);
+});
