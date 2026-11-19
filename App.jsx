@@ -11,6 +11,7 @@ const MCServer = lazy(()=>import('./pages/MCServer.jsx'));
 const Admin = lazy(()=>import('./pages/Admin.jsx'));
 const Clips = lazy(()=>import('./pages/Clips.jsx'));
 const BingoOverlay = lazy(()=>import('./pages/BingoOverlay.jsx'));
+const GtaGiveaway = lazy(()=>import('./pages/GtaGiveaway.jsx'));
 const Bingo = lazy(()=>import('./pages/Bingo.jsx'));
 const Map = lazy(() => import("./Map.jsx"));
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/reward-alerts" element={<RewardOverlay/>}/>
         <Route path="/clips" element={<Clips />} />
+        <Route path="/gta-giveaway" element={<GtaGiveaway/>}/>
         <Route path="/bingo" element={<Bingo/>} />
         <Route path="/bingo-overlay" element={<BingoOverlay/>} />
         <Route path="/map" element={<Map />} />
