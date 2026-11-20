@@ -6,7 +6,7 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
   <header className="gg-hero">
    <div className="gg-tag">ZEEKFUSION · KICK COMMUNITY</div>
    <h1>GTA Giveaway<span>Leaderboard</span></h1>
-   <div className="gg-prize"><strong>GTA 6 copy or gift card</strong><p>(If you don’t want it, it’ll be passed on to the next person.)</p></div>
+   <div className="gg-prize"><strong>GTA 6 copy or gift card</strong><p>(If you don’t want it, it’ll be passed on to the next person.)</p><p>No purchase needed.</p></div>
    <span className="gg-state">{({preview:'Scoring hasn’t started yet',live:'Live · scoring on',paused:'Between streams',closed:'Giveaway closed',stale:'Scoring paused · feed check pending'})[status] ?? 'Scoring unavailable'}</span>
   </header>
   <div className="gg-grid">
@@ -15,13 +15,12 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
      <thead><tr><th>Rank</th><th>Kick handle</th><th>XP</th></tr></thead>
      <tbody>{entries.map(r=><tr key={r.username}><td>{r.rank}</td><td>@{r.username}</td><td>{r.xp}</td></tr>)}</tbody>
     </table>}
+    {skippedWindows>0&&<p>{skippedWindows} unverified {skippedWindows===1?'block skipped':'blocks skipped'}.</p>}
    </section>
    <section className="gg-panel" aria-label="How scoring works"><h2>How it works</h2>
     <p>While ZeekFusion is live, there’s one surprise check-in per 30-minute block. If you’ve chatted since the last check-in, you get 1 XP. No command or spam needed.</p>
-    <p>After each stream, ZeekFusion can award top-chatter bonuses: 1st +3 XP, 2nd +2 XP, 3rd +1 XP.</p>
-    <p>No subscription, payment, or gifts required.</p>
-    <p>XP carries across streams. If a check-in cannot be verified, it won’t award XP.</p>
-    {skippedWindows>0&&<p>{skippedWindows} unverified {skippedWindows===1?'block skipped':'blocks skipped'}.</p>}
+    <p>At the end of each stream, the top three chatters get bonus XP: 1st +3, 2nd +2, 3rd +1.</p>
+    <p>XP carries across streams. Good luck!</p>
    </section>
   </div>
  </main>;
