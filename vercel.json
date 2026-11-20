@@ -50,6 +50,11 @@
       "source": "/mc-server",
       "destination": "/#/mc-server",
       "permanent": false
+    },
+    {
+      "source": "/gta-giveaway",
+      "destination": "/#/gta-giveaway",
+      "permanent": false
     }
   ]
 }
