@@ -1,0 +1,20 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {calculateStandings as score, WINDOW_MS as m} from '../prototypes/gta-leaderboard/scoring.mjs';
+const e=(userId,t,message='hi',extra={})=>({userId,at:t*m,username:'user'+userId,message,...extra});
+const points=(params)=>score({mode:'chat-15',openedAt:0,asOf:12*m,streams:[{start:0,end:3*m},{start:8*m,end:11*m}],events:[],...params}).map(({xp})=>xp);
+test('chat earns only one XP per 15-minute window, across streams',()=>assert.deepEqual(points({events:[e(1,.1),e(1,.2),e(1,5),e(1,8.9),e(1,10.1),e(1,11)]}),[3]));
+test('30-minute active mode counts a single message at two check-ins',()=>assert.deepEqual(points({mode:'chat-30',events:[e(1,.1)]}),[2]));
+test('commands only, nonparticipants never appear, no scoring after stop',()=>assert.deepEqual(points({mode:'command',closedAt:2*m,events:[e(2,.1),e(1,.2,' !GTA '),e(1,2.1,'!gta'),e(9,.1,'!gta',{bot:true}), e(4,.3,'!gta',{host:true})]}),[1]));
+test('uncompleted windows award nothing and excluded people do not rank',()=>assert.deepEqual(points({asOf:.9*m,events:[e(1,.1)]}),[]));
+test('passing preserves remaining standings and ties share rank',()=>{ const p={mode:'chat-15',openedAt:0,asOf:m,streams:[{start:0}],events:[e(1,.1),e(2,.2),e(3,.7)],excluded:new Set([1])}; assert.deepEqual(score(p),[{rank:1,username:'user2',xp:1},{rank:1,username:'user3',xp:1}]); });
+test('30-minute blocks cap spam at one point and do not carry a message into the next block',()=>assert.deepEqual(points({mode:'block-30',asOf:6*m,streams:[{start:0,end:6*m}],events:[e(1,.1),e(1,.3),e(1,1.9),e(1,4.01),e(2,1.1)]}),[2,1]));
+test('the timer is anchored to each stream, but the campaign XP does not reset',()=>assert.deepEqual(points({mode:'block-30',asOf:16*m,streams:[{start:m,end:5*m},{start:11*m,end:15*m}],events:[e(1,1.1),e(1,10),e(1,11.1),e(1,15)]}),[2]));
+test('surprise check-ins count new timestamps only and never award offline',async()=>{
+ const {surpriseCheckpoint, surpriseAwards}=await import('../prototypes/gta-leaderboard/scoring.mjs');
+ const mins=60000;
+ const checks=[surpriseCheckpoint(0,0,240),surpriseCheckpoint(0,1,300),surpriseCheckpoint(0,2,100)];
+ assert.deepEqual(checks.slice(0,2),[24*mins,55*mins]);
+ const events=[{userId:1,at:3*mins},{userId:1,at:4*mins},{userId:2,at:24*mins},{userId:2,at:32*mins},{userId:3,at:58*mins}];
+ assert.deepEqual([...surpriseAwards({start:0,end:57*mins,asOf:90*mins,checks,events})],[[1,1],[2,1]]);
+});

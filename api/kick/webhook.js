@@ -1,3 +1,4 @@
+import {giveawayEnabled,observeGiveawayStream,recordGiveawayChat} from '../../server/gta-giveaway.mjs';
 import {securityLog} from '../../server/security-log.mjs';
 import {processChat} from '../../server/chat-commands.mjs';
 import {db} from '../../server/db.mjs';
@@ -20,8 +21,16 @@ export default async function handler(req,res){
  if(type==='chat.message.sent'&&body.sender?.user_id&&!body.sender.is_anonymous){
  const who=body.sender,content=String(body.content||'');let send=false;
  if(typeof id!=='string'||id.length>200||typeof body.message_id!=='string'||body.message_id.length>200||typeof who.username!=='string'||who.username.length>100||!Number.isSafeInteger(who.user_id)||who.user_id<=0||content.length>5000||!Number.isFinite(Date.parse(body.created_at)))return res.status(400).end();
+ // Record before the existing idempotent chat processor. If recording fails,
+ // return an error after the original handler so a Kick retry can recover it.
+ let giveawayFailed=false;
+ if(giveawayEnabled())try{await recordGiveawayChat(body);}catch{giveawayFailed=true;securityLog('giveaway_chat_failure',503);}
  send=await processChat({event:id,user:who.user_id,username:who.username,message:body.message_id,content,created:body.created_at});
  try{if(send)await flushOutbox();}catch(e){securityLog('delivery_failure',503);}
+ if(giveawayFailed)return res.status(503).json({error:'Temporary chat tracking failure'});
+ }
+ if(giveawayEnabled()&&type==='livestream.status.updated'){
+  await observeGiveawayStream({live:body.is_live,start:body.started_at,ended:body.ended_at,observed:body.is_live?body.started_at:ts});
  }
  return res.json({received:true});
  }catch(e){securityLog('webhook_failure',500);return res.status(500).json({error:'Webhook processing failed'});}
