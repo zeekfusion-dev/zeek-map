@@ -7,7 +7,7 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
    <div className="gg-tag">ZEEKFUSION · KICK COMMUNITY</div>
    <h1>GTA Giveaway<span>Leaderboard</span></h1>
    <div className="gg-prize"><strong>GTA 6 copy or gift card</strong><p>(If you don’t want it, it’ll be passed on to the next person.)</p></div>
-   <span className="gg-state">{({preview:'Preview · scoring off',live:'Live · scoring on',paused:'Between streams',closed:'Giveaway closed',stale:'Scoring paused · feed check pending'})[status] ?? 'Scoring unavailable'}</span>
+   <span className="gg-state">{({preview:'Scoring hasn’t started yet',live:'Live · scoring on',paused:'Between streams',closed:'Giveaway closed',stale:'Scoring paused · feed check pending'})[status] ?? 'Scoring unavailable'}</span>
   </header>
   <div className="gg-grid">
    <section className="gg-panel" aria-label="Live standings"><h2>Standings</h2>
