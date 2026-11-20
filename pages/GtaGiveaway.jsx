@@ -1,15 +1,7 @@
 import React,{useCallback,useEffect,useState} from 'react';
 import './GtaGiveaway.css';
 
-const labels={
- 'random-preview':'One surprise check-in per 30-minute block. Chat normally; one message since the previous check-in is enough.',
- 'block-30':'Chat normally at least once in each live 30-minute block. Extra messages don’t earn extra XP.',
- 'chat-15':'Send any message during a live 15-minute block.',
- 'chat-30':'Be on the active chatter list at the check-in.',
- command:'Type !gta during a live 15-minute block.'
-};
-export function GiveawayBoard({mode, status, entries=[], nextCheckIn=null, skippedWindows=0, now=Date.now()}) {
- const minutes=nextCheckIn==null?null:Math.max(0,Math.ceil((nextCheckIn-now)/60000));
+export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
  return <main className="gg-page">
   <header className="gg-hero">
    <div className="gg-tag">ZEEKFUSION · KICK COMMUNITY</div>
@@ -25,8 +17,8 @@ export function GiveawayBoard({mode, status, entries=[], nextCheckIn=null, skipp
     </table>}
    </section>
    <section className="gg-panel" aria-label="How scoring works"><h2>How it works</h2>
-    <p>{labels[mode] ?? 'The check-in rule has not been set.'}</p>
-    <p>{status==='live'&&minutes!==null?'Next check-in: '+minutes+' min.':'Check-ins run only when ZeekFusion is live.'}</p>
+    <p>While ZeekFusion is live, there’s one surprise check-in per 30-minute block. If you’ve chatted since the last check-in, you get 1 XP. No command or spam needed.</p>
+    <p>After each stream, ZeekFusion can award top-chatter bonuses: 1st +3 XP, 2nd +2 XP, 3rd +1 XP.</p>
     <p>No subscription, payment, or gifts required.</p>
     <p>XP carries across streams. If a check-in cannot be verified, it won’t award XP.</p>
     {skippedWindows>0&&<p>{skippedWindows} unverified {skippedWindows===1?'block skipped':'blocks skipped'}.</p>}
@@ -37,7 +29,7 @@ export function GiveawayBoard({mode, status, entries=[], nextCheckIn=null, skipp
 
 const ENDPOINT='/api/site?giveaway=1&owner=1';
 export default function GtaGiveaway(){
- const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[now,setNow]=useState(Date.now());
+ const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[picked,setPicked]=useState('');
  const refresh=useCallback(async(signal)=>{
   try{const r=await fetch(ENDPOINT,{cache:'no-store',signal}),j=await r.json();
    if(r.status===404){setData({status:'preview',entries:[]});setError('');return;}
@@ -46,21 +38,41 @@ export default function GtaGiveaway(){
   }catch(e){if(e.name!=='AbortError')setError('Couldn’t refresh; the scores below are the last confirmed standings.');}
  },[]);
  useEffect(()=>{const ac=new AbortController();refresh(ac.signal);const poll=setInterval(()=>{if(!document.hidden)refresh(ac.signal);},20000);
-  const timer=setInterval(()=>setNow(Date.now()),1000);return()=>{ac.abort();clearInterval(poll);clearInterval(timer);};},[refresh]);
- const manage=async(action,handle)=>{
-  setBusy(true);setError('');
-  try{const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,handle})});
+  return()=>{ac.abort();clearInterval(poll);};},[refresh]);
+ const manage=async(action,fields={})=>{
+  setBusy(true);setError('');setNotice('');
+  try{const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...fields})});
    const j=await res.json();if(!res.ok)throw Error(j.error||'Could not save the change.');await refresh();
+   if(action==='bonus')setNotice(j.result==='unchanged'?'Those bonuses were already recorded. No points were added again.':'Top-three bonuses saved.');
   }catch(e){setError(e.message);}finally{setBusy(false);}
  };
+ const streams=data?.streams??[];
+ const selected=streams.find(s=>s.started_at===picked)??streams[0];
  return <>
   {error&&<p className="gg-alert" role="status">{error}</p>}
-  <GiveawayBoard mode={data?.status==='preview'?'random-preview':'block-30'} {...(data??{status:'loading'})} now={now}/>
+  <GiveawayBoard {...(data??{status:'loading'})}/>
   {data?.isOwner&&<section className="gg-panel gg-owner" aria-label="Giveaway controls">
    <h2>Owner controls</h2>
-   {data.status==='preview'&&<p>Tracking is off while the updated rules are being tested.</p>}
+   {data.status==='preview'&&(data.canStart?<button disabled={busy} onClick={()=>{if(window.confirm('Start scoring this giveaway?'))manage('start');}}>Start scoring</button>:<p>Tracking is off while the setup is being tested.</p>)}
+   {notice&&<p role="status">{notice}</p>}
+   {['live','paused','stale'].includes(data.status)&&<div className="gg-bonus">
+    <h3>Top chatter bonuses</h3>
+    {!selected?<p>Choose the top chatters after a stream has ended.</p>:<>
+    <label>Completed stream <select value={selected.started_at} onChange={e=>setPicked(e.target.value)} disabled={busy}>
+     {streams.map(s=><option key={s.started_at} value={s.started_at}>{new Date(s.started_at).toLocaleString()} {s.gta_bonuses.length?'(awarded)':''}</option>)}
+    </select></label>
+    {selected.gta_bonuses.length?<ol>{[...selected.gta_bonuses].sort((a,b)=>a.place-b.place).map(x=><li key={x.place}>@{x.username} (+{4-x.place} XP)</li>)}</ol>:
+     <form key={selected.started_at} onSubmit={e=>{
+      e.preventDefault();const f=new FormData(e.currentTarget);const handles=[1,2,3].map(n=>String(f.get('place'+n)).trim());
+      if(window.confirm('Record these bonuses? '+handles.map((h,i)=>h+' +'+(3-i)+' XP').join(', ')))manage('bonus',{stream:selected.started_at,handles});
+     }}>
+      {['1st','2nd','3rd'].map((place,i)=><label key={place}>{place} (+{3-i} XP) <input name={'place'+(i+1)} placeholder="@KickHandle" maxLength={101} required disabled={busy}/></label>)}
+      <button disabled={busy}>Award bonuses</button>
+     </form>}
+    </>}
+   </div>}
    {['live','paused','stale'].includes(data.status)&&<button disabled={busy} onClick={()=>{if(window.confirm('Stop the giveaway and freeze XP?'))manage('stop');}}>Stop and freeze XP</button>}
-   {data.status==='closed'&&<form onSubmit={e=>{e.preventDefault();const h=new FormData(e.currentTarget).get('handle');if(window.confirm('Mark this confirmed participant as passed?'))manage('pass',h);}}>
+   {data.status==='closed'&&<form onSubmit={e=>{e.preventDefault();const h=new FormData(e.currentTarget).get('handle');if(window.confirm('Mark this confirmed participant as passed?'))manage('pass',{handle:h});}}>
     <label>Kick handle of participant who passed <input name="handle" required /></label><button disabled={busy}>Mark as passed</button>
    </form>}
   </section>}

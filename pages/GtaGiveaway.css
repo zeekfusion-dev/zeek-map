@@ -16,3 +16,5 @@
 .gg-alert{margin:0;padding:.9rem;text-align:center;background:#382b15;color:#fff0cf}.gg-owner{max-width:72rem;margin:1rem auto;color:#f5f7f4}
 .gg-owner button,.gg-owner input{font:inherit;margin:.4rem;padding:.55rem .75rem}.gg-owner button{background:#ffc5e1;color:#27112d;border:0;border-radius:.4rem;font-weight:bold}
 @media(max-width:680px){.gg-grid{grid-template-columns:1fr}.gg-hero{min-height:0;background-position:72% 50%}.gg-hero::before{background:linear-gradient(90deg,#170e28e8 0%,#271132ac 83%,#2910318f 100%)}}
+
+.gg-bonus label{display:block;margin:.45rem 0}.gg-bonus select{font:inherit;max-width:100%;padding:.5rem}.gg-bonus{margin-bottom:1rem}

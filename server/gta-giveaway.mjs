@@ -6,6 +6,9 @@ import {requireAdmin,sameOrigin,session} from './auth.mjs';
 import {securityLog} from './security-log.mjs';
 
 export const giveawayEnabled=()=>process.env.GTA_GIVEAWAY_ENABLED==='1';
+const startAllowed=()=>process.env.GTA_GIVEAWAY_START_ALLOWED==='1';
+const cleanHandle=x=>typeof x==='string'?x.trim().replace(/^@/,''):'';
+const validHandle=x=>/^[a-zA-Z0-9_-]{1,100}$/.test(x);
 const time=x=>typeof x==='string'&&Number.isFinite(Date.parse(x))?new Date(x).toISOString():null;
 export function isEligible(sender,content){
  return Number.isSafeInteger(sender?.user_id) && sender.user_id>0 && sender.user_id!==BROADCASTER &&
@@ -47,7 +50,10 @@ export async function giveawayApi(req,res){
   await limit(req,'gta-standings',45);
   const standings=await rpc('gta_standings');
   const u=req.query.owner==='1'?await session(req):null;
-  return res.json({...standings,isOwner:Number(u?.kick_user_id)===BROADCASTER});
+  const isOwner=Number(u?.kick_user_id)===BROADCASTER;
+  if(!isOwner)return res.json(standings);
+  const streams=await db('gta_streams?select=started_at,ended_at,gta_bonuses(place,username)&ended_at=not.is.null&order=started_at.desc&limit=30');
+  return res.json({...standings,isOwner,streams,canStart:startAllowed()});
  }
  if(req.method!=='POST')return res.status(405).end();
  sameOrigin(req);
@@ -55,15 +61,31 @@ export async function giveawayApi(req,res){
  await limit(req,'gta-owner',15,60,u.kick_user_id);
  const b=bodyObject(req,1000), now=new Date().toISOString();
  if(b.action==='start'){
-  throw invalid('The updated giveaway rules are not ready for live scoring.',409);
+  if(!startAllowed())throw invalid('Live scoring is not enabled for launch.',409);
+  await db('gta_campaign?on_conflict=id',{method:'POST',prefer:'resolution=ignore-duplicates',body:{id:1,opened_at:now}});
+ }else if(b.action==='bonus'){
+  const names=Array.isArray(b.handles)?b.handles.map(cleanHandle):[];
+  const stream=time(b.stream);
+  if(!stream||names.length!==3||!names.every(validHandle)||new Set(names.map(x=>x.toLowerCase())).size!==3)
+   throw invalid('Choose a stream and enter three different Kick handles.');
+  const result=await rpc('gta_award_bonus',{p_stream:stream,p_names:names});
+  if(!['awarded','unchanged'].includes(result))throw invalid(({
+   campaign_closed:'Scoring is not open.',
+   stream_not_ended:'This stream has not been confirmed as ended.',
+   unmatched_handle:'At least one handle could not be uniquely matched to eligible chat from this stream. Check the spelling.',
+   duplicate_handle:'Each place must go to a different Kick account.',
+   already_awarded:'The bonuses for this stream were already recorded.'
+  })[result]??'Could not record the bonuses.',409);
+  return res.json({result});
  }else if(b.action==='stop'){
   await db('gta_campaign?id=eq.1&closed_at=is.null',{method:'PATCH',body:{closed_at:now}});
  }else if(b.action==='pass'){
-  const handle=String(b.handle??'').trim().replace(/^@/,'');
-  if(!/^[a-zA-Z0-9_-]{1,100}$/.test(handle))throw invalid('Enter the Kick handle exactly.');
+  const handle=cleanHandle(b.handle);
+  if(!validHandle(handle))throw invalid('Enter the Kick handle exactly.');
   const campaign=(await db('gta_campaign?id=eq.1&select=closed_at'))[0];
   if(!campaign?.closed_at)throw invalid('Stop scoring before marking a participant as passed.');
-  const matches=await db('gta_checkins?select=user_id&username=eq.'+encodeURIComponent(handle)+'&limit=1000');
+  const query='?select=user_id&username=eq.'+encodeURIComponent(handle)+'&limit=1000';
+  const matches=(await Promise.all(['gta_checkins','gta_bonuses'].map(table=>db(table+query)))).flat();
   const ids=[...new Set(matches.map(x=>x.user_id))];
   if(ids.length!==1)throw invalid('That handle could not be uniquely matched.');
   await db('gta_passes?on_conflict=user_id',{method:'POST',prefer:'resolution=ignore-duplicates',body:{user_id:ids[0]}});
