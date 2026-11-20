@@ -23,5 +23,5 @@ test('GTA overlay shows five standings every 15 minutes and hides after 12 secon
  enabled=false;await poll();
  assert.equal(nodes.popup.hidden,false);
  assert.equal(nodes.leaders.kids.length,0);
- assert.match(nodes.empty.textContent,/hasn’t started/);
+ assert.equal(nodes.empty.textContent,'No standings yet.');
 });

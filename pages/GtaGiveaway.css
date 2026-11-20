@@ -1,20 +1,19 @@
 .gg-page{min-height:80vh;color:#fff5f9;background:#140e25;padding:clamp(1rem,4vw,4rem);font:inherit;--accent:#ffafd0;--line:#754a77}
 .gg-hero,.gg-grid{max-width:73rem;margin:0 auto}
-.gg-hero{position:relative;isolation:isolate;overflow:hidden;min-height:24rem;padding:clamp(1.7rem,5vw,4.5rem);border:1px solid #8d507e;border-radius:1.65rem;background:#2e163c url('/images/gta-sunset.svg') 100% 50%/cover no-repeat;box-shadow:0 1rem 4rem #0c06195a}
-.gg-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#180f2af7 0%,#241031df 49%,#26133312 100%)}
-.gg-tag{margin-bottom:1rem;font-weight:800;font-size:.84rem;letter-spacing:.17em;color:#ffcaa1}
-.gg-hero h1{font-size:clamp(2.65rem,7vw,6.5rem);line-height:.9;letter-spacing:-.066em;text-transform:uppercase;margin:0;max-width:12ch}
-.gg-hero h1 span{display:block;color:#ffafd0;font-style:italic;font-size:.72em;text-shadow:0 0 1.8rem #f563ab66;letter-spacing:-.055em}
-.gg-prize{display:inline-block;margin:1.55rem 0 1.1rem;padding:.85rem 1.1rem;border-left:4px solid #ffc997;background:#180e29c4;border-radius:.4rem}
-.gg-prize strong{color:#fff0bb;font-size:clamp(1.2rem,3vw,1.9rem)}
+.gg-hero{position:relative;isolation:isolate;overflow:hidden;display:grid;align-content:center;justify-items:start;min-height:clamp(21rem,39vw,32rem);padding:clamp(1.4rem,5vw,4.7rem);border:1px solid #a85e93;border-radius:1.45rem;background:#2e163c url('/images/gta-sunset.svg') 100% 54%/cover no-repeat;box-shadow:0 1rem 4rem #0c061970}
+.gg-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#190d29f5 0%,#251032e0 39%,#24103153 66%,transparent 88%),linear-gradient(0deg,#170e28ad,transparent 41%)}
+.gg-hero::after{content:'';position:absolute;inset:0 auto auto 0;width:100%;height:3px;background:linear-gradient(90deg,#ee72cb,#ffa98a 65%,#ec87b08c)}
+.gg-hero h1{font-family:Arial,system-ui,sans-serif;font-weight:950;font-size:clamp(2.3rem,6.5vw,6.2rem);line-height:.92;letter-spacing:-.075em;text-transform:uppercase;margin:0;color:#fff4fb;text-shadow:0 .08em .27em #13091b}
+.gg-hero h1 span{display:block;margin-top:.12em;color:#ffb1d7;font-style:italic;font-size:.78em;letter-spacing:-.059em;text-shadow:0 .075em .2em #150a23,0 0 .5em #ed67aea0}
 .gg-page p{font-size:1rem;line-height:1.53;color:#f1d8ed}
-.gg-prize p{margin:.25rem 0 0}.gg-state{display:table;border:1px solid #eea5c6;border-radius:999px;padding:.47rem .82rem;font-size:.9rem;font-weight:700;color:#ffcae3;background:#251330}
+.gg-hero .gg-prize{margin:1.5rem 0 0;padding:.55rem .9rem;border-left:3px solid #ffc38f;border-radius:0 .4rem .4rem 0;background:#160d24bf;color:#ffe2b7;font-size:clamp(1rem,2.45vw,1.45rem);font-weight:750}
+.gg-page .gg-rules{margin:1rem 0 0;color:#ddbdd7;font-size:.87rem}
 .gg-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:1rem;margin-top:1rem}
 .gg-panel{border:1px solid var(--line,#754a77);border-radius:1.1rem;padding:clamp(1rem,3vw,2rem);background:#251632}
 .gg-panel h2{margin:0 0 1rem;color:#ffc5e1}.gg-panel table{width:100%;text-align:left;border-collapse:collapse}
 .gg-panel th,.gg-panel td{padding:.65rem .35rem;border-bottom:1px solid #754a77}.gg-panel th:last-child,.gg-panel td:last-child{text-align:right}
 .gg-alert{margin:0;padding:.9rem;text-align:center;background:#382b15;color:#fff0cf}.gg-owner{max-width:72rem;margin:1rem auto;color:#f5f7f4}
 .gg-owner button,.gg-owner input{font:inherit;margin:.4rem;padding:.55rem .75rem}.gg-owner button{background:#ffc5e1;color:#27112d;border:0;border-radius:.4rem;font-weight:bold}
-@media(max-width:680px){.gg-grid{grid-template-columns:1fr}.gg-hero{min-height:0;background-position:72% 50%}.gg-hero::before{background:linear-gradient(90deg,#170e28e8 0%,#271132ac 83%,#2910318f 100%)}}
+@media(max-width:680px){.gg-grid{grid-template-columns:1fr}.gg-hero{min-height:18rem;align-content:end;padding-bottom:1.6rem;background-position:76% 48%}.gg-hero::before{background:linear-gradient(0deg,#170e28f5 3%,#231131aa 54%,#2910310c 100%)}}
 
 .gg-bonus label{display:block;margin:.45rem 0}.gg-bonus select{font:inherit;max-width:100%;padding:.5rem}.gg-bonus{margin-bottom:1rem}
