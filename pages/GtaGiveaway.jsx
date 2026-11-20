@@ -5,7 +5,7 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
  return <main className="gg-page">
   <header className="gg-hero">
    <h1>GTA Giveaway <span>Leaderboard</span></h1>
-   <p className="gg-prize">GTA 6 copy or gift card</p>
+   <p className="gg-prize">GTA 6 Copy or Gift Card</p>
   </header>
   <div className="gg-grid">
    <section className="gg-panel" aria-label="Live standings"><h2>Standings</h2>
@@ -18,10 +18,10 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
     {skippedWindows>0&&<p>{skippedWindows} unverified {skippedWindows===1?'block skipped':'blocks skipped'}.</p>}
    </section>
    <section className="gg-panel" aria-label="How scoring works"><h2>How it works</h2>
-    <p>While ZeekFusion is live, there’s one surprise check-in per 30-minute block. If you’ve chatted since the last check-in, you get 1 XP. No command or spam needed.</p>
+    <p>While ZeekFusion is live, there’s one surprise check-in per 30-minute block. If you chatted in that block before the check-in, you get 1 XP. No command or spam needed.</p>
     <p>At the end of each stream, the top three chatters get bonus XP: 1st +3, 2nd +2, 3rd +1.</p>
     <p>XP carries across streams. Good luck!</p>
-    <p className="gg-rules">No purchase needed. If the winner passes, the prize goes to the next eligible person.</p>
+    <p className="gg-rules">If the winner passes, the prize goes to the next eligible person.</p>
    </section>
   </div>
  </main>;
