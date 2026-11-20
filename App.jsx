@@ -31,8 +31,8 @@ export default function App() {
         <Route path="/reward-alerts" element={<RewardOverlay/>}/>
         <Route path="/clips" element={<Clips />} />
         <Route path="/gta-giveaway" element={<GtaGiveaway/>}/>
-        <Route path="/bingo" element={<Bingo/>} />
-        <Route path="/bingo-overlay" element={<BingoOverlay/>} />
+        <Route path="/bingo" element={<OwnerOnly><Bingo/></OwnerOnly>} />
+        <Route path="/bingo-overlay" element={<OwnerOnly><BingoOverlay/></OwnerOnly>} />
         <Route path="/map" element={<Map />} />
         <Route path="/schedule" element={<Vault />} />
         <Route path="/market" element={<Vault />} />
