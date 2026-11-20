@@ -4,14 +4,14 @@ import './GtaGiveaway.css';
 export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
  return <main className="gg-page">
   <header className="gg-hero">
-   <div className="gg-tag">ZEEKFUSION · KICK COMMUNITY</div>
-   <h1>GTA Giveaway<span>Leaderboard</span></h1>
-   <div className="gg-prize"><strong>GTA 6 copy or gift card</strong><p>(If you don’t want it, it’ll be passed on to the next person.)</p><p>No purchase needed.</p></div>
-   <span className="gg-state">{({preview:'Scoring hasn’t started yet',live:'Live · scoring on',paused:'Between streams',closed:'Giveaway closed',stale:'Scoring paused · feed check pending'})[status] ?? 'Scoring unavailable'}</span>
+   <h1>GTA Giveaway <span>Leaderboard</span></h1>
+   <p className="gg-prize">GTA 6 copy or gift card</p>
   </header>
   <div className="gg-grid">
    <section className="gg-panel" aria-label="Live standings"><h2>Standings</h2>
-    {!entries.length?<p>No scored check-ins yet.</p>:<table>
+    {status==='closed'&&<p>Giveaway closed.</p>}
+    {status==='stale'&&<p>Standings are temporarily paused.</p>}
+    {!entries.length?<p>No standings yet.</p>:<table>
      <thead><tr><th>Rank</th><th>Kick handle</th><th>XP</th></tr></thead>
      <tbody>{entries.map(r=><tr key={r.username}><td>{r.rank}</td><td>@{r.username}</td><td>{r.xp}</td></tr>)}</tbody>
     </table>}
@@ -21,6 +21,7 @@ export function GiveawayBoard({status, entries=[], skippedWindows=0}) {
     <p>While ZeekFusion is live, there’s one surprise check-in per 30-minute block. If you’ve chatted since the last check-in, you get 1 XP. No command or spam needed.</p>
     <p>At the end of each stream, the top three chatters get bonus XP: 1st +3, 2nd +2, 3rd +1.</p>
     <p>XP carries across streams. Good luck!</p>
+    <p className="gg-rules">No purchase needed. If the winner passes, the prize goes to the next eligible person.</p>
    </section>
   </div>
  </main>;

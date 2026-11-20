@@ -22,7 +22,7 @@
  async function show() {
   try {
    const r=await fetch('/api/site?giveaway=1',{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(5000)});
-   if(r.status===404)paint([],'Scoring hasn’t started.');
+   if(r.status===404)paint([],'No standings yet.');
    else{
     if(!r.ok)throw Error();
     const {entries}=await r.json();
