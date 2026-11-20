@@ -3,7 +3,7 @@
  const popup=document.getElementById('popup');
  const board=document.getElementById('leaders');
  const empty=document.getElementById('empty');
- const intervalMs=15*60*1000,visibleMs=12*1000;
+ const intervalMs=15*60*1000,visibleMs=30*1000;
  function paint(rows,message) {
   board.replaceChildren(...rows.map(row=>{
    const li=document.createElement('li');
